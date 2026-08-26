@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MentalClass · Sfondo del widget (gradiente teal del brand)
+  Va in: android/app/src/main/res/drawable/widget_sfondo.xml
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="20dp" />
+    <gradient
+        android:startColor="#0e5b66"
+        android:centerColor="#08444C"
+        android:endColor="#052c31"
+        android:angle="135" />
+</shape>

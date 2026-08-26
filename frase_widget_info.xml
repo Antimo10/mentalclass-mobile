@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MentalClass · Definizione del widget Android
+  Va in: android/app/src/main/res/xml/frase_widget_info.xml
+
+  E nel file android/app/src/main/AndroidManifest.xml, dentro <application>,
+  va aggiunto questo blocco (te lo ricordo io in fase di compilazione):
+
+  <receiver
+      android:name=".FraseWidget"
+      android:exported="false">
+      <intent-filter>
+          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/frase_widget_info" />
+  </receiver>
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="3600000"
+    android:initialLayout="@layout/frase_widget"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:previewLayout="@layout/frase_widget" />

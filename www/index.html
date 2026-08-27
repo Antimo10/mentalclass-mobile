@@ -362,6 +362,7 @@
   .audio-hero h2{ font-family:'Anton',Impact,'Arial Narrow',sans-serif; font-size:clamp(26px,3.4vw,40px); text-transform:uppercase; margin:0 0 10px; line-height:1; font-weight:400; }
   .audio-hero p{ max-width:520px; font-size:14.5px; color:var(--tx-mut); line-height:1.55; margin:0 0 20px; }
   .row-title{ font-size:14px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin:28px 0 14px; display:flex; align-items:center; gap:10px; }
+  .sottocat-tit{ font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--lime); margin:18px 0 10px; opacity:.9; }
   .row-title .match{ font-size:10px; font-weight:800; background:rgba(194,232,62,.16); border:1px solid rgba(194,232,62,.4); color:var(--lime); padding:4px 10px; border-radius:100px; letter-spacing:.06em; }
   .a-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
   .a-card{ cursor:pointer; }
@@ -3355,6 +3356,7 @@ var REFERRAL_ATTIVO = false;
      STATE
   ===================================================== */
   var ONBOARDING_IN_CORSO = false;
+  var AUTH_OBBLIGATORIA = false;   /* true se arrivato dalla landing per registrarsi */
 
   /* icone play/pausa professionali (SVG) al posto degli emoji di sistema */
   var ICONA_PLAY  = '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
@@ -3722,6 +3724,7 @@ var REFERRAL_ATTIVO = false;
   var FRASI_PLAYER_ATTIVE = false;   /* le frasi che scorrevano nel player sono state tolte */
   var AUDIO_DB = {};        /* id → riga audio dal database */
   var CAT_DB   = [];        /* categorie reali */
+  var SOTTOCAT_DB = [];     /* sottocategorie reali */
 
   /* elenco numeri della rivista dal database */
   async function caricaRiviste(){
@@ -3761,9 +3764,12 @@ var REFERRAL_ATTIVO = false;
         MC.audio.categorie(),
         MC.audio.lista({}),
         MC.audio.percorsi(),
-        MC.utenteCorrente() ? MC.audio.mieiProgressi() : Promise.resolve([])
+        MC.utenteCorrente() ? MC.audio.mieiProgressi() : Promise.resolve([]),
+        MC.audio.sottocategorie()
       ]);
       var cats = ris[0], audios = ris[1], percorsi = ris[2], progressi = ris[3];
+      var sottocats = ris[4] || [];
+      SOTTOCAT_DB = sottocats;
 
       /* Resta sulla vetrina di esempio SOLO se non c'è ancora nulla di
          reale: né audio, né categorie, né percorsi. Basta una categoria
@@ -3826,14 +3832,22 @@ var REFERRAL_ATTIVO = false;
         var suoi = audios.filter(function(a){ return a.categoria_id === c.id && !a.percorso_id; });
         if(!suoi.length) return;
 
-        /* Tutti gli audio della categoria, in griglia che va a capo:
-           niente carosello, niente limite. Si scorre la pagina in basso. */
-        var mostrati = suoi;
-
         blocchi += '<div class="cat-block" data-block="'+c.slug+'">'+
-                   '<div class="row-title" id="row-'+c.slug+'">'+escapeHtml(c.nome)+'</div>'+
-                   '<div class="a-row" id="row-cont-'+c.slug+'">';
-        mostrati.forEach(function(a, i){
+                   '<div class="row-title" id="row-'+c.slug+'">'+escapeHtml(c.nome)+'</div>';
+
+        /* sottocategorie di questa categoria che hanno almeno un audio */
+        var sottoDiC = (SOTTOCAT_DB || []).filter(function(s){ return s.categoria_id === c.id; });
+        var gruppi = [];
+        sottoDiC.forEach(function(s){
+          var dentro = suoi.filter(function(a){ return a.sottocategoria_id === s.id; });
+          if(dentro.length) gruppi.push({ nome: s.nome, audio: dentro });
+        });
+        /* audio senza sottocategoria: vanno in un gruppo "senza titolo" */
+        var senza = suoi.filter(function(a){
+          return !a.sottocategoria_id || !sottoDiC.some(function(s){ return s.id === a.sottocategoria_id; });
+        });
+
+        function disegnaCard(a, i){
           var min = a.durata_sec ? Math.round(a.durata_sec/60)+' min' : '';
           var p = prog[a.id];
           var ripresa = (p && p.posizione_sec > 5 && !p.completato) ? ' · ripresa' : (p && p.completato ? ' · ✓' : '');
@@ -3841,11 +3855,25 @@ var REFERRAL_ATTIVO = false;
           var cop = a.copertina_url
             ? '<div class="art" style="background-image:url('+a.copertina_url+');background-size:cover;background-position:center;">'+lucchetto+'<span>'+escapeHtml(a.titolo)+'</span><div class="playov">▶</div></div>'
             : '<div class="art art-'+(a.colore || 'abcde'[i%5])+'">'+lucchetto+'<span>'+escapeHtml(a.titolo)+'</span><div class="playov">▶</div></div>';
-          blocchi += '<div class="a-card" onclick="apriAudioVero(\''+a.id+'\')">'+ cop +
+          return '<div class="a-card" onclick="apriAudioVero(\''+a.id+'\')">'+ cop +
             '<div class="sub">'+escapeHtml(c.nome)+(min?' · '+min:'')+ripresa+
             '<span class="fav" onclick="event.stopPropagation();preferitoAudio(this,\''+a.id+'\')">♡</span></div></div>';
-        });
-        blocchi += '</div></div>';
+        }
+
+        if(gruppi.length){
+          /* prima gli audio senza sottocategoria (se ci sono), poi ogni sottocategoria col suo titolo */
+          if(senza.length){
+            blocchi += '<div class="a-row">' + senza.map(disegnaCard).join('') + '</div>';
+          }
+          gruppi.forEach(function(g){
+            blocchi += '<div class="sottocat-tit">'+escapeHtml(g.nome)+'</div>'+
+                       '<div class="a-row">' + g.audio.map(disegnaCard).join('') + '</div>';
+          });
+        } else {
+          /* nessuna sottocategoria: griglia unica come prima */
+          blocchi += '<div class="a-row" id="row-cont-'+c.slug+'">' + suoi.map(disegnaCard).join('') + '</div>';
+        }
+        blocchi += '</div>';
       });
 
       var cont = document.getElementById('audio-pills').parentNode;
@@ -6707,6 +6735,9 @@ var REFERRAL_ATTIVO = false;
   function applicaProfilo(){
     var p = MC.profiloCorrente();
     if(!p) return;
+    /* login/registrazione riusciti: da ora l'app è liberamente navigabile,
+       la X del modulo non deve più rimandare alla landing */
+    AUTH_OBBLIGATORIA = false;
     if(p.nome){
       state.name = p.nome;
     } else {
@@ -6789,7 +6820,16 @@ var REFERRAL_ATTIVO = false;
   }
 
   function openAuth(kind){ document.getElementById('auth').classList.add('show'); authTab(kind); }
-  function closeAuth(){ document.getElementById('auth').classList.remove('show'); }
+  function closeAuth(){
+    /* Se l'utente è arrivato dalla landing per autenticarsi e non ha
+       ancora una sessione, chiudere il modulo NON deve rivelare l'app:
+       lo riportiamo alla landing. */
+    if(AUTH_OBBLIGATORIA && !(COLLEGATO && MC.utenteCorrente())){
+      window.location.href = 'index.html';
+      return;
+    }
+    document.getElementById('auth').classList.remove('show');
+  }
   function authTab(kind){
     document.getElementById('auth-login').style.display = kind==='login'?'block':'none';
     document.getElementById('auth-signup').style.display = kind==='signup'?'block':'none';
@@ -8375,8 +8415,11 @@ var REFERRAL_ATTIVO = false;
      i contenuti non si vedono ancora, parte quel giorno. */
   function sfidaNonAncoraPartita(sf){
     if(!sf || !sf.data_inizio) return false;      /* nessuna data: parte subito */
+    /* normalizzo: tengo solo aaaa-mm-gg, ignoro eventuale ora/timezone
+       che il database può aggiungere (es. "2026-08-30T00:00:00+00") */
+    var inizio = String(sf.data_inizio).slice(0, 10);
     var oggi = dataLocale(new Date());
-    return sf.data_inizio > oggi;                 /* confronto aaaa-mm-gg */
+    return inizio > oggi;                         /* confronto aaaa-mm-gg */
   }
 
   /* Mostra il messaggio di attesa al posto dei giorni, con il conto alla
@@ -9663,7 +9706,13 @@ var REFERRAL_ATTIVO = false;
       if(COLLEGATO && MC.utenteCorrente()) return;   /* già dentro: niente da fare */
 
       if(vai){ enterApp(vai); return; }
-      if(auth === 'login' || auth === 'signup'){ enterApp(); openAuth(auth); return; }
+      if(auth === 'login' || auth === 'signup'){
+        /* Arriva dalla landing per registrarsi/accedere: l'app dietro NON
+           deve essere esplorabile. Se chiude il modulo (X), lo riportiamo
+           alla landing invece di rivelargli l'app senza account. */
+        AUTH_OBBLIGATORIA = true;
+        enterApp(); openAuth(auth); return;
+      }
       /* Regalo nascosto per ora: ignoro ?gift=1 così non si apre da link.
          Per riattivarlo, togli questa riga. */
       if(gift){ enterApp(); return; }

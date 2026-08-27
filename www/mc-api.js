@@ -398,6 +398,12 @@ const MC = (function(){
       return data || [];
     },
 
+    async sottocategorie(){
+      const { data, error } = await sb.from('sottocategorie').select('*').order('ordine');
+      if(error) return [];   /* se la tabella non c'è ancora, nessun problema */
+      return data || [];
+    },
+
     async lista(filtri){
       filtri = filtri || {};
       let q = sb.from('audio').select('*, categorie(nome,slug)').eq('pubblicato', true);

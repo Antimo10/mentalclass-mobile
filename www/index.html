@@ -1391,7 +1391,9 @@ button, .pill, .qa, .fav, .ep, .bg-sw, .share-btn, .act{ -webkit-tap-highlight-c
 .sday .tt span{ font-size:11.5px; color:var(--tx-mut); }
 .sday .st{ font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--tx-dim); white-space:nowrap; }
 .sday.done .st{ color:var(--lime); }
-.sday-rec{ display:flex; align-items:center; gap:11px; margin-top:10px; }
+.sday-rec{ display:flex; align-items:center; gap:11px; margin-top:10px; flex-wrap:wrap; }
+.sday-allega{ font-size:12px; color:var(--tx-mut); text-decoration:underline; cursor:pointer; margin-left:auto; }
+.sday-allega:hover{ color:var(--lime); }
 .sday-rec .micbtn{ width:40px; height:40px; border-radius:50%; background:var(--lime); color:var(--ink); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; }
 .sday-rec .micbtn svg{ width:16px; height:16px; stroke:var(--ink); stroke-width:2; fill:none; }
 .sday-rec .micbtn.recording{ background:#e0655f; animation:recPulse 1.2s infinite; }
@@ -3497,8 +3499,12 @@ var REFERRAL_ATTIVO = false;
   function enterApp(screen){
     /* app.html mostra sempre e solo l'app: qui non c'è più una landing
        da nascondere. La funzione resta per compatibilità con tutte le
-       chiamate sparse nel resto del codice. */
-    closeAuth();
+       chiamate sparse nel resto del codice.
+       Nota: chiudo il modulo direttamente (non via closeAuth) perché
+       closeAuth, con AUTH_OBBLIGATORIA attiva, rimanderebbe alla landing
+       proprio mentre stiamo per aprire il modulo di registrazione. */
+    var m = document.getElementById('auth');
+    if(m) m.classList.remove('show');
     window.scrollTo(0,0);
     applyPersonalization();
     applicaVisibilitaReferral();
@@ -8473,7 +8479,10 @@ var REFERRAL_ATTIVO = false;
       var sub = (isDone || isToday) ? d.s : 'La prova si svela a mezzanotte.';
       var rec = '';
       if(isToday){
-        rec = '<div class="sday-rec"><div class="micbtn" id="sday-mic" onclick="sfidaComplete('+n+')"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></div><span>'+(n===7?'Registra la voce finale per il gruppo':'Racconta com\'è andata (30s) e chiudi il giorno')+'</span></div>';
+        rec = '<div class="sday-rec"><div class="micbtn" id="sday-mic" onclick="sfidaComplete('+n+')"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></div><span>'+(n===7?'Registra la voce finale per il gruppo':'Racconta com\'è andata (30s) e chiudi il giorno')+'</span>'+
+          '<div class="sday-allega" onclick="event.stopPropagation();document.getElementById(\'sday-file\').click()">📎 Allega un file</div>'+
+          '<input type="file" id="sday-file" style="display:none;" onchange="sfidaAllegaFile(this,'+n+')">'+
+        '</div>';
       }
       /* conversazione con l'esperto sotto i giorni completati */
       var chat = '';
@@ -8498,6 +8507,40 @@ var REFERRAL_ATTIVO = false;
     renderHomeSync();
   }
   var sfRecorder = null, sfStream = null, sfChunks = [], sfSecondi = 0, sfTimer = null, sfGiornoCorrente = null;
+
+  /* invia un file già pronto (di qualsiasi tipo: audio, immagine,
+     documento…), invece di registrare dal vivo */
+  async function sfidaAllegaFile(input, n){
+    var file = input.files && input.files[0];
+    input.value = '';
+    if(!file) return;
+    if(file.size > 25 * 1024 * 1024){
+      toast('Il file è troppo grande (massimo 25 MB)'); return;
+    }
+    if(!COLLEGATO || !MC.utenteCorrente() || !ISCRIZIONE){
+      toast('Disponibile con l\'account reale'); return;
+    }
+    toast('Invio in corso…');
+    try{
+      /* durata non nota per un file esterno: la lasciamo a 0, il server
+         può comunque leggerla dal file quando serve mostrarla */
+      await MC.sfide.inviaVocale(ISCRIZIONE.id, n, file, 0);
+      if(!sfidaDone.includes(n)) sfidaDone.push(n);
+      SFIDA_DATE[n] = dataLocale(new Date());
+      renderSfidaDays(); renderExpDash();
+      if(n === 7){
+        confetti(40); chime();
+        toast('🎉 Sfida completata · la conversazione resta all\'esperto');
+      } else {
+        confetti(14); chime();
+        toast('✓ Giorno '+n+' chiuso · file inviato all\'esperto');
+      }
+      if(typeof sincronizzaHome === 'function') sincronizzaHome();
+    }catch(err){
+      toast('Non sono riuscito a inviare: ' + err.message);
+    }
+  }
+
   async function sfidaComplete(n){
     var mic = document.getElementById('sday-mic');
 

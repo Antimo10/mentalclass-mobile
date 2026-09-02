@@ -12,7 +12,7 @@
 //  android/app/src/main/java/it/mentalclass/app/FraseWidget.kt
 //  =====================================================================
 
-package it.mentalclass.app
+package it.mentalclass.mentalclass
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
@@ -29,7 +29,7 @@ class FraseWidget : AppWidgetProvider() {
         for (appWidgetId in appWidgetIds) {
             // Il plugin capacitor-widget-bridge scrive nelle SharedPreferences
             // con il nome del gruppo. Deve combaciare con APP_GROUP di mc-widget.js
-            val prefs = context.getSharedPreferences("group.it.mentalclass.app", Context.MODE_PRIVATE)
+            val prefs = context.getSharedPreferences("group.it.mentalclass.mentalclass", Context.MODE_PRIVATE)
             val frase = prefs.getString("frase_del_giorno", "Alleniamo la mente, un giorno alla volta.")
             val autore = prefs.getString("autore_del_giorno", "MentalClass")
 

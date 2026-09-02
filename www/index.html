@@ -297,6 +297,39 @@
 
   /* ===== EXP 7: deck frasi/pensieri/dizionario/oroscopo con quote ===== */
   .deck{ padding:30px 32px 24px; position:relative; display:flex; flex-direction:column; min-height:330px; overflow:hidden; }
+
+  /* --- feed verticale dei contenuti del giorno --- */
+  .feed-scroll{
+    flex:1; min-height:300px; max-height:56vh; overflow-y:auto; overflow-x:hidden;
+    scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none; margin:0 -8px;
+  }
+  .feed-scroll::-webkit-scrollbar{ display:none; }
+  .feed-card{
+    min-height:300px; height:56vh; scroll-snap-align:start; scroll-snap-stop:always;
+    display:flex; align-items:center; justify-content:center; padding:8px;
+  }
+  .fc-in{ width:100%; text-align:center; }
+  .fc-q{
+    font-family:'Playfair Display',Georgia,serif; font-style:italic;
+    font-size:clamp(19px, 2.4vw, 27px); line-height:1.45; color:var(--cream); margin:0 0 16px;
+  }
+  .fc-a{ font-size:12.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--lime); }
+  .fc-word{ font-size:clamp(26px,3.4vw,38px); color:var(--cream); margin-bottom:10px; }
+  .fc-def{ font-size:14.5px; color:var(--tx-mut); line-height:1.6; margin:0 0 14px; }
+  .fc-ex{ font-family:'Playfair Display',Georgia,serif; font-style:italic; font-size:16px; color:var(--cream); margin:0; }
+  .fc-segno{ font-size:12.5px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--lime); margin-bottom:14px; }
+  .feed-fine .fc-em{ font-size:34px; margin-bottom:10px; }
+  .feed-fine h4{ font-size:18px; color:var(--cream); margin:0 0 8px; }
+  .feed-fine p{ font-size:13.5px; color:var(--tx-mut); line-height:1.6; margin:0; }
+  /* piccolo suggerimento: si scorre */
+  .deck::after{
+    content:''; position:absolute; left:50%; bottom:74px; transform:translateX(-50%);
+    width:26px; height:26px; pointer-events:none; opacity:.34;
+    background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F1EDE2' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
+    animation:giuGiu 1.8s ease-in-out infinite;
+  }
+  @keyframes giuGiu{ 0%,100%{ transform:translate(-50%,0); } 50%{ transform:translate(-50%,5px); } }
   .deck-body{ flex:1; display:flex; flex-direction:column; justify-content:center; transition:opacity .28s ease, transform .28s ease; }
   .deck-body.out{ opacity:0; transform:translateX(-14px); }
   .deck .bulb{ font-size:20px; }
@@ -2135,17 +2168,23 @@ var REFERRAL_ATTIVO = false;
 
         <div class="home-grid">
           <div class="pane deck" id="deck-card">
-            <div class="qmark">"</div>
-            <div class="deck-body" id="deck-body"><!-- render JS --></div>
+            <!-- WEB (browser): carosello a carta singola con frecce -->
+            <div id="deck-carosello">
+              <div class="qmark">"</div>
+              <div class="deck-body" id="deck-body"><!-- render JS --></div>
+              <div class="deck-dots" id="deck-dots"></div>
+            </div>
+            <!-- APP (da store): feed verticale, si scorre in basso -->
+            <div class="feed-scroll" id="deck-feed" onscroll="feedScorso()" style="display:none;"><!-- render JS --></div>
+
             <div class="deck-foot">
               <div style="display:flex;align-items:center;gap:14px;">
-                <div class="deck-dots" id="deck-dots"></div>
                 <div class="deck-quota" id="deck-quota"></div>
               </div>
               <div style="display:flex;align-items:center;gap:8px;">
                 <div class="qa" id="qa-save" title="Salva nei preferiti" onclick="toggleSaveCurrent()"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0112 5a5 5 0 019.5 7c-2.5 4.5-9.5 9-9.5 9z"/></svg></div>
                 <div class="qa" id="qa-share" title="Condividi sui social" onclick="openShare()"><svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v14"/></svg></div>
-                <div class="deck-nav">
+                <div class="deck-nav" id="deck-nav">
                   <button class="deck-arrow" id="deck-prev" onclick="deckMove(-1)">‹</button>
                   <button class="deck-arrow" id="deck-next" onclick="deckMove(1)">›</button>
                 </div>
@@ -7186,12 +7225,37 @@ var REFERRAL_ATTIVO = false;
     state.frasiIndex = next;
     renderDeck(true);
   }
+  /* =====================================================
+     HOME · feed verticale dei contenuti del giorno
+     Si scorre verso il basso per il contenuto successivo.
+     Le schede in alto cambiano tipo (frasi, pensieri, ...).
+     I limiti giornalieri restano identici a prima.
+  ===================================================== */
+  /* Sceglie quale versione della home mostrare:
+     - nel BROWSER (sito): il carosello a carta singola con le frecce
+     - nell'APP da store: il feed verticale a scorrimento
+     Un solo file, un solo comportamento corretto in entrambi i casi. */
   function renderDeck(animate){
+    var app = eAppNativa();
+    var car  = document.getElementById('deck-carosello');
+    var feed = document.getElementById('deck-feed');
+    var nav  = document.getElementById('deck-nav');
+    if(car)  car.style.display  = app ? 'none'  : '';
+    if(feed) feed.style.display = app ? 'block' : 'none';
+    if(nav)  nav.style.display  = app ? 'none'  : '';
+
+    if(app) renderDeckFeed(animate);
+    else    renderDeckCarosello(animate);
+  }
+
+  /* WEB: la versione originale, a carta singola con frecce avanti/indietro */
+  function renderDeckCarosello(animate){
     var body = document.getElementById('deck-body');
     var dots = document.getElementById('deck-dots');
     var quota = document.getElementById('deck-quota');
     var prev = document.getElementById('deck-prev');
     var next = document.getElementById('deck-next');
+    if(!body) return;
     var html = '';
     var q = state.quotas;
 
@@ -7241,6 +7305,118 @@ var REFERRAL_ATTIVO = false;
       body.classList.add('out');
       setTimeout(write, 200);
     } else write();
+  }
+
+  /* APP: feed verticale, si scorre in basso per il contenuto successivo */
+  function renderDeckFeed(animate){
+    var feed  = document.getElementById('deck-feed');
+    var quota = document.getElementById('deck-quota');
+    if(!feed) return;
+    var q = state.quotas;
+    var carte = [];
+
+    if(state.deck === 'frasi'){
+      var f = q.frasi;
+      var quante = Math.min(FRASI.length, f.max);
+      for(var i = 0; i < quante; i++){
+        carte.push(cartaFeed(FRASI[i].q, FRASI[i].a, i));
+      }
+      carte.push(cartaFine('Hai chiuso le ' + f.max + ' frasi di oggi',
+        'Le prossime arrivano domani, nella tua fascia ' + fmtRange() + '.'));
+      quota.textContent = quante + ' frasi di oggi';
+      var el = document.getElementById('q-frasi');
+      if(el) el.textContent = (f.max - Math.min(f.used, f.max)) + '/' + f.max;
+    }
+
+    if(state.deck === 'pensieri'){
+      carte.push(cartaFeed(PENSIERO.q, PENSIERO.a, 0));
+      carte.push(cartaFine('È il pensiero di oggi',
+        'Il prossimo arriva domani, nella tua fascia ' + fmtRange() + '.'));
+      quota.textContent = '1 al giorno';
+      var ep = document.getElementById('q-pensieri');
+      if(ep) ep.textContent = (q.pensieri.max - q.pensieri.used) + '/1';
+    }
+
+    if(state.deck === 'dizionario'){
+      carte.push('<div class="feed-card" data-i="0">' +
+        '<div class="fc-in">' +
+          '<div class="fc-word disp">' + escapeHtml(DIZIONARIO.word) + '</div>' +
+          '<p class="fc-def">' + escapeHtml(DIZIONARIO.def) + '</p>' +
+          '<p class="fc-ex quote">' + escapeHtml(DIZIONARIO.ex) + '</p>' +
+        '</div></div>');
+      carte.push(cartaFine('È la parola di oggi', 'La prossima arriva domani.'));
+      quota.textContent = '1 parola al giorno';
+      var ed = document.getElementById('q-dizionario');
+      if(ed) ed.textContent = (q.dizionario.max - q.dizionario.used) + '/1';
+    }
+
+    if(state.deck === 'oroscopo'){
+      var em = SIGN_EMOJI[state.sign] || '';
+      carte.push('<div class="feed-card" data-i="0">' +
+        '<div class="fc-in">' +
+          '<div class="fc-segno">' + em + ' ' + escapeHtml(state.sign) + '</div>' +
+          '<p class="fc-q quote">' + escapeHtml(OROSCOPI[state.sign] || '') + '</p>' +
+          '<div class="fc-a">Oroscopo mentale del mese</div>' +
+        '</div></div>');
+      carte.push(cartaFine('È il tuo oroscopo del mese', 'Il prossimo arriva il mese prossimo.'));
+      quota.textContent = '1 al mese per il tuo segno';
+    }
+
+    feed.innerHTML = carte.join('');
+    feed.scrollTop = 0;
+    aggiornaIndiceFeed();
+    updateSaveBtn();
+  }
+
+  /* una carta del feed: frase + autore, a tutta altezza */
+  function cartaFeed(testo, autore, i){
+    return '<div class="feed-card" data-i="' + i + '">' +
+      '<div class="fc-in">' +
+        '<p class="fc-q quote">' + escapeHtml(testo) + '</p>' +
+        (autore ? '<div class="fc-a">' + escapeHtml(autore) + '</div>' : '') +
+      '</div></div>';
+  }
+
+  /* la carta finale: quota giornaliera esaurita */
+  function cartaFine(titolo, sotto){
+    return '<div class="feed-card feed-fine">' +
+      '<div class="fc-in">' +
+        '<div class="fc-em">🌱</div>' +
+        '<h4>' + escapeHtml(titolo) + '</h4>' +
+        '<p>' + escapeHtml(sotto) + '</p>' +
+        '<button class="btn btn-lime" style="padding:11px 20px;font-size:13px;margin-top:14px;" onclick="goScreen(\'audio\')">Passa agli audio</button>' +
+      '</div></div>';
+  }
+
+  /* chiamata mentre si scorre il feed: aggiorna la carta corrente e,
+     per le frasi, segna il consumo giornaliero come faceva la freccia */
+  var _feedTimer = null, _feedUltimo = -1;
+  function feedScorso(){
+    if(_feedTimer) clearTimeout(_feedTimer);
+    _feedTimer = setTimeout(function(){
+      aggiornaIndiceFeed();
+      if(state.deck === 'frasi' && state.frasiIndex > _feedUltimo){
+        _feedUltimo = state.frasiIndex;
+        if(state.frasiIndex > 0) segnaConsumo('frase');
+      }
+    }, 120);
+  }
+
+  /* capisce quale carta è in vista, per il cuore e la condivisione */
+  function aggiornaIndiceFeed(){
+    var feed = document.getElementById('deck-feed');
+    if(!feed) return;
+    var carte = feed.querySelectorAll('.feed-card');
+    var alto = feed.scrollTop;
+    var h = feed.clientHeight || 1;
+    var idx = Math.round(alto / h);
+    if(idx < 0) idx = 0;
+    if(idx > carte.length - 1) idx = carte.length - 1;
+    var c = carte[idx];
+    state.frasiIndex = (c && c.getAttribute('data-i') != null)
+      ? parseInt(c.getAttribute('data-i'), 10) || 0
+      : state.frasiIndex;
+    updateSaveBtn();
   }
 
   /* =====================================================

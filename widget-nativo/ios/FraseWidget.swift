@@ -12,7 +12,7 @@
 //  COME SI INSTALLA (lo fa chi compila, con la mia guida):
 //  1. In Xcode: File > New > Target > Widget Extension, nome "FraseWidget"
 //  2. Attivare App Groups sia sull'app sia sul widget, ID:
-//     group.it.mentalclass.app
+//     group.it.mentalclass.mentalclass
 //  3. Sostituire il file generato con questo.
 //  =====================================================================
 
@@ -21,7 +21,7 @@ import SwiftUI
 
 // L'identificatore della cassetta condivisa: deve combaciare ESATTAMENTE
 // con APP_GROUP in mc-widget.js
-let MC_APP_GROUP = "group.it.mentalclass.app"
+let MC_APP_GROUP = "group.it.mentalclass.mentalclass"
 let MC_KEY_FRASE = "frase_del_giorno"
 let MC_KEY_AUTORE = "autore_del_giorno"
 

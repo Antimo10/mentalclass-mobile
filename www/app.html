@@ -322,6 +322,44 @@
   .feed-fine .fc-em{ font-size:34px; margin-bottom:10px; }
   .feed-fine h4{ font-size:18px; color:var(--cream); margin:0 0 8px; }
   .feed-fine p{ font-size:13.5px; color:var(--tx-mut); line-height:1.6; margin:0; }
+  /* ===== HOME NATIVA A TUTTA PAGINA — stile Motivation (solo app) ===== */
+  .mc-native-top{ display:none; }
+  .mc-native-wm{ display:none; }
+  body.native{ overscroll-behavior:none; background:#052c31; }
+  /* niente scorrimento laterale e niente rimbalzo che mostra altri colori */
+  body.native #app, body.native .main{ overflow-x:hidden; }
+  body.native #s-home .screen-title,
+  body.native #s-home .screen-sub,
+  body.native #s-home .train-card,
+  body.native #s-home .pills-row,
+  body.native #s-home .deck-quota,
+  body.native #s-home #deck-nav{ display:none !important; }
+  /* la home diventa una sola colonna piena */
+  body.native #s-home{ position:relative; padding:0; }
+  body.native #s-home .home-grid{ display:block; margin:0; }
+  body.native #s-home .deck{ border:0; border-radius:0; background:transparent; padding:0; box-shadow:none; }
+  /* barra logo in alto, sempre */
+  body.native .mc-native-top{ position:relative; z-index:6; display:flex; align-items:center; justify-content:space-between; padding:8px 18px 6px; }
+  body.native .mc-native-top .mc-logo{ font-family:'Anton',Impact,sans-serif; text-transform:uppercase; letter-spacing:.02em; font-size:17px; color:var(--cream); }
+  body.native .mc-native-top .mc-logo b{ color:var(--lime); }
+  body.native .mc-native-top .mc-oggi{ font-size:12px; font-weight:600; color:var(--tx-mut); }
+  /* feed a schermo pieno con snap verticale, nessuna barra visibile */
+  body.native #deck-feed{ max-height:none; height:calc(100vh - 132px); margin:0; overscroll-behavior:none; scroll-snap-type:y mandatory; }
+  body.native #deck-feed .feed-card{ height:calc(100vh - 132px); min-height:420px; padding:24px 26px; }
+  body.native #deck-feed .fc-in{ max-width:26ch; }
+  body.native #deck-feed .fc-q{ font-size:clamp(26px,7vw,34px); line-height:1.3; }
+  body.native #deck-feed .fc-a{ text-transform:none; letter-spacing:.01em; font-weight:600; font-size:14px; color:var(--lime); }
+  body.native #deck-feed .fc-a::before{ content:"\2014\00a0\00a0"; }
+  /* cuore + condivisione come cerchi sulla card, a destra */
+  body.native #s-home .deck-foot{ position:absolute; right:12px; top:50%; transform:translateY(-50%); z-index:7; flex-direction:column; gap:14px; padding:0; background:transparent; border:0; }
+  body.native #s-home .deck-foot > div{ flex-direction:column !important; gap:14px !important; }
+  body.native #s-home .qa{ width:50px; height:50px; border-radius:50%; border:1px solid rgba(241,237,226,.18); background:rgba(241,237,226,.06); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; }
+  body.native #s-home .qa.on{ background:var(--lime); border-color:var(--lime); color:#052c31; }
+  /* selettore sfondo in basso, centrato e discreto */
+  body.native #s-home .bg-picker{ position:relative; z-index:6; justify-content:center; padding:6px 0 2px; }
+  body.native #s-home .bg-picker .lb{ display:none; }
+  /* watermark landing in fondo */
+  body.native .mc-native-wm{ display:block; text-align:center; font-size:11px; font-weight:600; letter-spacing:.02em; color:var(--tx-mut); padding:2px 0 4px; }
   /* piccolo suggerimento: si scorre */
   .deck::after{
     content:''; position:absolute; left:50%; bottom:74px; transform:translateX(-50%);
@@ -1994,16 +2032,10 @@ button, .pill, .qa, .fav, .ep, .bg-sw, .share-btn, .act{ -webkit-tap-highlight-c
 <!-- ============================================================
      AUTH
 ============================================================ -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
-<script>
-  /* Rete di sicurezza: se il primo CDN non ha caricato la libreria
-     (rete lenta o bloccata), la carichiamo da un secondo CDN. Senza la
-     libreria l'app cadrebbe in modalità demo, quindi vale la pena avere
-     un piano B. Questo blocco è sincrono: si esegue prima di mc-api.js. */
-  if(typeof window.supabase === 'undefined'){
-    document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"><\/script>');
-  }
-</script>
+<!-- libreria Supabase inclusa in locale (niente CDN): nel WebView nativo
+     di Capacitor il caricamento esterno può fallire e mandare l'app in
+     modalità demo. Con il file locale MC.init() va sempre a buon fine. -->
+<script src="vendor/supabase.min.js"></script>
 <script src="mc-api.js"></script>
 <script src="mc-analytics.js"></script>
 <script src="mc-notifiche.js"></script>
@@ -2156,6 +2188,7 @@ var REFERRAL_ATTIVO = false;
 
       <!-- HOME -->
       <section class="app-screen" id="s-home">
+        <div class="mc-native-top"><span class="mc-logo">Mental<b>Class</b></span><span class="mc-oggi">Oggi</span></div>
         <div class="screen-title"><h1 class="disp" id="greet">Buongiorno</h1></div>
         <p class="screen-sub" id="greet-sub">Il tuo allenamento di oggi ti aspetta.</p>
 
@@ -2191,6 +2224,7 @@ var REFERRAL_ATTIVO = false;
               </div>
             </div>
             <div class="bg-picker" id="bg-picker"><span class="lb">Sfondo</span></div>
+            <div class="mc-native-wm">mentalclass.it</div>
           </div>
 
           <div class="pane train-card">
@@ -7836,7 +7870,7 @@ var REFERRAL_ATTIVO = false;
     var testo = shareText();
     var txt = encodeURIComponent(testo);
     /* il link è quello reale dell'app, non un indirizzo fisso */
-    var linkApp = window.location.origin + window.location.pathname;
+    var linkApp = eAppNativa() ? 'https://www.mentalclass.it/' : (window.location.origin + window.location.pathname);
     var url = encodeURIComponent(linkApp);
     var links = {
       whatsapp:'https://wa.me/?text='+txt+'%20'+url,
@@ -7878,7 +7912,7 @@ var REFERRAL_ATTIVO = false;
         if(navigator.canShare({ files:[file] })){
           await navigator.share({
             files:[file],
-            text: frase + ' · via MentalClass'
+            text: frase + ' · via MentalClass — mentalclass.it'
           });
           closeShare(); return;
         }
@@ -7955,7 +7989,11 @@ var REFERRAL_ATTIVO = false;
 
       c.fillStyle = 'rgba(241,237,226,0.6)';
       c.font = '600 26px Arial, sans-serif';
-      c.fillText('alleniamo la mente', 100, S-108);
+      c.fillText('alleniamo la mente', 100, S-118);
+
+      c.fillStyle = 'rgba(194,232,62,0.85)';
+      c.font = '700 26px Arial, sans-serif';
+      c.fillText('mentalclass.it', 100, S-74);
 
       cv.toBlob(function(b){ resolve(b); }, 'image/png');
     });
@@ -9881,6 +9919,7 @@ var REFERRAL_ATTIVO = false;
 
   /* init */
   applyPersonalization();
+  if(eAppNativa()) document.body.classList.add('native');
   buildBgPicker();
 
   /* collegamento al backend (se configurato) */

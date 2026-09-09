@@ -327,6 +327,8 @@
   body.native{ overscroll-behavior:none; background:#052c31; }
   html.native, body.native{ overflow:hidden; }
   body.native #app, body.native .main{ overflow-x:hidden; }
+  body.native, body.native .main, body.native .app-screen, body.native #deck-feed, body.native #app{ scrollbar-width:none; -ms-overflow-style:none; }
+  body.native ::-webkit-scrollbar, body.native .main::-webkit-scrollbar, body.native .app-screen::-webkit-scrollbar{ width:0 !important; height:0 !important; display:none !important; }
 
   /* fuori: titolo pagina, sottotitolo, anello "passi di oggi", le 4 card di riepilogo, banner promo */
   body.native #s-home .screen-title,
@@ -341,7 +343,7 @@
   /* la home è SOLO il mazzo di frasi, a schermo intero */
   body.native #s-home{ position:fixed; inset:0; padding:0; z-index:5; }
   body.native #s-home .home-grid{ display:block; margin:0; height:100%; }
-  body.native #s-home .deck{ position:relative; height:100%; border:0; border-radius:0; background:transparent; padding:0; box-shadow:none; }
+  body.native #s-home .deck{ position:relative; height:100%; border:0; border-radius:0; padding:0; box-shadow:none; }
 
   /* logo in alto, sovrapposto al feed (non occupa spazio proprio) */
   body.native .mc-native-top{ display:flex; position:absolute; top:0; left:0; right:0; z-index:8; align-items:center; justify-content:space-between; padding:calc(env(safe-area-inset-top) + 10px) 20px 14px; background:linear-gradient(to bottom, rgba(5,44,49,.55), transparent); pointer-events:none; }
@@ -6419,8 +6421,8 @@ var REFERRAL_ATTIVO = false;
         b.disabled = false; b.style.opacity = ''; b.style.cursor = '';
         b.textContent = testoBase;
       }
-      resetBtn(mens, eAppNativa() ? 'Info sull\'abbonamento' : 'Scegli Mensile');
-      resetBtn(ann,  eAppNativa() ? 'Info sull\'abbonamento' : ((st && st.stato === 'in_prova') ? 'Riprendi la prova' : 'Inizia la prova gratuita'));
+      resetBtn(mens, 'Scegli Mensile');
+      resetBtn(ann,  (st && st.stato === 'in_prova') ? 'Riprendi la prova' : 'Inizia la prova gratuita');
 
       if(st.abbonato){
         var nome = st.piano === 'annuale' ? 'Annuale' : st.piano === 'mensile' ? 'Mensile' : st.piano;
@@ -6632,7 +6634,9 @@ var REFERRAL_ATTIVO = false;
 
   async function abbonati(codice){
     if(eAppNativa()){
-      mostraAvvisoAbbonatiSulSito();
+      /* Pagamento sul sito: apriamo la pagina abbonamenti della webapp nel browser di sistema. */
+      var dest = 'https://www.mentalclass.it/?abbonati=' + encodeURIComponent(codice || 'annuale');
+      try{ window.open(dest, '_blank'); }catch(e){ window.location.href = dest; }
       return;
     }
     if(!COLLEGATO){ toast('Il pagamento si attiva con il backend collegato'); return; }
@@ -6917,6 +6921,7 @@ var REFERRAL_ATTIVO = false;
        ancora una sessione, chiudere il modulo NON deve rivelare l'app:
        lo riportiamo alla landing. */
     if(AUTH_OBBLIGATORIA && !(COLLEGATO && MC.utenteCorrente())){
+      if(eAppNativa()){ return; }   /* in app: non si esce senza accesso, resta aperto */
       window.location.href = 'index.html';
       return;
     }
@@ -10003,7 +10008,13 @@ var REFERRAL_ATTIVO = false;
          Per riattivarlo, togli questa riga. */
       if(gift){ enterApp(); return; }
       if(false && gift){ enterApp(); openGift(); return; }
-      enterApp();   /* nessun parametro: mostra comunque l'app (sfoglia libera) */
+      /* NELL'APP NATIVA l'accesso è obbligatorio: da anonimo l'RLS di Supabase
+         non restituisce contenuti. Se non c'è sessione, apriamo la registrazione. */
+      if(eAppNativa() && !(COLLEGATO && MC.utenteCorrente())){
+        AUTH_OBBLIGATORIA = true;
+        enterApp(); openAuth('signup'); return;
+      }
+      enterApp();   /* browser senza parametri: sfoglia libera */
     })();
   })();
 

@@ -360,6 +360,46 @@
   body.native #s-home .bg-picker .lb{ display:none; }
   /* watermark landing in fondo */
   body.native .mc-native-wm{ display:block; text-align:center; font-size:11px; font-weight:600; letter-spacing:.02em; color:var(--tx-mut); padding:2px 0 4px; }
+  /* ===== AUDIO — formato app (solo nativo): rail orizzontali, titoli editoriali ===== */
+  body.native #s-audio .screen-sub{ display:none; }
+  body.native #s-audio .pills-row .pill.on{ background:var(--lime); color:#052c31; border-color:var(--lime); }
+  body.native #s-audio .row-title{ font-family:'Playfair Display',Georgia,serif; font-style:italic; font-weight:600; text-transform:none; letter-spacing:0; font-size:22px; }
+  body.native #s-audio .a-row{ display:flex; grid-template-columns:none; gap:13px; overflow-x:auto; scroll-snap-type:x proximity; padding:2px 18px 6px 0; margin-right:-18px; scrollbar-width:none; }
+  body.native #s-audio .a-row::-webkit-scrollbar{ display:none; }
+  body.native #s-audio .a-row .a-card{ flex:0 0 158px; scroll-snap-align:start; }
+  body.native #s-audio .a-card .art{ aspect-ratio:auto; height:206px; border-radius:22px; align-items:flex-end; }
+  body.native #s-audio .a-card .art::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.82) 6%,rgba(0,0,0,.12) 52%,transparent); z-index:0; }
+  body.native #s-audio .a-card .art > *{ position:relative; z-index:1; }
+  body.native #s-audio .a-card .art span{ font-family:'Inter',-apple-system,sans-serif; font-weight:700; font-size:15px; text-transform:none; line-height:1.15; }
+  body.native #s-audio .a-card .sub{ margin-top:8px; }
+  /* ===== RIVISTA — formato app (solo nativo) ===== */
+  .mc-riv-tag{ display:none; }
+  body.native #s-riviste .screen-sub{ display:none; }
+  body.native #s-riviste .mc-riv-tag{ display:block; font-family:'Playfair Display',Georgia,serif; font-style:italic; font-size:13px; color:var(--tx-mut); margin:-4px 2px 16px; }
+  body.native #s-riviste .issue-row{ padding:16px 4px; gap:16px; }
+  body.native #s-riviste .issue-cov{ width:92px; height:126px; }
+  body.native #s-riviste .issue-meta h3{ font-family:'Playfair Display',Georgia,serif; font-style:italic; font-weight:600; line-height:1.15; }
+  body.native #s-riviste .issue-meta .lab{ color:var(--lime); font-weight:600; }
+  body.native #s-riviste .issue-cta{ font-size:22px; color:var(--tx-mut); }
+  /* ===== PROFILO + DIARIO — formato app (solo nativo) ===== */
+  body.native #s-diario .screen-sub,
+  body.native #s-profilo .screen-sub{ display:none; }
+  body.native #s-diario .diario-grid,
+  body.native #s-profilo .prof-grid{ grid-template-columns:1fr; gap:14px; }
+  body.native #s-diario .entry .top h4{ font-family:'Playfair Display',Georgia,serif; font-style:italic; font-weight:600; }
+  body.native #s-diario .sec-cap,
+  body.native #s-profilo .prof-name{ font-family:'Playfair Display',Georgia,serif; font-style:italic; }
+  body.native #s-profilo .prof-hero{ text-align:center; }
+  body.native #s-profilo .settings{ border-radius:18px; overflow:hidden; }
+  /* ===== SFIDE + SUPPORTO — formato app (solo nativo) ===== */
+  body.native #s-sfide .screen-sub,
+  body.native #s-supporto .screen-sub{ display:none; }
+  body.native #s-sfide .sfida-card h4,
+  body.native #s-supporto .comp-card h4{ font-family:'Playfair Display',Georgia,serif; font-style:italic; text-transform:none; font-weight:600; font-size:22px; }
+  body.native #s-sfide .sfida-attesa .sa-t{ font-family:'Playfair Display',Georgia,serif; font-style:italic; text-transform:none; }
+  body.native #s-sfide .sf-griglia{ display:flex; flex-direction:column; gap:14px; }
+  body.native #s-supporto .comp-btns{ flex-direction:column; }
+  body.native #s-supporto .comp-btns .btn{ width:100%; }
   /* piccolo suggerimento: si scorre */
   .deck::after{
     content:''; position:absolute; left:50%; bottom:74px; transform:translateX(-50%);
@@ -2273,40 +2313,6 @@ var REFERRAL_ATTIVO = false;
 
         <div class="pills-row" id="audio-pills">
           <div class="pill on" data-cat="tutto" onclick="audioCat(this,'tutto')">Tutto</div>
-          <div class="pill" data-cat="percorsi" onclick="audioCat(this,'percorsi')">Percorsi</div>
-          <div class="pill" data-cat="webinar" onclick="audioCat(this,'webinar')">Webinar</div>
-        </div>
-
-        <div class="cat-block" data-block="percorsi">
-        <div class="audio-hero" onclick="goScreen('percorso')" style="cursor:pointer;">
-          <span class="trend">PERCORSO · 6 EPISODI</span>
-          <h2>Decompressione</h2>
-          <p>6 strumenti per abbassare il rumore mentale e decidere con lucidità, anche sotto pressione. Il primo episodio è completo e gratuito.</p>
-          <button class="btn btn-lime" style="padding:12px 22px;font-size:13px;">Apri il percorso ›</button>
-        </div>
-        </div>
-
-        <div class="cat-block" data-block="webinar">
-        <div class="row-title">Webinar dal vivo <span class="match">SOLO VOCE</span></div>
-        <div class="pane webi-card">
-          <div style="flex:1;min-width:220px;">
-            <span class="live"><i></i>Giovedì · 21:00</span>
-            <h4>Decidere sotto pressione: il metodo dei neuroscienziati</h4>
-            <div class="meta">Con l'esperto MentalClass · 40 min · gratuito per tutti</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
-            <button class="btn btn-lime" id="webi-btn" style="padding:12px 20px;font-size:13px;" onclick="webiIscriviti()">Iscriviti ora</button>
-            <button class="btn btn-ghost" id="webi-live-btn" style="padding:10px 16px;font-size:12px;display:none;" onclick="openWebiLive()">🔴 È iniziato · Entra nel live</button>
-          </div>
-        </div>
-        <p style="font-size:11px;color:var(--tx-dim);margin:4px 0 0;">⚡ L'offerta lampo esiste solo dentro il live: chi ascolta dal vivo la vede attivarsi a fine webinar, per 15 minuti. Nei replay non c'è.</p>
-
-        <div class="row-title" id="row-webinar">Webinar registrati <span class="match" style="background:rgba(241,237,226,.1);color:var(--tx-mut);">REPLAY · PREMIUM</span></div>
-        <div class="a-row">
-          <div class="a-card" onclick="playWebinar('La biochimica delle abitudini','52 min')"><div class="art art-web"><span class="replay-tag">▶ Replay</span><span class="lockmini">🔒</span><span>La biochimica delle abitudini</span><div class="playov">▶</div></div><div class="sub">Webinar · 52 min<span class="fav" onclick="event.stopPropagation();favAudio(this,'La biochimica delle abitudini')">♡</span></div></div>
-          <div class="a-card" onclick="playWebinar('Il no che protegge le priorità','44 min')"><div class="art art-web2"><span class="replay-tag">▶ Replay</span><span class="lockmini">🔒</span><span>Il no che protegge le priorità</span><div class="playov">▶</div></div><div class="sub">Webinar · 44 min<span class="fav" onclick="event.stopPropagation();favAudio(this,'Il no che protegge le priorità')">♡</span></div></div>
-          <div class="a-card" onclick="playWebinar('Dormire per decidere: il sonno del leader','38 min')"><div class="art art-web"><span class="replay-tag">▶ Replay</span><span class="lockmini">🔒</span><span>Dormire per decidere: il sonno del leader</span><div class="playov">▶</div></div><div class="sub">Webinar · 38 min<span class="fav" onclick="event.stopPropagation();favAudio(this,'Dormire per decidere: il sonno del leader')">♡</span></div></div>
-        </div>
         </div>
 
         <!-- Le categorie reali vengono inserite qui dal database.
@@ -2532,6 +2538,7 @@ var REFERRAL_ATTIVO = false;
       <!-- RIVISTE -->
       <section class="app-screen" id="s-riviste" style="display:none;">
         <div class="screen-title"><h1 class="disp">Riviste</h1></div>
+        <div class="mc-riv-tag">Giornale libero e indipendente</div>
         <p class="screen-sub">Il Magazine di MentalClass: parte del tuo abbonamento, insieme ad audio e strumenti. Tocca un numero per sfogliarlo.</p>
 
         <div class="issues">

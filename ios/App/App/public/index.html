@@ -322,64 +322,86 @@
   .feed-fine .fc-em{ font-size:34px; margin-bottom:10px; }
   .feed-fine h4{ font-size:18px; color:var(--cream); margin:0 0 8px; }
   .feed-fine p{ font-size:13.5px; color:var(--tx-mut); line-height:1.6; margin:0; }
-  /* ===== HOME NATIVA A TUTTA PAGINA — stile Motivation (solo app) ===== */
+  /* ===== HOME NATIVA — schermo intero stile Motivation (solo app store) ===== */
   .mc-native-top{ display:none; } .mc-native-wm{ display:none; }
   body.native{ overscroll-behavior:none; background:#052c31; }
+  html.native, body.native{ overflow:hidden; }
   body.native #app, body.native .main{ overflow-x:hidden; }
-  body.native #s-home .screen-title, body.native #s-home .screen-sub, body.native #s-home .train-card,
-  body.native #s-home .pills-row, body.native #s-home .deck-quota, body.native #s-home #deck-nav{ display:none !important; }
-  body.native #s-home{ position:relative; padding:0; }
-  body.native #s-home .home-grid{ display:block; margin:0; }
-  body.native #s-home .deck{ border:0; border-radius:0; background:transparent; padding:0; box-shadow:none; }
-  body.native .mc-native-top{ position:relative; z-index:6; display:flex; align-items:center; justify-content:space-between; padding:8px 18px 6px; }
+
+  /* fuori: titolo pagina, sottotitolo, anello "passi di oggi", le 4 card di riepilogo, banner promo */
+  body.native #s-home .screen-title,
+  body.native #s-home .screen-sub,
+  body.native #s-home .train-card,
+  body.native #s-home .sc-grid,
+  body.native #s-home .lampo-plan,
+  body.native #s-home .pills-row,
+  body.native #s-home .deck-quota,
+  body.native #s-home #deck-nav{ display:none !important; }
+
+  /* la home è SOLO il mazzo di frasi, a schermo intero */
+  body.native #s-home{ position:fixed; inset:0; padding:0; z-index:5; }
+  body.native #s-home .home-grid{ display:block; margin:0; height:100%; }
+  body.native #s-home .deck{ position:relative; height:100%; border:0; border-radius:0; background:transparent; padding:0; box-shadow:none; }
+
+  /* logo in alto, sovrapposto al feed (non occupa spazio proprio) */
+  body.native .mc-native-top{ display:flex; position:absolute; top:0; left:0; right:0; z-index:8; align-items:center; justify-content:space-between; padding:calc(env(safe-area-inset-top) + 10px) 20px 14px; background:linear-gradient(to bottom, rgba(5,44,49,.55), transparent); pointer-events:none; }
   body.native .mc-native-top .mc-logo{ font-family:'Anton',Impact,sans-serif; text-transform:uppercase; letter-spacing:.02em; font-size:17px; color:var(--cream); }
   body.native .mc-native-top .mc-logo b{ color:var(--lime); }
   body.native .mc-native-top .mc-oggi{ font-size:12px; font-weight:600; color:var(--tx-mut); }
-  body.native #deck-feed{ max-height:none; height:calc(100vh - 132px); margin:0; overscroll-behavior:none; scroll-snap-type:y mandatory; }
-  body.native #deck-feed .feed-card{ height:calc(100vh - 132px); min-height:420px; padding:24px 26px; }
+  body.native .mc-native-top .mc-crown{ pointer-events:auto; color:var(--lime); width:38px; height:38px; border-radius:50%; background:rgba(5,44,49,.55); backdrop-filter:blur(10px); border:1px solid rgba(241,237,226,.14); display:flex; align-items:center; justify-content:center; }
+
+  /* il feed riempie tutto lo schermo, bordo a bordo: nessuno scorrimento laterale visibile, nessun rimbalzo che scopre un altro colore */
+  body.native #deck-feed{ display:block; position:absolute; inset:0; max-height:none; height:100%; margin:0; overflow-y:scroll; overflow-x:hidden; overscroll-behavior-y:contain; scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch; }
+  body.native #deck-feed::-webkit-scrollbar{ display:none; }
+  body.native #deck-feed .feed-card{ height:100%; min-height:100%; width:100%; scroll-snap-align:start; scroll-snap-stop:always; padding:0 28px; display:flex; align-items:center; justify-content:center; }
   body.native #deck-feed .fc-in{ max-width:26ch; }
-  body.native #deck-feed .fc-q{ font-size:clamp(26px,7vw,34px); line-height:1.3; }
-  body.native #deck-feed .fc-a{ text-transform:none; letter-spacing:.01em; font-weight:600; font-size:14px; color:var(--lime); }
+  body.native #deck-feed .fc-q{ font-size:clamp(26px,7.2vw,34px); line-height:1.32; }
+  body.native #deck-feed .fc-a{ text-transform:none; letter-spacing:.01em; font-weight:600; font-size:14px; color:var(--lime); margin-top:20px; display:block; }
   body.native #deck-feed .fc-a::before{ content:"\2014\00a0\00a0"; }
-  body.native #s-home .deck-foot{ position:absolute; right:12px; top:50%; transform:translateY(-50%); z-index:7; flex-direction:column; gap:14px; padding:0; background:transparent; border:0; }
-  body.native #s-home .deck-foot > div{ flex-direction:column !important; gap:14px !important; }
-  body.native #s-home .qa{ width:50px; height:50px; border-radius:50%; border:1px solid rgba(241,237,226,.18); background:rgba(241,237,226,.06); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; }
+
+  /* azioni (salva + condividi): riga orizzontale in basso, sopra la barra di navigazione — non più sul lato */
+  body.native #s-home .deck-foot{ position:absolute; left:0; right:0; z-index:8; bottom:calc(env(safe-area-inset-bottom) + 118px); display:flex; flex-direction:row; align-items:center; justify-content:center; gap:18px; padding:0; background:transparent; border:0; }
+  body.native #s-home .deck-foot > div{ display:none; }
+  body.native #s-home .deck-foot #qa-save,
+  body.native #s-home .deck-foot #qa-share{ display:flex; }
+  body.native #s-home .qa{ width:52px; height:52px; border-radius:50%; border:1px solid rgba(241,237,226,.18); background:rgba(5,44,49,.55); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center; color:var(--cream); }
+  body.native #s-home .qa svg{ width:23px; height:23px; }
   body.native #s-home .qa.on{ background:var(--lime); border-color:var(--lime); color:#052c31; }
-  body.native #s-home .bg-picker{ position:relative; z-index:6; justify-content:center; padding:6px 0 2px; }
+
+  /* selettore sfondo: riga discreta sopra le azioni */
+  body.native #s-home .bg-picker{ position:absolute; left:0; right:0; z-index:8; bottom:calc(env(safe-area-inset-bottom) + 186px); justify-content:center; gap:11px; padding:0; }
   body.native #s-home .bg-picker .lb{ display:none; }
-  body.native .mc-native-wm{ display:block; text-align:center; font-size:11px; font-weight:600; letter-spacing:.02em; color:var(--tx-mut); padding:2px 0 4px; }
-  /* AUDIO */
+
+  /* watermark verso la landing, appena sopra la barra di navigazione */
+  body.native .mc-native-wm{ display:block; position:absolute; left:0; right:0; z-index:8; bottom:calc(env(safe-area-inset-bottom) + 80px); text-align:center; font-size:11px; font-weight:600; letter-spacing:.03em; color:var(--tx-mut); }
+
+  /* ===== AUDIO — rail orizzontali (font invariato, resta quello della webapp) ===== */
   body.native #s-audio .screen-sub{ display:none; }
   body.native #s-audio .pills-row .pill.on{ background:var(--lime); color:#052c31; border-color:var(--lime); }
-  body.native #s-audio .row-title{ font-family:'Playfair Display',Georgia,serif; font-style:italic; font-weight:600; text-transform:none; letter-spacing:0; font-size:22px; }
   body.native #s-audio .a-row{ display:flex; grid-template-columns:none; gap:13px; overflow-x:auto; scroll-snap-type:x proximity; padding:2px 18px 6px 0; margin-right:-18px; scrollbar-width:none; }
   body.native #s-audio .a-row::-webkit-scrollbar{ display:none; }
   body.native #s-audio .a-row .a-card{ flex:0 0 158px; scroll-snap-align:start; }
   body.native #s-audio .a-card .art{ aspect-ratio:auto; height:206px; border-radius:22px; align-items:flex-end; }
   body.native #s-audio .a-card .art::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.82) 6%,rgba(0,0,0,.12) 52%,transparent); z-index:0; }
   body.native #s-audio .a-card .art > *{ position:relative; z-index:1; }
-  body.native #s-audio .a-card .art span{ font-family:'Inter',-apple-system,sans-serif; font-weight:700; font-size:15px; text-transform:none; line-height:1.15; }
   body.native #s-audio .a-card .sub{ margin-top:8px; }
-  /* RIVISTA */
-  .mc-riv-tag{ display:none; }
+
+  /* ===== RIVISTA (font invariato) ===== */
   body.native #s-riviste .screen-sub{ display:none; }
-  body.native #s-riviste .mc-riv-tag{ display:block; font-family:'Playfair Display',Georgia,serif; font-style:italic; font-size:13px; color:var(--tx-mut); margin:-4px 2px 16px; }
   body.native #s-riviste .issue-row{ padding:16px 4px; gap:16px; }
   body.native #s-riviste .issue-cov{ width:92px; height:126px; }
-  body.native #s-riviste .issue-meta h3{ font-family:'Playfair Display',Georgia,serif; font-style:italic; font-weight:600; line-height:1.15; }
-  body.native #s-riviste .issue-meta .lab{ color:var(--lime); font-weight:600; }
-  body.native #s-riviste .issue-cta{ font-size:22px; color:var(--tx-mut); }
-  /* PROFILO + DIARIO */
-  body.native #s-diario .screen-sub, body.native #s-profilo .screen-sub{ display:none; }
-  body.native #s-diario .diario-grid, body.native #s-profilo .prof-grid{ grid-template-columns:1fr; gap:14px; }
-  body.native #s-diario .entry .top h4{ font-family:'Playfair Display',Georgia,serif; font-style:italic; font-weight:600; }
-  body.native #s-diario .sec-cap, body.native #s-profilo .prof-name{ font-family:'Playfair Display',Georgia,serif; font-style:italic; }
+
+  /* ===== PROFILO + DIARIO (font invariato, solo una colonna) ===== */
+  body.native #s-diario .screen-sub,
+  body.native #s-profilo .screen-sub{ display:none; }
+  body.native #s-diario .diario-grid,
+  body.native #s-profilo .prof-grid{ grid-template-columns:1fr; gap:14px; }
   body.native #s-profilo .prof-hero{ text-align:center; }
   body.native #s-profilo .settings{ border-radius:18px; overflow:hidden; }
-  /* SFIDE + SUPPORTO */
-  body.native #s-sfide .screen-sub, body.native #s-supporto .screen-sub{ display:none; }
-  body.native #s-sfide .sfida-card h4, body.native #s-supporto .comp-card h4{ font-family:'Playfair Display',Georgia,serif; font-style:italic; text-transform:none; font-weight:600; font-size:22px; }
-  body.native #s-sfide .sfida-attesa .sa-t{ font-family:'Playfair Display',Georgia,serif; font-style:italic; text-transform:none; }
+
+  /* ===== SFIDE + SUPPORTO (font invariato) ===== */
+  body.native #s-sfide .screen-sub,
+  body.native #s-supporto .screen-sub{ display:none; }
   body.native #s-sfide .sf-griglia{ display:flex; flex-direction:column; gap:14px; }
   body.native #s-supporto .comp-btns{ flex-direction:column; }
   body.native #s-supporto .comp-btns .btn{ width:100%; }
@@ -2212,7 +2234,7 @@ var REFERRAL_ATTIVO = false;
 
       <!-- HOME -->
       <section class="app-screen" id="s-home">
-        <div class="mc-native-top"><span class="mc-logo">Mental<b>Class</b></span><span class="mc-oggi">Oggi</span></div>
+        <div class="mc-native-top"><span class="mc-logo">Mental<b>Class</b></span><span class="mc-crown" onclick="goScreen('plan')" style="pointer-events:auto;cursor:pointer;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/></svg></span></div>
         <div class="screen-title"><h1 class="disp" id="greet">Buongiorno</h1></div>
         <p class="screen-sub" id="greet-sub">Il tuo allenamento di oggi ti aspetta.</p>
 
@@ -9911,6 +9933,21 @@ var REFERRAL_ATTIVO = false;
   /* init */
   applyPersonalization();
   if(eAppNativa()) document.body.classList.add('native');
+  if(eAppNativa()){
+    /* Raccoglitore di errori: in un WebView nativo un errore silenzioso
+       blocca tutto senza dire nulla. Qui lo intercettiamo e lo mostriamo
+       come messaggio a schermo, cos\u00ec anche senza Mac/Safari Web Inspector
+       si vede subito cosa \u00e8 andato storto. */
+    window.addEventListener('error', function(ev){
+      try{ toast('\u26a0\ufe0f ' + (ev && ev.message ? ev.message : 'Errore imprevisto')); }catch(e){}
+    });
+    window.addEventListener('unhandledrejection', function(ev){
+      try{
+        var msg = (ev && ev.reason && ev.reason.message) ? ev.reason.message : 'Richiesta di rete non riuscita';
+        toast('\u26a0\ufe0f ' + msg);
+      }catch(e){}
+    });
+  }
   buildBgPicker();
 
   /* collegamento al backend (se configurato) */

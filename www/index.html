@@ -809,6 +809,12 @@
 .share-btn:hover{ border-color:var(--lime); transform:translateY(-2px); }
 .share-btn .em{ font-size:20px; display:block; margin-bottom:6px; }
 
+.wz-step{ display:flex; gap:13px; align-items:flex-start; padding:11px 0; border-top:1px solid rgba(241,237,226,.09); }
+.wz-step:first-of-type{ border-top:none; }
+.wz-n{ flex:0 0 28px; width:28px; height:28px; border-radius:50%; background:var(--lime); color:#052c31; font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:center; }
+.wz-t{ flex:1; }
+.wz-t b{ display:block; font-size:14px; margin-bottom:2px; }
+.wz-t span{ display:block; font-size:12.5px; color:var(--tx-mut); line-height:1.55; }
 /* modale notifiche */
 .np-row{ display:flex; align-items:center; justify-content:space-between; padding:13px 0; border-bottom:1px solid rgba(241,237,226,.09); gap:14px; }
 .np-row .l{ font-size:13.5px; font-weight:600; }
@@ -2770,6 +2776,7 @@ var REFERRAL_ATTIVO = false;
             </div>
             <div class="settings">
               <div class="set-row" onclick="openNotif()" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg>Notifiche giornaliere</div><span class="val" id="notif-sum">08:30 · 7 contenuti ›</span></div>
+              <div class="set-row" onclick="openWidget()" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Widget · Frase del giorno</div><span class="val">›</span></div>
               <div class="set-row" onclick="openObiettivo()" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>Obiettivo mentale</div><span class="val" id="prof-ob">🎯 Focus Mentale ›</span></div>
               <div class="set-row" onclick="openSignPicker()" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Segno zodiacale</div><span class="val" id="prof-sign">♌ Leone ›</span></div>
               <div class="set-row"><div class="l"><svg viewBox="0 0 24 24"><path d="M9 18V6l11-2v12M9 18a3 3 0 11-3-3M20 16a3 3 0 11-3-3"/></svg>Suoni soft</div><div class="toggle" id="tog-sound" onclick="toggleSound(this)"></div></div>
@@ -3050,6 +3057,23 @@ var REFERRAL_ATTIVO = false;
       <div class="share-btn" onclick="shareTo('copy')"><span class="em">📋</span>Copia testo</div>
     </div>
     <p style="font-size:11px;color:var(--tx-dim);margin:14px 0 0;text-align:center;">Ogni condivisione porta la firma MentalClass e il link all'app.</p>
+  </div>
+</div>
+
+<!-- WIDGET · ISTRUZIONI -->
+<div class="modal-bg" id="widget-bg" onclick="if(event.target===this)closeWidget()">
+  <div class="modal">
+    <div class="m-head"><h3 class="disp" style="margin:0;">Widget · Frase del giorno</h3><div class="cancel" onclick="closeWidget()">Chiudi ×</div></div>
+    <p style="font-size:13.5px;color:var(--tx-mut);line-height:1.6;margin:6px 0 18px;">Aggiungi la frase del giorno di MentalClass alla schermata Home del tuo iPhone. Si aggiorna ogni giorno da sola.</p>
+
+    <div class="wz-step"><div class="wz-n">1</div><div class="wz-t"><b>Tieni premuto sulla schermata Home</b><span>Premi a lungo su un punto vuoto finché le icone iniziano a tremare.</span></div></div>
+    <div class="wz-step"><div class="wz-n">2</div><div class="wz-t"><b>Tocca il “+” in alto a sinistra</b><span>Si apre la galleria dei widget disponibili.</span></div></div>
+    <div class="wz-step"><div class="wz-n">3</div><div class="wz-t"><b>Cerca “MentalClass”</b><span>Scorri o usa la ricerca in alto, poi selezionala.</span></div></div>
+    <div class="wz-step"><div class="wz-n">4</div><div class="wz-t"><b>Scegli la misura e tocca “Aggiungi widget”</b><span>Trascinalo dove preferisci e tocca “Fine”.</span></div></div>
+
+    <div style="margin-top:16px;background:rgba(194,232,62,.10);border:1px solid rgba(194,232,62,.25);border-radius:14px;padding:13px 15px;font-size:12.5px;color:var(--tx-mut);line-height:1.6;">
+      💡 Se non vedi ancora “MentalClass” tra i widget, apri l’app una volta e riprova: la prima frase viene preparata all’apertura.
+    </div>
   </div>
 </div>
 
@@ -8155,6 +8179,8 @@ var REFERRAL_ATTIVO = false;
       });
     }
   }
+  function openWidget(){ var m=document.getElementById('widget-bg'); if(m) m.classList.add('show'); }
+  function closeWidget(){ var m=document.getElementById('widget-bg'); if(m) m.classList.remove('show'); }
   function updateNotifSum(){
     var tot = state.notifPrefs.frasi + state.notifPrefs.pensieri + state.notifPrefs.dizionario;
     var el = document.getElementById('notif-sum');

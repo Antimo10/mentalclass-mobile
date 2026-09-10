@@ -17,7 +17,7 @@
 
   /* stesso identificatore usato nel codice nativo (App Group / SharedPrefs).
      Deve combaciare ESATTAMENTE con quello impostato in Xcode e Android. */
-  var APP_GROUP = "group.it.mentalclass.app";
+  var APP_GROUP = "group.it.mentalclass.mentalclass";
   var CHIAVE_FRASE  = "frase_del_giorno";
   var CHIAVE_AUTORE = "autore_del_giorno";
 

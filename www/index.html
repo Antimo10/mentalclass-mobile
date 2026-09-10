@@ -328,7 +328,8 @@
   html.native, body.native{ overflow:hidden; }
   body.native #app, body.native .main{ overflow-x:hidden; }
   body.native, body.native .main, body.native .app-screen, body.native #deck-feed, body.native #app{ scrollbar-width:none; -ms-overflow-style:none; }
-  body.native ::-webkit-scrollbar, body.native .main::-webkit-scrollbar, body.native .app-screen::-webkit-scrollbar{ width:0 !important; height:0 !important; display:none !important; }
+  body.native ::-webkit-scrollbar, body.native *::-webkit-scrollbar{ width:0 !important; height:0 !important; display:none !important; background:transparent !important; }
+  body.native *{ scrollbar-width:none !important; -ms-overflow-style:none !important; }
 
   /* fuori: titolo pagina, sottotitolo, anello "passi di oggi", le 4 card di riepilogo, banner promo */
   body.native #s-home .screen-title,
@@ -407,6 +408,16 @@
   body.native #s-sfide .sf-griglia{ display:flex; flex-direction:column; gap:14px; }
   body.native #s-supporto .comp-btns{ flex-direction:column; }
   body.native #s-supporto .comp-btns .btn{ width:100%; }
+  /* ===== rifiniture premium (solo nativo) ===== */
+  body.native .app-screen{ padding-bottom:120px; }
+  body.native #s-audio .a-card .art,
+  body.native #s-sfide .sfida-card,
+  body.native #s-sfide .sfida-attesa{ border-radius:22px; }
+  body.native #s-audio .row-title{ margin-top:24px; margin-bottom:12px; opacity:.92; }
+  body.native #s-audio .a-card .art{ box-shadow:0 10px 26px rgba(0,0,0,.28); }
+  body.native #s-sfide .sfida-card, body.native #s-sfide .sfida-attesa{ box-shadow:0 10px 26px rgba(0,0,0,.22); }
+  body.native .pills-row{ gap:9px; }
+  body.native .pills-row .pill{ padding:9px 16px; }
   /* piccolo suggerimento: si scorre */
   .deck::after{
     content:''; position:absolute; left:50%; bottom:74px; transform:translateX(-50%);
@@ -4239,6 +4250,15 @@ var REFERRAL_ATTIVO = false;
   async function apriPercorso(id){
     if(!COLLEGATO) return goScreen('percorso');
     goScreen('percorso');
+    /* Svuoto subito il contenuto statico: cos\u00ec non lampeggia il demo
+       mentre arrivano i dati veri. */
+    (function(){
+      var h=document.querySelector('#s-percorso .perc-hero h2'); if(h) h.textContent='\u2026';
+      var d=document.querySelector('#s-percorso .perc-hero .desc'); if(d) d.innerHTML='';
+      var m=document.querySelector('#s-percorso .perc-hero .meta'); if(m) m.innerHTML='';
+      var t=document.querySelector('#s-percorso .trend'); if(t) t.textContent='PERCORSO';
+      var e=document.getElementById('perc-eps'); if(e) e.innerHTML='<div style="padding:26px;text-align:center;color:var(--tx-mut);font-size:13px;">Carico gli episodi\u2026</div>';
+    })();
     try{
       var ris = await Promise.all([
         MC.audio.lista({ percorso: id }),
@@ -5142,7 +5162,22 @@ var REFERRAL_ATTIVO = false;
           (p.sottotitolo ? '<div class="subt">' + escapeHtml(p.sottotitolo) + '</div>' : '') +
           '<div class="prev">' + escapeHtml(estratto) + '</div></div>';
       }).join('');
-    }catch(e){ console.warn('Diario:', e.message); }
+    }catch(e){
+      console.warn('Diario:', e.message);
+      /* Mai lasciare le voci demo: se la lettura fallisce, mostriamo lo stato
+         vuoto e (in app) l'errore reale, cos\u00ec si capisce la causa. */
+      var vd = document.getElementById('view-diario');
+      if(vd){
+        var cap2 = vd.querySelector('.sec-cap');
+        vd.innerHTML = (cap2 ? cap2.outerHTML : '') +
+          '<div class="pane" style="text-align:center;padding:34px 20px;">' +
+          '<div style="font-size:30px;margin-bottom:10px;">\ud83d\udcd3</div>' +
+          '<div style="font-size:14px;font-weight:700;margin-bottom:6px;">Il diario \u00e8 ancora bianco</div>' +
+          '<div style="font-size:12.5px;color:var(--tx-dim);line-height:1.6;">Scrivere la sera aiuta a chiudere la giornata con ordine.</div>' +
+          '</div>';
+      }
+      if(eAppNativa()){ toast('Diario: ' + e.message); }
+    }
   }
 
   async function apriPagina(id){
@@ -5258,7 +5293,7 @@ var REFERRAL_ATTIVO = false;
     }
 
     if(!COLLEGATO || !MC.utenteCorrente()){
-      closeEditor(); toast('✓ Pagina salvata'); return;
+      toast('Accedi per salvare le pagine del diario'); return;
     }
 
     try{
@@ -6633,12 +6668,9 @@ var REFERRAL_ATTIVO = false;
   }
 
   async function abbonati(codice){
-    if(eAppNativa()){
-      /* Pagamento sul sito: apriamo la pagina abbonamenti della webapp nel browser di sistema. */
-      var dest = 'https://www.mentalclass.it/?abbonati=' + encodeURIComponent(codice || 'annuale');
-      try{ window.open(dest, '_blank'); }catch(e){ window.location.href = dest; }
-      return;
-    }
+    /* Anche in app usiamo lo stesso flusso della webapp: consenso al recesso
+       e poi checkout Stripe vero. In nativo il link Stripe si apre nel
+       browser esterno (vedi mc-api.js). */
     if(!COLLEGATO){ toast('Il pagamento si attiva con il backend collegato'); return; }
     if(!MC.utenteCorrente()){ toast('Accedi per abbonarti'); return; }
     var btn = document.getElementById('plan-btn-' + codice);
@@ -7053,6 +7085,17 @@ var REFERRAL_ATTIVO = false;
     caricaRiviste();
     confetti(30); chime();
     toast(widget ? '📲 Widget attivato · benvenuta, '+state.name : 'Benvenuta, '+state.name+' · notifiche '+fmtRange());
+
+    /* In app: chiediamo il permesso notifiche QUI (dopo che l'utente ha
+       scelto la fascia in registrazione) e programmiamo subito le frasi
+       del giorno. Senza questo, le notifiche partirebbero solo passando
+       dalle impostazioni. */
+    if(window.MCN && window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()){
+      state.notifSpente = false;
+      MCN.chiediPermesso().then(function(ok){
+        if(ok){ programmaNotificheApp(); }
+      });
+    }
 
     /* Veniva da "Inizia la prova gratuita"? Lo portiamo dritto al
        pagamento: ha già espresso l'intenzione, non gliela facciamo
@@ -9725,6 +9768,15 @@ var REFERRAL_ATTIVO = false;
     document.querySelectorAll('#bg-picker .bg-sw').forEach(function(s,i){
       s.classList.toggle('on', BGS[i].id===id);
     });
+    /* In app il colore deve riempire tutto lo schermo (anche dietro logo e
+       barre): copiamo lo sfondo calcolato del deck sul body. */
+    if(eAppNativa()){
+      try{
+        var cs = getComputedStyle(card);
+        document.body.style.backgroundColor = cs.backgroundColor;
+        document.body.style.backgroundImage = cs.backgroundImage;
+      }catch(e){}
+    }
   }
 
   /* =====================================================

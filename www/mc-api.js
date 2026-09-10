@@ -1177,7 +1177,7 @@ const MC = (function(){
       const { data, error } = await sb.functions.invoke('crea-checkout', { body: corpo });
       if(error) throw new Error('Non riesco ad aprire il pagamento: ' + error.message);
       if(!data || !data.url) throw new Error(data && data.errore ? data.errore : 'Risposta non valida');
-      window.location.href = data.url;
+      if(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()){ window.open(data.url, '_blank'); } else { window.location.href = data.url; }
     },
 
     /* apre il portale Stripe (cambio carta, fatture, disdetta) */
@@ -1186,7 +1186,7 @@ const MC = (function(){
       const { data, error } = await sb.functions.invoke('portale-cliente', { body: {} });
       if(error) throw new Error(error.message);
       if(!data || !data.url) throw new Error(data && data.errore ? data.errore : 'Nessun abbonamento attivo');
-      window.location.href = data.url;
+      if(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()){ window.open(data.url, '_blank'); } else { window.location.href = data.url; }
     },
 
     stato(){

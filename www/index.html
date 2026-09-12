@@ -3845,7 +3845,8 @@ var REFERRAL_ATTIVO = false;
       var frasi = (FRASI || []).map(function(f){
         return { testo: f.q || f.testo || '', autore: (f.a && f.a !== 'MentalClass') ? f.a : '' };
       }).filter(function(f){ return f.testo; });
-      await MCN.riprogramma({ frasi: frasi }, state.notifFrom);
+      var perGiorno = (state.notifPrefs && state.notifPrefs.frasi) ? state.notifPrefs.frasi : 1;
+      await MCN.riprogramma({ frasi: frasi }, state.notifFrom, state.notifTo, perGiorno);
     }catch(e){}
   }
 

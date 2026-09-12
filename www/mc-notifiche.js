@@ -144,6 +144,31 @@
       } catch (e) {}
     },
 
+    /* Riepilogo settimanale: una notifica la domenica sera (prossime 4 domeniche). */
+    programmaRiepilogo: async function () {
+      var p = plugin();
+      if (!p || !eApp()) return;
+      var nuove = [];
+      var oggi = new Date();
+      var count = 0;
+      for (var g = 0; g < 30 && count < 4; g++) {
+        var d = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate() + g, 19, 0, 0);
+        if (d.getDay() !== 0) continue;            /* 0 = domenica */
+        if (d.getTime() < Date.now() + 60000) continue;
+        nuove.push({
+          id: 2000 + count,
+          title: 'MentalClass',
+          body: 'La tua settimana è pronta: guarda quanto hai allenato la mente. 💪',
+          schedule: { at: d, allowWhileIdle: true },
+          channelId: CANALE,
+          smallIcon: 'ic_stat_icon',
+          extra: { tipo: 'riepilogo' }
+        });
+        count++;
+      }
+      if (nuove.length) { try { await p.schedule({ notifications: nuove }); } catch (e) {} }
+    },
+
     /* Notifica di PROVA: la manda tra ~8 secondi, per verificare subito che
        permesso e consegna funzionino. Restituisce un messaggio da mostrare. */
     provaSubito: async function () {

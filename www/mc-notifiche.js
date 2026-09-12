@@ -43,6 +43,14 @@
     return isNaN(h) ? 9 : h;
   }
 
+  function minutiDa(str, deflt){
+    if(!str) return deflt;
+    var pz = String(str).split(':');
+    var h = parseInt(pz[0],10), m = parseInt(pz[1]||'0',10);
+    if(isNaN(h)) return deflt;
+    return h*60 + (isNaN(m)?0:m);
+  }
+
   var MCN = {
 
     /* Chiede il permesso di inviare notifiche. Da chiamare una volta,
@@ -61,7 +69,7 @@
        - contenuti: { frasi:[...], pensiero:{}, dizionario:{}, oroscopo:{} }
        - oraInizio: la fascia scelta, es. "08:00"
     */
-    riprogramma: async function (contenuti, oraInizio) {
+    riprogramma: async function (contenuti, oraInizio, oraFine, perGiorno) {
       var p = plugin();
       if (!p || !eApp()) return;
 
@@ -77,30 +85,47 @@
       var frasi = (contenuti && contenuti.frasi) || [];
       if (!frasi.length) return;   /* senza frasi non programmo nulla */
 
-      var ora = oraDa(oraInizio);
+      /* quante al giorno (impostate dall'utente, 1..5) e fascia oraria */
+      var perDay = Math.max(1, Math.min(parseInt(perGiorno, 10) || 1, 5));
+      var minInizio = minutiDa(oraInizio, 8 * 60);          /* default 08:00 */
+      var minFine   = minutiDa(oraFine, 21 * 60);           /* default 21:00 */
+      if (minFine <= minInizio) { minFine = minInizio + 60; }
+
+      /* iOS accetta al massimo ~64 notifiche in coda: bilancio giorni × quantità */
+      var giorni = GIORNI_DA_PROGRAMMARE;
+      if (giorni * perDay > 60) { giorni = Math.floor(60 / perDay); }
+      if (giorni < 1) giorni = 1;
+
       var nuove = [];
       var oggi = new Date();
+      var idx = 0;
 
-      for (var g = 0; g < GIORNI_DA_PROGRAMMARE; g++) {
-        var quando = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate() + g, ora, 0, 0);
-        /* se per oggi l'orario è già passato, salto al giorno dopo */
-        if (quando.getTime() < Date.now() + 60000) continue;
+      for (var g = 0; g < giorni; g++) {
+        for (var k = 0; k < perDay; k++) {
+          /* distribuisco gli orari nella fascia: k-esimo slot */
+          var minuto = (perDay === 1)
+            ? minInizio
+            : Math.round(minInizio + (minFine - minInizio) * (k / (perDay - 1)));
+          var h = Math.floor(minuto / 60), m = minuto % 60;
 
-        /* scelgo la frase ruotando nella lista */
-        var f = frasi[g % frasi.length];
-        var testo = (f && (f.testo || f.q)) || "";
-        var autore = (f && (f.autore || f.a)) || "";
-        if (!testo) continue;
+          var quando = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate() + g, h, m, 0);
+          if (quando.getTime() < Date.now() + 60000) continue;   /* orario già passato */
 
-        nuove.push({
-          id: 1000 + g,                 /* id stabile per ogni giorno */
-          title: "MentalClass",
-          body: autore ? (testo + " — " + autore) : testo,
-          schedule: { at: quando, allowWhileIdle: true },
-          channelId: CANALE,
-          smallIcon: "ic_stat_icon",
-          extra: { tipo: "frase" }
-        });
+          var f = frasi[idx % frasi.length]; idx++;
+          var testo = (f && (f.testo || f.q)) || "";
+          var autore = (f && (f.autore || f.a)) || "";
+          if (!testo) continue;
+
+          nuove.push({
+            id: 1000 + g * 10 + k,          /* id univoco e stabile per giorno+slot */
+            title: "MentalClass",
+            body: autore ? (testo + " — " + autore) : testo,
+            schedule: { at: quando, allowWhileIdle: true },
+            channelId: CANALE,
+            smallIcon: "ic_stat_icon",
+            extra: { tipo: "frase" }
+          });
+        }
       }
 
       if (!nuove.length) return;

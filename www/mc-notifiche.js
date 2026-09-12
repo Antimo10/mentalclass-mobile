@@ -117,6 +117,29 @@
           await p.cancel({ notifications: inCoda.notifications });
         }
       } catch (e) {}
+    },
+
+    /* Notifica di PROVA: la manda tra ~8 secondi, per verificare subito che
+       permesso e consegna funzionino. Restituisce un messaggio da mostrare. */
+    provaSubito: async function () {
+      var p = plugin();
+      if (!p || !eApp()) return { ok:false, msg:'Le notifiche funzionano solo nell\'app installata.' };
+      try {
+        var ok = await MCN.chiediPermesso();
+        if (!ok) return { ok:false, msg:'Permesso notifiche negato. Vai su Impostazioni iPhone → MentalClass → Notifiche e attivale.' };
+        var quando = new Date(Date.now() + 8000);
+        await p.schedule({ notifications: [{
+          id: 999,
+          title: 'MentalClass',
+          body: 'Se leggi questo, le notifiche funzionano. Blocca il telefono per vederle arrivare.',
+          schedule: { at: quando, allowWhileIdle: true },
+          channelId: CANALE,
+          extra: { tipo:'prova' }
+        }]});
+        return { ok:true, msg:'Notifica di prova inviata. Blocca lo schermo: arriva tra qualche secondo.' };
+      } catch (e) {
+        return { ok:false, msg:'Errore: ' + (e && e.message ? e.message : 'imprevisto') };
+      }
     }
   };
 

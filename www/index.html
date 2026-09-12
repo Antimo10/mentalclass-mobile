@@ -52,11 +52,14 @@
   .disp{ font-family:'Anton',Impact,'Arial Narrow',sans-serif; font-weight:400; letter-spacing:.01em; text-transform:uppercase; line-height:1.02; color:var(--cream); margin:0; }
   .quote{ font-family:'Playfair Display',Georgia,'Times New Roman',serif; font-style:italic; }
   .btn{ border:none; border-radius:100px; font-weight:800; font-size:15px; padding:16px 28px; cursor:pointer; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:.18s; text-align:center; }
-  .btn-lime{ background:var(--lime); color:var(--ink); }
-  .btn-lime:hover{ transform:translateY(-2px); box-shadow:0 14px 30px -10px rgba(194,232,62,.5); }
-  .btn-cream{ background:var(--cream); color:var(--ink); }
-  .btn-ghost{ background:transparent; color:var(--cream); border:1px solid var(--pane-b); }
+  .btn-lime{ background:linear-gradient(180deg,#d2f24e 0%,var(--lime) 55%,#a9d234 100%); color:var(--ink); box-shadow:0 8px 22px -8px rgba(194,232,62,.55), inset 0 1px 0 rgba(255,255,255,.35); }
+  .btn-lime:hover{ transform:translateY(-2px); box-shadow:0 16px 34px -10px rgba(194,232,62,.6), inset 0 1px 0 rgba(255,255,255,.4); }
+  .btn-lime:active{ transform:translateY(0) scale(.985); }
+  .btn-cream{ background:linear-gradient(180deg,#faf7f0 0%,var(--cream) 60%,#e4dccb 100%); color:var(--ink); box-shadow:0 8px 22px -10px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.6); }
+  .btn-cream:active{ transform:scale(.985); }
+  .btn-ghost{ background:linear-gradient(180deg,rgba(241,237,226,.08),rgba(241,237,226,.03)); color:var(--cream); border:1px solid var(--pane-b); box-shadow:inset 0 1px 0 rgba(255,255,255,.06); }
   .btn-ghost:hover{ border-color:var(--cream); }
+  .btn-ghost:active{ transform:scale(.985); }
   .pane{ background:var(--pane); border:1px solid var(--pane-b); border-radius:20px; }
   .pill{ border:1px solid var(--pane-b); border-radius:100px; padding:9px 16px; font-size:13px; font-weight:600; color:var(--cream); background:transparent; white-space:nowrap; cursor:pointer; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif; transition:.15s; }
   .pill-vuota{ opacity:.5; }
@@ -405,7 +408,11 @@
   /* ===== SFIDE + SUPPORTO (font invariato) ===== */
   body.native #s-sfide .screen-sub,
   body.native #s-supporto .screen-sub{ display:none; }
-  body.native #s-sfide .sf-griglia{ display:flex; flex-direction:column; gap:14px; }
+  body.native #s-sfide .sf-griglia{ display:flex; flex-direction:row; gap:13px; overflow-x:auto; scroll-snap-type:x proximity; padding:2px 18px 8px 0; margin-right:-18px; scrollbar-width:none; }
+  body.native #s-sfide .sf-griglia::-webkit-scrollbar{ display:none; }
+  body.native #s-sfide .sf-griglia > *{ flex:0 0 82%; scroll-snap-align:start; }
+  body.native #s-sfide .feed-col{ display:flex; flex-direction:column; gap:14px; }
+  body.native #s-sfide .sfida-card, body.native #s-sfide .sfida-attesa{ background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.02)); }
   body.native #s-supporto .comp-btns{ flex-direction:column; }
   body.native #s-supporto .comp-btns .btn{ width:100%; }
   /* ===== rifiniture premium (solo nativo) ===== */
@@ -3103,6 +3110,8 @@ var REFERRAL_ATTIVO = false;
     </div>
     <div class="np-total">Riceverai <b id="np-tot">7</b> contenuti al giorno (massimo 7), distribuiti a caso nella fascia. L'oroscopo arriva una volta al mese.</div>
     <button class="btn btn-lime" style="width:100%;" onclick="saveNotif()">Salva le preferenze</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="provaNotifica(this)">Invia una notifica di prova</button>
+    <p style="font-size:11.5px;color:var(--tx-mut);line-height:1.55;margin-top:8px;text-align:center;">Le notifiche si vedono a schermo bloccato o con l'app chiusa: iOS non le mostra mentre l'app è aperta.</p>
   </div>
 </div>
 
@@ -7215,6 +7224,8 @@ var REFERRAL_ATTIVO = false;
       }
       NAV.corrente = id;
     }
+    /* marcatore schermata attiva + sfondo home a tutta pagina solo in home */
+    try{ document.body.setAttribute('data-screen', id); if(typeof applicaHomeBgFondo==='function') applicaHomeBgFondo(); }catch(e){}
 
     var skel = document.getElementById('skel');
     var showTarget = function(){
@@ -8178,6 +8189,14 @@ var REFERRAL_ATTIVO = false;
         if(ok) programmaNotificheApp();
       });
     }
+  }
+  async function provaNotifica(btn){
+    if(!window.MCN){ toast('Notifiche non disponibili'); return; }
+    var t = btn ? btn.textContent : '';
+    if(btn){ btn.disabled = true; btn.textContent = 'Invio…'; }
+    try{ var r = await MCN.provaSubito(); toast(r && r.msg ? r.msg : 'Fatto'); }
+    catch(e){ toast('Errore: ' + (e && e.message ? e.message : 'imprevisto')); }
+    if(btn){ btn.disabled = false; btn.textContent = t; }
   }
   function openWidget(){ var m=document.getElementById('widget-bg'); if(m) m.classList.add('show'); }
   function closeWidget(){ var m=document.getElementById('widget-bg'); if(m) m.classList.remove('show'); }
@@ -9799,9 +9818,28 @@ var REFERRAL_ATTIVO = false;
     if(eAppNativa()){
       try{
         var cs = getComputedStyle(card);
-        document.body.style.backgroundColor = cs.backgroundColor;
-        document.body.style.backgroundImage = cs.backgroundImage;
+        /* salviamo il colore della home per applicarlo al fondo schermo
+           SOLO quando la home è la schermata attiva */
+        window.__mcHomeBgColor = cs.backgroundColor;
+        window.__mcHomeBgImage = cs.backgroundImage;
+        applicaHomeBgFondo();
       }catch(e){}
+    }
+  }
+
+  /* Applica il colore della home dietro tutto (status bar, bordi) SOLO se la
+     home è attiva; nelle altre sezioni ripristina il teal di base. */
+  function applicaHomeBgFondo(){
+    if(!eAppNativa()) return;
+    var homeAttiva = document.body.getAttribute('data-screen') === 'home';
+    if(homeAttiva && window.__mcHomeBgColor){
+      document.documentElement.style.background = window.__mcHomeBgColor;
+      document.body.style.backgroundColor = window.__mcHomeBgColor;
+      document.body.style.backgroundImage = window.__mcHomeBgImage || 'none';
+    } else {
+      document.documentElement.style.background = '#052c31';
+      document.body.style.backgroundColor = '#052c31';
+      document.body.style.backgroundImage = 'none';
     }
   }
 

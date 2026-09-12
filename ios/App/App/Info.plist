@@ -4,6 +4,8 @@
 <dict>
   <key>CAPACITOR_DEBUG</key>
 	<string>$(CAPACITOR_DEBUG)</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>MentalClass usa il microfono per registrare i tuoi vocali nel Compagno Invisibile e nelle sfide.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>

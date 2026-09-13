@@ -516,7 +516,12 @@ const MC = (function(){
       const { data, error } = await sb.from('magazine_numeri')
         .select('*').eq('stato','pubblicato').order('data_uscita', { ascending:false });
       if(error) throw new Error(error.message);
-      return data || [];
+      return (data || []).map(function(n){
+        n.copertina_url = n.copertina_path
+          ? sb.storage.from('pubblico').getPublicUrl(n.copertina_path).data.publicUrl
+          : null;
+        return n;
+      });
     },
 
     /* quante pagine può leggere chi non è abbonato */
@@ -1177,7 +1182,7 @@ const MC = (function(){
       const { data, error } = await sb.functions.invoke('crea-checkout', { body: corpo });
       if(error) throw new Error('Non riesco ad aprire il pagamento: ' + error.message);
       if(!data || !data.url) throw new Error(data && data.errore ? data.errore : 'Risposta non valida');
-      window.location.href = data.url;
+      if(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()){ var _w = window.open(data.url, '_blank'); if(!_w){ window.location.href = data.url; } } else { window.location.href = data.url; }
     },
 
     /* apre il portale Stripe (cambio carta, fatture, disdetta) */
@@ -1186,7 +1191,7 @@ const MC = (function(){
       const { data, error } = await sb.functions.invoke('portale-cliente', { body: {} });
       if(error) throw new Error(error.message);
       if(!data || !data.url) throw new Error(data && data.errore ? data.errore : 'Nessun abbonamento attivo');
-      window.location.href = data.url;
+      if(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()){ var _w = window.open(data.url, '_blank'); if(!_w){ window.location.href = data.url; } } else { window.location.href = data.url; }
     },
 
     stato(){

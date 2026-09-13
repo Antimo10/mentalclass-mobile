@@ -48,7 +48,7 @@
         if (window.Capacitor.getPlatform && window.Capacitor.getPlatform() === "android") {
           try {
             await p.setRegisteredWidgets({
-              widgets: ["it.mentalclass.mentalclass.FraseWidget"]
+              widgets: ["it.mentalclass.app.FraseWidget"]
             });
           } catch (e) {}
         }

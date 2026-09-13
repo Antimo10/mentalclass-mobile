@@ -394,6 +394,9 @@
   body.native .app-screen > .screen-title h1::after{ content:""; display:block; width:38px; height:4px; border-radius:3px; background:var(--lime); margin-top:10px; box-shadow:0 3px 12px -2px rgba(194,232,62,.6); }
   body.native .app-screen > .screen-title{ animation:mcTitleIn .5s cubic-bezier(.2,.7,.2,1); }
   @keyframes mcTitleIn{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+  .a-card.in-arrivo{ position:relative; opacity:.92; }
+  .a-card.in-arrivo::after{ content:'IN ARRIVO'; position:absolute; top:10px; left:10px; z-index:4; background:var(--lime); color:#052c31; font-family:'Anton',Impact,sans-serif; font-size:10px; letter-spacing:.5px; padding:4px 9px; border-radius:20px; }
+  .issue-row[data-arrivo] .issue-cov::after{ content:'IN ARRIVO'; position:absolute; top:8px; left:8px; background:var(--lime); color:#052c31; font-family:'Anton',Impact,sans-serif; font-size:9px; padding:3px 7px; border-radius:12px; }
   body.native .mc-native-wm{ display:block; position:absolute; left:0; right:0; z-index:8; bottom:calc(env(safe-area-inset-bottom) + 92px); text-align:center; font-size:11px; font-weight:600; letter-spacing:.03em; color:var(--tx-mut); }
 
   /* ===== AUDIO — rail orizzontali (font invariato, resta quello della webapp) ===== */
@@ -3155,7 +3158,10 @@ var REFERRAL_ATTIVO = false;
       <div class="stepper"><button id="np-dizionario-m" onclick="npStep('dizionario',-1)">−</button><span class="n" id="np-dizionario">1</span><button id="np-dizionario-p" onclick="npStep('dizionario',1)">+</button></div>
     </div>
     <div class="np-total">Riceverai <b id="np-tot">7</b> contenuti al giorno (massimo 7), distribuiti a caso nella fascia. L'oroscopo arriva una volta al mese.</div>
-    <button class="btn btn-lime" style="width:100%;" onclick="saveNotif()">Salva le preferenze</button>
+    <div class="set-row" style="cursor:pointer;" onclick="toggleNotifExtra('sfide',this)"><div class="l">Promemoria sfide<span>1 giorno prima della chiusura iscrizioni</span></div><span class="np-tog" id="tog-sfide">On</span></div>
+    <div class="set-row" style="cursor:pointer;" onclick="toggleNotifExtra('riep',this)"><div class="l">Riepilogo settimanale<span>La domenica sera</span></div><span class="np-tog" id="tog-riep">On</span></div>
+    <div class="set-row" style="cursor:pointer;" onclick="toggleNotifExtra('novita',this)"><div class="l">Novità in arrivo<span>Quando esce un contenuto programmato</span></div><span class="np-tog" id="tog-novita">On</span></div>
+    <button class="btn btn-lime" style="width:100%;margin-top:12px;" onclick="saveNotif()">Salva le preferenze</button>
     <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="provaNotifica(this)">Invia una notifica di prova</button>
     <p style="font-size:11.5px;color:var(--tx-mut);line-height:1.55;margin-top:8px;text-align:center;">Le notifiche si vedono a schermo bloccato o con l'app chiusa: iOS non le mostra mentre l'app è aperta.</p>
   </div>
@@ -3893,7 +3899,7 @@ var REFERRAL_ATTIVO = false;
       }).filter(function(f){ return f.testo; });
       var perGiorno = (state.notifPrefs && state.notifPrefs.frasi) ? state.notifPrefs.frasi : 1;
       await MCN.riprogramma({ frasi: frasi }, state.notifFrom, state.notifTo, perGiorno);
-      try{ if(MCN.programmaRiepilogo) await MCN.programmaRiepilogo(); }catch(e){}
+      try{ if(MCN.programmaRiepilogo && state.notifRiepilogo!==false) await MCN.programmaRiepilogo(); }catch(e){}
     }catch(e){}
   }
 
@@ -3919,12 +3925,16 @@ var REFERRAL_ATTIVO = false;
       var numeri = await MC.magazine.numeri();
       if(!numeri.length) return;
       var cont = document.querySelector('#s-riviste .issues');
+      try{ if(window.MCN && MCN.programmaNovita && state.notifNovita!==false && eAppNativa()){
+        var _nov = (numeri||[]).filter(function(n){return mcInArrivo(n);}).map(function(n){return {titolo:n.titolo, data_uscita:n.data_uscita, tipo:'rivista'};});
+        if(_nov.length) MCN.programmaNovita(_nov);
+      } }catch(e){}
       if(!cont) return;
       cont.innerHTML = numeri.map(function(n, i){
         var data = n.data_uscita
           ? new Date(n.data_uscita).toLocaleDateString('it-IT',{month:'long',year:'numeric'}) : '';
         return '<div class="issue-row"' + (i === numeri.length-1 ? ' style="border-bottom:none;"' : '') +
-          ' onclick="apriRivista(\'' + n.id + '\')">' +
+          (mcInArrivo(n) ? ' data-arrivo="1"' : '') + ' onclick="' + (mcInArrivo(n) ? 'toast(\'Disponibile dal ' + mcDataIt(n.data_uscita) + '\')' : 'apriRivista(\'' + n.id + '\')') + '">' +
           '<div class="issue-cov"' + (n.copertina_url ? ' style="background-image:url(' + n.copertina_url + ');background-size:cover;background-position:center;"' : '') + '>' + (n.copertina_url ? '' : '<span style="font-family:Anton;font-size:20px;">' + escapeHtml(n.numero || '') + '</span>') + '</div>' +
           '<div class="issue-meta">' +
             '<div class="lab">' + escapeHtml((n.numero || '') + (data ? ' — ' + data : '')) + '</div>' +
@@ -4187,7 +4197,7 @@ var REFERRAL_ATTIVO = false;
         var cop = a.copertina_url
           ? '<div class="art" style="background-image:url(' + a.copertina_url + ');background-size:cover;background-position:center;"><span>' + escapeHtml(a.titolo) + '</span><div class="playov">▶</div></div>'
           : '<div class="art art-' + (a.colore || 'abcde'[0]) + '"><span>' + escapeHtml(a.titolo) + '</span><div class="playov">▶</div></div>';
-        return '<div class="a-card" onclick="apriAudioVero(\'' + a.id + '\')">' + cop +
+        return '<div class="a-card' + (mcInArrivo(a) ? ' in-arrivo' : '') + '" onclick="apriAudioVero(\'' + a.id + '\')">' + cop +
           '<div class="sub">' + (cat ? escapeHtml(cat.nome) : '') + (min ? ' · ' + min : '') + '</div></div>';
       }).join('') : '<div style="color:var(--tx-dim);font-size:13px;padding:10px 2px;">Nessun audio.</div>';
     }
@@ -4245,6 +4255,7 @@ var REFERRAL_ATTIVO = false;
   async function apriAudioVero(id){
     var a = AUDIO_DB[id];
     if(!a) return;
+    if(mcInArrivo(a)){ toast('Disponibile dal ' + mcDataIt(a.data_uscita)); return; }
 
     var cat = CAT_DB.find(function(c){ return c.id === a.categoria_id; });
     if(window.MCA) MCA.evento('audio aperto', {
@@ -5626,7 +5637,7 @@ var REFERRAL_ATTIVO = false;
         var cop = a.copertina_url
           ? '<div class="art" style="background-image:url(' + a.copertina_url + ');background-size:cover;background-position:center;"><span>' + escapeHtml(a.titolo) + '</span><div class="playov">▶</div></div>'
           : '<div class="art art-' + (a.colore || 'abcde'[i%5]) + '"><span>' + escapeHtml(a.titolo) + '</span><div class="playov">▶</div></div>';
-        return '<div class="a-card" onclick="apriAudioVero(\'' + a.id + '\')">' + cop +
+        return '<div class="a-card' + (mcInArrivo(a) ? ' in-arrivo' : '') + '" onclick="apriAudioVero(\'' + a.id + '\')">' + cop +
           '<div class="sub">' + (c ? escapeHtml(c.nome) : '') + (min ? ' · ' + min : '') +
           '<span class="fav on" onclick="event.stopPropagation();preferitoAudio(this,\'' + a.id + '\')">♥</span></div></div>';
       }).join('') + '</div>';
@@ -6060,6 +6071,7 @@ var REFERRAL_ATTIVO = false;
     if(!COLLEGATO || !MC.utenteCorrente()) return;
     try{
       SFIDE_TUTTE = await MC.sfide.lista();
+      try{ if(window.MCN && MCN.programmaSfide && state.notifSfide!==false && eAppNativa()) await MCN.programmaSfide(SFIDE_TUTTE); }catch(e){}
       var card = document.querySelector('#s-sfide .sfida-card');
       var prossima = document.getElementById('sfida-prossima');
       if(prossima) prossima.style.display = 'none';   /* era solo un esempio */
@@ -8034,7 +8046,8 @@ var REFERRAL_ATTIVO = false;
        condivisione del telefono: da lì l'utente sceglie Instagram Storie,
        post, Facebook, dove vuole — con l'immagine pronta. */
     if(net==='ig-stories' || net==='ig-post' || net==='fb-stories'){
-      condividiImmagine(testo, linkApp);
+      var formato = (net==='ig-post') ? 'post' : 'story';   /* post = 1:1, storie/reel = 9:16 */
+      condividiImmagine(testo, linkApp, formato);
       return;
     }
     window.open(links[net], '_blank');
@@ -8044,11 +8057,11 @@ var REFERRAL_ATTIVO = false;
   /* Genera un'immagine quadrata con la frase e il logo MentalClass sotto,
      poi la offre alla condivisione nativa del telefono. È il modo che
      funziona davvero per Storie e post. */
-  async function condividiImmagine(testo, linkApp){
+  async function condividiImmagine(testo, linkApp, formato){
     try{
       toast('Preparo l\'immagine…');
       var frase = testo.replace(' · via MentalClass', '');
-      var blob = await generaImmagineFrase(frase);
+      var blob = await generaImmagineFrase(frase, formato);
 
       /* condivisione nativa con file: apre il pannello del telefono
          (Instagram, Storie, WhatsApp…) con l'immagine allegata */
@@ -8082,19 +8095,21 @@ var REFERRAL_ATTIVO = false;
 
   /* Disegna la frase su sfondo brand con il logo MentalClass sotto.
      Formato quadrato 1080×1080, adatto a post e Storie. */
-  function generaImmagineFrase(frase){
+  function generaImmagineFrase(frase, formato){
     return new Promise(function(resolve){
-      var S = 1080;
+      var W = 1080;
+      var H = (formato === 'story' || formato === 'reel') ? 1920 : 1080;
+      var S = W; /* compatibilità: S usato per i margini orizzontali */
       var cv = document.createElement('canvas');
-      cv.width = S; cv.height = S;
+      cv.width = W; cv.height = H;
       var c = cv.getContext('2d');
 
       /* sfondo: gradiente brand (nero → teal) */
-      var g = c.createLinearGradient(0, 0, S, S);
+      var g = c.createLinearGradient(0, 0, W, H);
       g.addColorStop(0, '#000000');
       g.addColorStop(0.55, '#275C64');
       g.addColorStop(1, '#08444C');
-      c.fillStyle = g; c.fillRect(0, 0, S, S);
+      c.fillStyle = g; c.fillRect(0, 0, W, H);
 
       /* virgoletta decorativa */
       c.fillStyle = 'rgba(194,232,62,0.9)';   // lime
@@ -8117,7 +8132,7 @@ var REFERRAL_ATTIVO = false;
       /* massimo 8 righe, poi taglia */
       righe = righe.slice(0, 9);
       var altezzaBlocco = righe.length * 68;
-      var y = (S - altezzaBlocco) / 2 - 20;
+      var y = (H - altezzaBlocco) / 2 - 20;
       righe.forEach(function(r){
         c.fillText(r, 100, y);
         y += 68;
@@ -8126,19 +8141,19 @@ var REFERRAL_ATTIVO = false;
       /* logo MentalClass sotto: linea + nome */
       c.strokeStyle = 'rgba(194,232,62,0.9)';
       c.lineWidth = 4;
-      c.beginPath(); c.moveTo(100, S-180); c.lineTo(190, S-180); c.stroke();
+      c.beginPath(); c.moveTo(100, H-180); c.lineTo(190, H-180); c.stroke();
 
       c.fillStyle = '#C2E83E';                 // lime
       c.font = '800 40px Arial, sans-serif';
-      c.fillText('MentalClass', 100, S-160);
+      c.fillText('MentalClass', 100, H-160);
 
       c.fillStyle = 'rgba(241,237,226,0.6)';
       c.font = '600 26px Arial, sans-serif';
-      c.fillText('alleniamo la mente', 100, S-118);
+      c.fillText('alleniamo la mente', 100, H-118);
 
       c.fillStyle = 'rgba(194,232,62,0.85)';
       c.font = '700 26px Arial, sans-serif';
-      c.fillText('mentalclass.it', 100, S-74);
+      c.fillText('mentalclass.it', 100, H-74);
 
       cv.toBlob(function(b){ resolve(b); }, 'image/png');
     });
@@ -8171,6 +8186,7 @@ var REFERRAL_ATTIVO = false;
     });
     buildHourSelects();
     document.getElementById('np-from').value = state.notifFrom;
+    if(typeof _syncTogUI==='function') _syncTogUI();
     document.getElementById('np-to').value = state.notifTo;
     npRefresh();
     document.getElementById('notif-bg').classList.add('show');
@@ -8238,6 +8254,18 @@ var REFERRAL_ATTIVO = false;
         if(ok) programmaNotificheApp();
       });
     }
+  }
+  function _syncTogUI(){
+    var a=document.getElementById('tog-sfide'), b=document.getElementById('tog-riep');
+    if(a){ a.textContent = state.notifSfide ? 'On' : 'Off'; a.style.color = state.notifSfide ? 'var(--lime)' : 'var(--tx-mut)'; }
+    if(b){ b.textContent = state.notifRiepilogo ? 'On' : 'Off'; b.style.color = state.notifRiepilogo ? 'var(--lime)' : 'var(--tx-mut)'; }
+    var d=document.getElementById('tog-novita'); if(d){ d.textContent = state.notifNovita ? 'On' : 'Off'; d.style.color = state.notifNovita ? 'var(--lime)' : 'var(--tx-mut)'; }
+  }
+  function toggleNotifExtra(quale){
+    if(quale==='sfide'){ state.notifSfide=!state.notifSfide; try{localStorage.setItem('mc_notif_sfide', state.notifSfide?'1':'0');}catch(e){} }
+    else if(quale==='novita'){ state.notifNovita=!state.notifNovita; try{localStorage.setItem('mc_notif_novita', state.notifNovita?'1':'0');}catch(e){} }
+    else { state.notifRiepilogo=!state.notifRiepilogo; try{localStorage.setItem('mc_notif_riep', state.notifRiepilogo?'1':'0');}catch(e){} }
+    _syncTogUI();
   }
   async function provaNotifica(btn){
     if(!window.MCN){ toast('Notifiche non disponibili'); return; }
@@ -10142,6 +10170,10 @@ var REFERRAL_ATTIVO = false;
   /* init */
   applyPersonalization();
   if(eAppNativa()) document.body.classList.add('native');
+  window.mcInArrivo = function(it){ try{ return !!(it && it.data_uscita && new Date(it.data_uscita) > new Date()); }catch(e){ return false; } };
+  window.mcDataIt = function(d){ try{ return new Date(d).toLocaleDateString('it-IT',{day:'numeric',month:'long'}); }catch(e){ return ''; } };
+  try{ state.notifNovita = (localStorage.getItem('mc_notif_novita')!=='0'); }catch(e){ state.notifNovita=true; }
+  try{ state.notifSfide = (localStorage.getItem('mc_notif_sfide')!=='0'); state.notifRiepilogo = (localStorage.getItem('mc_notif_riep')!=='0'); }catch(e){ state.notifSfide=true; state.notifRiepilogo=true; }
   if(eAppNativa()){
     /* Raccoglitore di errori: in un WebView nativo un errore silenzioso
        blocca tutto senza dire nulla. Qui lo intercettiamo e lo mostriamo

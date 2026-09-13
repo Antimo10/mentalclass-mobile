@@ -516,7 +516,12 @@ const MC = (function(){
       const { data, error } = await sb.from('magazine_numeri')
         .select('*').eq('stato','pubblicato').order('data_uscita', { ascending:false });
       if(error) throw new Error(error.message);
-      return data || [];
+      return (data || []).map(function(n){
+        n.copertina_url = n.copertina_path
+          ? sb.storage.from('pubblico').getPublicUrl(n.copertina_path).data.publicUrl
+          : null;
+        return n;
+      });
     },
 
     /* quante pagine può leggere chi non è abbonato */

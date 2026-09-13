@@ -144,6 +144,65 @@
       } catch (e) {}
     },
 
+    /* Novità programmate: contenuti (rivista/audio/percorso) con data di uscita
+       futura. Notifica alle 09:00 del giorno di uscita. Max 8. */
+    programmaNovita: async function (items) {
+      var p = plugin();
+      if (!p || !eApp()) return;
+      var validi = (items || [])
+        .filter(function (x) { return x && x.data_uscita; })
+        .map(function (x) {
+          return { x: x, when: new Date(x.data_uscita + 'T09:00:00') };
+        })
+        .filter(function (o) { return o.when.getTime() > Date.now() + 60000; })
+        .sort(function (a, b) { return a.when - b.when; })
+        .slice(0, 8);
+      var nuove = validi.map(function (o, i) {
+        var t = o.x.tipo === 'rivista' ? 'Nuovo numero del Magazine'
+              : o.x.tipo === 'percorso' ? 'Nuovo percorso audio'
+              : 'Nuovo audio';
+        return {
+          id: 4000 + i,
+          title: t,
+          body: '"' + (o.x.titolo || '') + '" è disponibile da oggi. Aprilo ora.',
+          schedule: { at: o.when, allowWhileIdle: true },
+          channelId: CANALE,
+          smallIcon: 'ic_stat_icon',
+          extra: { tipo: 'novita' }
+        };
+      });
+      if (nuove.length) { try { await p.schedule({ notifications: nuove }); } catch (e) {} }
+    },
+
+    /* Promemoria sfide: 1 giorno prima della chiusura iscrizioni, alle 10:00.
+       Programma al massimo le 5 sfide con chiusura futura più vicina. */
+    programmaSfide: async function (sfide) {
+      var p = plugin();
+      if (!p || !eApp()) return;
+      var validi = (sfide || [])
+        .filter(function (sf) { return sf && sf.data_chiusura; })
+        .map(function (sf) {
+          var ch = new Date(sf.data_chiusura + 'T10:00:00');
+          var when = new Date(ch.getTime() - 24 * 60 * 60 * 1000); /* 1 giorno prima */
+          return { sf: sf, when: when };
+        })
+        .filter(function (x) { return x.when.getTime() > Date.now() + 60000; })
+        .sort(function (a, b) { return a.when - b.when; })
+        .slice(0, 5);
+      var nuove = validi.map(function (x, i) {
+        return {
+          id: 3000 + i,
+          title: 'Ultimo giorno per iscriverti',
+          body: '"' + (x.sf.titolo || 'Una sfida') + '": le iscrizioni chiudono domani. Entra ora.',
+          schedule: { at: x.when, allowWhileIdle: true },
+          channelId: CANALE,
+          smallIcon: 'ic_stat_icon',
+          extra: { tipo: 'sfida' }
+        };
+      });
+      if (nuove.length) { try { await p.schedule({ notifications: nuove }); } catch (e) {} }
+    },
+
     /* Riepilogo settimanale: una notifica la domenica sera (prossime 4 domeniche). */
     programmaRiepilogo: async function () {
       var p = plugin();

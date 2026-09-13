@@ -66,6 +66,13 @@
   .pill.on{ background:var(--cream); color:var(--ink); border-color:var(--cream); }
   .pill .q{ font-size:10px; font-weight:800; opacity:.65; margin-left:5px; }
   .lockicon{ width:12px; height:12px; display:inline-block; vertical-align:-1px; }
+  /* lucchetto premium: badge elegante al posto dell'emoji nuda */
+  .pb.lock, .pw-lock{ font-size:0 !important; position:relative; display:inline-flex; align-items:center; justify-content:center; }
+  .pb.lock{ width:30px; height:30px; border-radius:50%; background:linear-gradient(160deg,rgba(194,232,62,.22),rgba(194,232,62,.08)); border:1px solid rgba(194,232,62,.45); }
+  .pw-lock{ width:52px; height:52px; border-radius:50%; background:linear-gradient(160deg,rgba(194,232,62,.25),rgba(194,232,62,.08)); border:1px solid rgba(194,232,62,.5); box-shadow:0 8px 24px -8px rgba(194,232,62,.4); }
+  .pb.lock::after, .pw-lock::after{ content:""; position:absolute; background:var(--lime); -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center/contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center/contain no-repeat; }
+  .pb.lock::after{ width:15px; height:15px; }
+  .pw-lock::after{ width:26px; height:26px; }
   /* ===== iPhone: notch, bordi curvi e barra di sistema =====
      Quando l'app è installata sulla schermata Home gira a schermo
      pieno: senza questi margini il contenuto finisce sotto il notch
@@ -327,7 +334,10 @@
   .feed-fine p{ font-size:13.5px; color:var(--tx-mut); line-height:1.6; margin:0; }
   /* ===== HOME NATIVA — schermo intero stile Motivation (solo app store) ===== */
   .mc-native-top{ display:none; } .mc-native-wm{ display:none; }
+  html.native{ background:#052c31; }
   body.native{ overscroll-behavior:none; background:#052c31; }
+  body.native #app, body.native .main{ background:#052c31; }
+  body.native:not([data-screen="home"]) .app-screen{ background:#052c31; }
   html.native, body.native{ overflow:hidden; }
   body.native #app, body.native .main{ overflow-x:hidden; }
   body.native, body.native .main, body.native .app-screen, body.native #deck-feed, body.native #app{ scrollbar-width:none; -ms-overflow-style:none; }
@@ -381,6 +391,10 @@
   body.native #s-home .bg-picker .lb{ display:none; }
 
   /* watermark verso la landing, appena sopra la barra di navigazione */
+  body.native .app-screen > .screen-title h1{ position:relative; letter-spacing:-.01em; }
+  body.native .app-screen > .screen-title h1::after{ content:""; display:block; width:38px; height:4px; border-radius:3px; background:var(--lime); margin-top:10px; box-shadow:0 3px 12px -2px rgba(194,232,62,.6); }
+  body.native .app-screen > .screen-title{ animation:mcTitleIn .5s cubic-bezier(.2,.7,.2,1); }
+  @keyframes mcTitleIn{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
   body.native .mc-native-wm{ display:block; position:absolute; left:0; right:0; z-index:8; bottom:calc(env(safe-area-inset-bottom) + 80px); text-align:center; font-size:11px; font-weight:600; letter-spacing:.03em; color:var(--tx-mut); }
 
   /* ===== AUDIO — rail orizzontali (font invariato, resta quello della webapp) ===== */
@@ -505,7 +519,7 @@
   .a-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
   .a-card{ cursor:pointer; }
   .a-card .art{ aspect-ratio:16/10; border-radius:16px; padding:16px; display:flex; align-items:flex-end; position:relative; border:1px solid var(--pane-b); transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease; overflow:hidden; }
-  .a-card .art:before{ content:""; position:absolute; inset:0; background:inherit; transition:transform .5s ease; z-index:0; }
+  .a-card .art:before{ content:""; position:absolute; inset:0; background:inherit; background-size:cover !important; background-position:center !important; transition:transform .5s ease; z-index:0; }
   .a-card .art > *{ position:relative; z-index:1; }
   .a-card:hover .art{ transform:translateY(-5px) scale(1.015); border-color:rgba(194,232,62,.5); box-shadow:0 22px 44px -16px rgba(0,0,0,.6); }
   .a-card:hover .art:before{ transform:scale(1.07); }
@@ -3905,7 +3919,7 @@ var REFERRAL_ATTIVO = false;
           ? new Date(n.data_uscita).toLocaleDateString('it-IT',{month:'long',year:'numeric'}) : '';
         return '<div class="issue-row"' + (i === numeri.length-1 ? ' style="border-bottom:none;"' : '') +
           ' onclick="apriRivista(\'' + n.id + '\')">' +
-          '<div class="issue-cov"><span style="font-family:Anton;font-size:20px;">' + escapeHtml(n.numero || '') + '</span></div>' +
+          '<div class="issue-cov"' + (n.copertina_url ? ' style="background-image:url(' + n.copertina_url + ');background-size:cover;background-position:center;"' : '') + '>' + (n.copertina_url ? '' : '<span style="font-family:Anton;font-size:20px;">' + escapeHtml(n.numero || '') + '</span>') + '</div>' +
           '<div class="issue-meta">' +
             '<div class="lab">' + escapeHtml((n.numero || '') + (data ? ' — ' + data : '')) + '</div>' +
             '<h3>' + escapeHtml(n.titolo) + '</h3>' +

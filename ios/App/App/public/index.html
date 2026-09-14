@@ -357,7 +357,7 @@
   /* la home è SOLO il mazzo di frasi, a schermo intero */
   body.native #s-home{ position:fixed; inset:0; padding:0; z-index:5; }
   body.native #s-home .home-grid{ display:block; margin:0; height:100%; }
-  body.native #s-home .deck{ position:relative; height:100%; border:0; border-radius:0; padding:0; box-shadow:none; }
+  body.native #s-home .deck{ position:relative; height:100%; border:0; border-radius:0; padding:0; box-shadow:none; background:transparent !important; }
 
   /* logo in alto, sovrapposto al feed (non occupa spazio proprio) */
   body.native .mc-native-top{ display:flex; position:absolute; top:0; left:0; right:0; z-index:8; align-items:center; justify-content:space-between; padding:calc(env(safe-area-inset-top) + 10px) 20px 14px; background:linear-gradient(to bottom, rgba(5,44,49,.55), transparent); pointer-events:none; }
@@ -404,7 +404,7 @@
   body.native #s-audio .pills-row{ gap:10px; padding-bottom:6px; scroll-snap-type:x proximity; }
   body.native #s-audio .pills-row .pill{ scroll-snap-align:start; transition:transform .2s cubic-bezier(.2,.7,.2,1), background .2s, color .2s, box-shadow .2s; }
   body.native #s-audio .pills-row .pill:active{ transform:scale(.94); }
-  body.native #s-audio .pills-row .pill.on{ background:linear-gradient(180deg,#d2f24e,#a9d234); color:#052c31; border-color:var(--lime); box-shadow:0 8px 20px -8px rgba(194,232,62,.55); transform:translateY(-1px); }
+  body.native #s-audio .pills-row .pill.on{ background:linear-gradient(180deg,#d2f24e,#a9d234); color:#052c31; border-color:var(--lime); box-shadow:none; }
   body.native #s-audio .row-title{ display:inline-flex; align-items:center; gap:8px; }
   body.native #s-audio .row-title::before{ content:""; width:5px; height:18px; border-radius:3px; background:var(--lime); display:inline-block; }
   body.native #s-audio .a-card{ transition:transform .25s cubic-bezier(.2,.7,.2,1); }
@@ -413,8 +413,9 @@
   body.native #s-audio .a-row::-webkit-scrollbar{ display:none; }
   body.native #s-audio .a-row .a-card{ flex:0 0 158px; scroll-snap-align:start; }
   body.native #s-audio .a-card .art{ aspect-ratio:auto; height:206px; border-radius:22px; align-items:flex-end; }
-  body.native #s-audio .a-card .art::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.82) 6%,rgba(0,0,0,.12) 52%,transparent); z-index:0; }
+  body.native #s-audio .a-card .art::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.7) 0%,rgba(0,0,0,.25) 40%,transparent 75%); z-index:0; }
   body.native #s-audio .a-card .art > *{ position:relative; z-index:1; }
+  body.native #s-audio .a-card .art:before{ display:none !important; }
   body.native #s-audio .a-card .sub{ margin-top:8px; }
 
   /* ===== RIVISTA (font invariato) ===== */
@@ -427,7 +428,13 @@
   body.native #s-profilo .screen-sub{ display:none; }
   body.native #s-diario .diario-grid,
   body.native #s-profilo .prof-grid{ grid-template-columns:1fr; gap:14px; }
-  body.native #s-profilo .prof-hero{ text-align:center; }
+  body.native #s-profilo{ overflow-x:hidden; }
+  body.native #s-profilo .prof-hero{ text-align:center; animation:mcTitleIn .5s cubic-bezier(.2,.7,.2,1); }
+  body.native #s-profilo .prof-name{ overflow-wrap:anywhere; padding:0 10px; }
+  body.native #s-profilo .stats{ min-width:0; }
+  body.native #s-profilo .stat .l{ font-size:11px; overflow-wrap:anywhere; }
+  body.native #s-profilo .set-row{ gap:12px; }
+  body.native #s-profilo .settings{ border-radius:18px; overflow:hidden; }
   body.native #s-profilo .settings{ border-radius:18px; overflow:hidden; }
 
   /* ===== SFIDE + SUPPORTO (font invariato) ===== */
@@ -446,7 +453,7 @@
   body.native #s-sfide .sfida-card,
   body.native #s-sfide .sfida-attesa{ border-radius:22px; }
   body.native #s-audio .row-title{ margin-top:24px; margin-bottom:12px; opacity:.92; }
-  body.native #s-audio .a-card .art{ box-shadow:0 10px 26px rgba(0,0,0,.28); }
+  body.native #s-audio .a-card .art{ box-shadow:none; }
   body.native #s-sfide .sfida-card, body.native #s-sfide .sfida-attesa{ box-shadow:0 10px 26px rgba(0,0,0,.22); }
   body.native .pills-row{ gap:9px; }
   body.native .pills-row .pill{ padding:9px 16px; }
@@ -715,7 +722,10 @@
   .set-row:last-child{ border-bottom:none; }
   .set-row .l{ display:flex; align-items:center; gap:13px; }
   .set-row svg{ width:19px; height:19px; stroke:var(--tx-mut); fill:none; stroke-width:1.7; }
-  .set-row .val{ color:var(--tx-mut); font-size:13px; }
+  .set-row .val{ color:var(--tx-mut); font-size:13px; flex:0 0 auto; white-space:nowrap; }
+  .set-row .l{ min-width:0; }
+  .set-row .l > span{ overflow-wrap:anywhere; }
+  .set-row .np-tog{ flex:0 0 auto; white-space:nowrap; font-weight:700; font-size:13px; }
   .toggle{ width:44px; height:26px; border-radius:100px; background:var(--lime); position:relative; cursor:pointer; transition:.2s; }
   .toggle:after{ content:""; position:absolute; top:3px; right:3px; width:20px; height:20px; border-radius:50%; background:var(--ink); transition:.2s; }
   .toggle.off{ background:rgba(241,237,226,.2); }
@@ -755,7 +765,7 @@
   .ref-fine{ max-width:640px; margin:18px auto 0; font-size:11px; color:var(--tx-dim); line-height:1.55; text-align:center; }
 
   /* mobile tabbar */
-  .m-tabs{ display:none; position:fixed; bottom:0; left:0; right:0; z-index:96; background:rgba(5,44,49,.9); backdrop-filter:blur(16px); border-top:1px solid rgba(241,237,226,.1); padding:10px 6px calc(10px + env(safe-area-inset-bottom)); justify-content:space-around; }
+  .m-tabs{ display:none; position:fixed; bottom:0; left:0; right:0; z-index:96; background:linear-gradient(to top, #052c31 62%, rgba(5,44,49,.82) 82%, rgba(5,44,49,0)); backdrop-filter:blur(12px); border-top:none; padding:16px 6px calc(12px + env(safe-area-inset-bottom)); justify-content:space-around; }
   .m-tabs button{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:none; border:none; cursor:pointer; font-size:9.5px; font-weight:700; color:var(--tx-dim); font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif; flex:1 1 0; min-width:0; padding:0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   @media(max-width:360px){ .m-tabs button{ font-size:8.5px; } .m-tabs button svg{ width:20px; height:20px; } }
   .m-tabs button svg{ width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:1.6; }
@@ -9947,16 +9957,10 @@ var REFERRAL_ATTIVO = false;
   }
   function applicaHomeBgFondo(){
     if(!eAppNativa()) return;
-    var homeAttiva = document.body.getAttribute('data-screen') === 'home';
-    if(homeAttiva && window.__mcHomeBgColor){
-      document.documentElement.style.background = window.__mcHomeBgColor;
-      document.body.style.backgroundColor = window.__mcHomeBgColor;
-      document.body.style.backgroundImage = window.__mcHomeBgImage || 'none';
-    } else {
-      document.documentElement.style.background = '#052c31';
-      document.body.style.backgroundColor = '#052c31';
-      document.body.style.backgroundImage = 'none';
-    }
+    /* Sfondo unico in tutta l'app, home inclusa: nessuna differenza di tinta. */
+    document.documentElement.style.background = '#052c31';
+    document.body.style.backgroundColor = '#052c31';
+    document.body.style.backgroundImage = 'none';
   }
 
   /* =====================================================

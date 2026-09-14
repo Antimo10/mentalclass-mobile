@@ -1,0 +1,20 @@
+# Node
+node_modules/
+npm-debug.log
+
+# macOS
+.DS_Store
+
+# Xcode
+ios/App/build/
+ios/App/Pods/
+ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/App.xcworkspace/xcuserdata/
+*.xcuserstate
+xcschememanagement.plist
+
+# Capacitor
+ios/App/App/public/
+www/
+dist/

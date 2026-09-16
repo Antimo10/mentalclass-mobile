@@ -18,7 +18,7 @@
 		A537DF5D305AED2D00FA4381 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = A537DF5C305AED2D00FA4381 /* CapApp-SPM */; };
 		A54A42EC305758470000F3FF /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A54A42EB305758470000F3FF /* WidgetKit.framework */; };
 		A54A42EE305758470000F3FF /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A54A42ED305758470000F3FF /* SwiftUI.framework */; };
-		A54A42FB305758470000F3FF /* FraseWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A54A42E9305758470000F3FF /* FraseWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A54A42FB305758470000F3FF /* FraseWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A54A42E9305758470000F3FF /* FraseWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +38,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				A54A42FB305758470000F3FF /* FraseWidgetExtension.appex in Embed Foundation Extensions */,
+				A54A42FB305758470000F3FF /* FraseWidget.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -57,7 +57,7 @@
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		9582B6822FE993A50072D4E8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
-		A54A42E9305758470000F3FF /* FraseWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FraseWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A54A42E9305758470000F3FF /* FraseWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FraseWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A54A42EB305758470000F3FF /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A54A42ED305758470000F3FF /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		A54A430130575D1A0000F3FF /* FraseWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FraseWidgetExtension.entitlements; sourceTree = "<group>"; };
@@ -70,7 +70,7 @@
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = A54A42E8305758470000F3FF /* FraseWidgetExtension */;
+			target = A54A42E8305758470000F3FF /* FraseWidget */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -115,7 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3041FED79650016851F /* App.app */,
-				A54A42E9305758470000F3FF /* FraseWidgetExtension.appex */,
+				A54A42E9305758470000F3FF /* FraseWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -171,9 +171,9 @@
 			productReference = 504EC3041FED79650016851F /* App.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A54A42E8305758470000F3FF /* FraseWidgetExtension */ = {
+		A54A42E8305758470000F3FF /* FraseWidget */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A54A4300305758470000F3FF /* Build configuration list for PBXNativeTarget "FraseWidgetExtension" */;
+			buildConfigurationList = A54A4300305758470000F3FF /* Build configuration list for PBXNativeTarget "FraseWidget" */;
 			buildPhases = (
 				A54A42E5305758470000F3FF /* Sources */,
 				A54A42E6305758470000F3FF /* Frameworks */,
@@ -186,11 +186,11 @@
 			fileSystemSynchronizedGroups = (
 				A54A42EF305758470000F3FF /* FraseWidget */,
 			);
-			name = FraseWidgetExtension;
+			name = FraseWidget;
 			packageProductDependencies = (
 			);
 			productName = FraseWidgetExtension;
-			productReference = A54A42E9305758470000F3FF /* FraseWidgetExtension.appex */;
+			productReference = A54A42E9305758470000F3FF /* FraseWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -230,7 +230,7 @@
 			projectRoot = "";
 			targets = (
 				504EC3031FED79650016851F /* App */,
-				A54A42E8305758470000F3FF /* FraseWidgetExtension */,
+				A54A42E8305758470000F3FF /* FraseWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -280,7 +280,7 @@
 /* Begin PBXTargetDependency section */
 		A54A42FA305758470000F3FF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A54A42E8305758470000F3FF /* FraseWidgetExtension */;
+			target = A54A42E8305758470000F3FF /* FraseWidget */;
 			targetProxy = A54A42F9305758470000F3FF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -567,7 +567,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A54A4300305758470000F3FF /* Build configuration list for PBXNativeTarget "FraseWidgetExtension" */ = {
+		A54A4300305758470000F3FF /* Build configuration list for PBXNativeTarget "FraseWidget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A54A42FD305758470000F3FF /* Debug */,

@@ -338,6 +338,10 @@
   body.native{ overscroll-behavior:none; background:#052c31; }
   body.native #app, body.native .main{ background:#052c31; }
   body.native:not([data-screen="home"]) .app-screen{ background:#052c31; }
+  /* colore unico in tutta l'app, anche dietro la barra di stato e in overscroll */
+  html.native, body.native, body.native #app, body.native .main, body.native .app-screen{ background-color:#052c31 !important; background-image:none !important; }
+  body.native, body.native .main, body.native .app-screen, body.native #deck-feed{ overscroll-behavior:none !important; }
+  body.native::before{ content:""; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#052c31; z-index:99; pointer-events:none; }
   html.native, body.native{ overflow:hidden; }
   body.native #app, body.native .main{ overflow-x:hidden; }
   body.native, body.native .main, body.native .app-screen, body.native #deck-feed, body.native #app{ scrollbar-width:none; -ms-overflow-style:none; }
@@ -373,7 +377,7 @@
   body.native #deck-feed::-webkit-scrollbar{ display:none; }
   body.native #deck-feed .feed-card{ height:100%; min-height:100%; width:100%; scroll-snap-align:start; scroll-snap-stop:always; padding:0 28px; display:flex; align-items:center; justify-content:center; }
   body.native #deck-feed .fc-in{ max-width:26ch; }
-  body.native #deck-feed .fc-q{ font-size:clamp(26px,7.2vw,34px); line-height:1.32; }
+  body.native #deck-feed .fc-q{ font-size:clamp(26px,7.2vw,34px); line-height:1.34; font-style:normal; font-weight:600; letter-spacing:-.01em; }
   body.native #deck-feed .fc-a{ text-transform:none; letter-spacing:.01em; font-weight:600; font-size:14px; color:var(--lime); margin-top:20px; display:block; }
   body.native #deck-feed .fc-a::before{ content:"\2014\00a0\00a0"; }
 
@@ -415,7 +419,8 @@
   body.native #s-audio .a-card .art{ aspect-ratio:auto; height:206px; border-radius:22px; align-items:flex-end; }
   body.native #s-audio .a-card .art::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.7) 0%,rgba(0,0,0,.25) 40%,transparent 75%); z-index:0; }
   body.native #s-audio .a-card .art > *{ position:relative; z-index:1; }
-  body.native #s-audio .a-card .art:before{ display:none !important; }
+  body.native #s-audio .a-card .art:before,
+  body.native .a-card .art:before{ display:none !important; }
   body.native #s-audio .a-card .sub{ margin-top:8px; }
 
   /* ===== RIVISTA (font invariato) ===== */
@@ -428,7 +433,10 @@
   body.native #s-profilo .screen-sub{ display:none; }
   body.native #s-diario .diario-grid,
   body.native #s-profilo .prof-grid{ grid-template-columns:1fr; gap:14px; }
-  body.native #s-profilo{ overflow-x:hidden; }
+  body.native #s-profilo{ overflow-x:hidden; padding-left:0; padding-right:0; }
+  body.native #s-profilo .prof-hero{ margin-top:6px; }
+  body.native #s-profilo > *{ max-width:100%; }
+  body.native #s-profilo .prof-grid, body.native #s-profilo .settings, body.native #s-profilo .stats{ margin-left:0; margin-right:0; }
   body.native #s-profilo .prof-hero{ text-align:center; animation:mcTitleIn .5s cubic-bezier(.2,.7,.2,1); }
   body.native #s-profilo .prof-name{ overflow-wrap:anywhere; padding:0 10px; }
   body.native #s-profilo .stats{ min-width:0; }
@@ -2250,7 +2258,7 @@ var REFERRAL_ATTIVO = false;
         <div style="font-family:'Archivo Black','Arial Black',Impact,sans-serif;font-size:12.5px;line-height:1.5;">"Che tu creda di farcela o no, avrai comunque ragione."</div>
       </div>
       <div class="onb-dots"><i></i><i></i><i></i><i class="on"></i></div>
-      <button class="btn btn-lime" style="width:100%;margin-bottom:10px;" onclick="finishOnboarding(true)">Attiva il widget e inizia</button>
+      <button class="btn btn-lime" style="width:100%;margin-bottom:10px;" onclick="finishOnboarding(true)">Aggiungi il widget e inizia</button>
       <button class="btn btn-ghost" style="width:100%;" onclick="finishOnboarding(false)">Più tardi</button>
     </div>
 
@@ -6136,7 +6144,7 @@ var REFERRAL_ATTIVO = false;
           '<span class="' + classe + '">' + etichetta + '</span>' +
           '<div class="info">' +
             '<h5>' + escapeHtml(sf.titolo || 'Sfida') + '</h5>' +
-            '<div class="sub">' + (inArrivo ? 'Presto disponibile' : ((sf.giorni || 7) + ' giorni · ' + presi + '/' + posti + ' posti')) + '</div>' +
+            '<div class="sub">' + (inArrivo ? 'Presto disponibile' : ((sf.giorni || 7) + ' giorni · ' + Math.max(0,(posti - presi)) + ' posti liberi su ' + posti)) + '</div>' +
             (inArrivo ? '' : '<div class="posti"><i style="width:' + Math.min(presi / posti * 100, 100) + '%"></i></div>') +
           '</div>' +
         '</div>' +
@@ -7188,7 +7196,8 @@ var REFERRAL_ATTIVO = false;
     caricaCatalogoAudio();
     caricaRiviste();
     confetti(30); chime();
-    toast(widget ? '📲 Widget attivato · benvenuta, '+state.name : 'Benvenuta, '+state.name+' · notifiche '+fmtRange());
+    toast('Benvenuta, '+state.name+' · notifiche '+fmtRange());
+    if(widget && eAppNativa()){ setTimeout(function(){ if(typeof openWidget==='function') openWidget(); }, 700); }
 
     /* In app: chiediamo il permesso notifiche QUI (dopo che l'utente ha
        scelto la fascia in registrazione) e programmiamo subito le frasi

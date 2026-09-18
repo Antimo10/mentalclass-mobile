@@ -2221,28 +2221,28 @@ var REFERRAL_ATTIVO = false;
   <div class="onb-card">
 
     <div class="onb-step on" id="onb-1">
-      <div class="onb-step-label">Passo 1 di 4 · Il tuo obiettivo</div>
+      <div class="onb-step-label">Passo 1 di 3 · Il tuo obiettivo</div>
       <div class="onb-q disp">Cosa vuoi<br>allenare?</div>
       <div class="onb-sub">Uno solo: decide i contenuti e i percorsi consigliati per te.</div>
       <div class="goal-opt sel" data-ob="Focus Mentale" onclick="pickObiettivo(this)">🎯 Focus Mentale <span style="display:block;font-size:11px;color:var(--tx-dim);font-weight:500;margin-top:2px;">Concentrazione e produttività</span><span class="tick">✓</span></div>
       <div class="goal-opt" data-ob="Autostima e Fiducia" onclick="pickObiettivo(this)">💪 Autostima e Fiducia <span style="display:block;font-size:11px;color:var(--tx-dim);font-weight:500;margin-top:2px;">Sicurezza e valore personale</span><span class="tick">✓</span></div>
       <div class="goal-opt" data-ob="Serenità e Calma" onclick="pickObiettivo(this)">🌊 Serenità e Calma <span style="display:block;font-size:11px;color:var(--tx-dim);font-weight:500;margin-top:2px;">Scarichi la pressione, ritrovi il ritmo</span><span class="tick">✓</span></div>
       <div class="goal-opt" data-ob="Motivazione e Azione" onclick="pickObiettivo(this)">🔥 Motivazione e Azione <span style="display:block;font-size:11px;color:var(--tx-dim);font-weight:500;margin-top:2px;">Energia, disciplina e direzione</span><span class="tick">✓</span></div>
-      <div class="onb-dots"><i class="on"></i><i></i><i></i><i></i></div>
+      <div class="onb-dots"><i class="on"></i><i></i><i></i></div>
       <button class="btn btn-lime" style="width:100%;" onclick="onbStep(2)">Continua</button>
     </div>
 
     <div class="onb-step" id="onb-2">
-      <div class="onb-step-label">Passo 2 di 4 · Il tuo segno</div>
+      <div class="onb-step-label">Passo 2 di 3 · Il tuo segno</div>
       <div class="onb-q disp">Qual è il tuo<br>segno zodiacale?</div>
       <div class="onb-sub">Serve per l'oroscopo mensile: uno per segno, ogni mese.</div>
       <div class="sign-grid" id="onb-signs"></div>
-      <div class="onb-dots"><i></i><i class="on"></i><i></i><i></i></div>
+      <div class="onb-dots"><i></i><i class="on"></i><i></i></div>
       <button class="btn btn-lime" style="width:100%;" onclick="onbStep(3)">Continua</button>
     </div>
 
     <div class="onb-step" id="onb-3">
-      <div class="onb-step-label">Passo 3 di 4 · La tua sveglia mentale</div>
+      <div class="onb-step-label">Passo 3 di 3 · La tua sveglia mentale</div>
       <div class="onb-q disp">Quando vuoi<br>le notifiche?</div>
       <div class="onb-sub">Frasi, pensiero e parola del giorno arrivano in momenti casuali dentro la tua fascia.</div>
       <div class="time-row" id="onb-times">
@@ -2250,22 +2250,11 @@ var REFERRAL_ATTIVO = false;
         <div class="time-opt sel" data-f="08:00" data-a="21:00" onclick="pickTime(this)">Tutto il giorno<span>08:00 → 21:00</span></div>
         <div class="time-opt" data-f="18:00" data-a="23:00" onclick="pickTime(this)">Sera<span>18:00 → 23:00</span></div>
       </div>
-      <div class="onb-dots"><i></i><i></i><i class="on"></i><i></i></div>
-      <button class="btn btn-lime" style="width:100%;" onclick="onbStep(4)">Continua</button>
+      <div class="onb-dots"><i></i><i></i><i class="on"></i></div>
+      <button class="btn btn-lime" style="width:100%;" onclick="finishOnboarding(false)">Attiva e inizia</button>
     </div>
 
-    <div class="onb-step" id="onb-4">
-      <div class="onb-step-label">Passo 4 di 4 · Il widget</div>
-      <div class="onb-q disp">Frasi anche<br>sulla schermata Home</div>
-      <div class="onb-sub">Il widget MentalClass mostra frasi che cambiano da sole durante il giorno, senza aprire l'app.</div>
-      <div class="pane" style="padding:18px;margin:6px 0 16px;display:flex;gap:14px;align-items:center;">
-        <div style="width:52px;height:52px;border-radius:14px;background:var(--grad);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="logo" style="height:12px;width:32px;"></span></div>
-        <div style="font-family:'Archivo Black','Arial Black',Impact,sans-serif;font-size:12.5px;line-height:1.5;">"Che tu creda di farcela o no, avrai comunque ragione."</div>
-      </div>
-      <div class="onb-dots"><i></i><i></i><i></i><i class="on"></i></div>
-      <button class="btn btn-lime" style="width:100%;margin-bottom:10px;" onclick="finishOnboarding(true)">Aggiungi il widget e inizia</button>
-      <button class="btn btn-ghost" style="width:100%;" onclick="finishOnboarding(false)">Più tardi</button>
-    </div>
+
 
   </div>
 </div>
@@ -10189,6 +10178,14 @@ var REFERRAL_ATTIVO = false;
   /* init */
   applyPersonalization();
   if(eAppNativa()) document.body.classList.add('native');
+  /* Il widget apre l'app con mentalclass://home -> porto l'utente alla home */
+  try{
+    if(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App){
+      window.Capacitor.Plugins.App.addListener('appUrlOpen', function(ev){
+        try{ if(ev && ev.url && ev.url.indexOf('home')>-1 && typeof enterApp==='function'){ enterApp('home'); } }catch(e){}
+      });
+    }
+  }catch(e){}
   window.mcInArrivo = function(it){ try{ return !!(it && it.data_uscita && new Date(it.data_uscita) > new Date()); }catch(e){ return false; } };
   window.mcDataIt = function(d){ try{ return new Date(d).toLocaleDateString('it-IT',{day:'numeric',month:'long'}); }catch(e){ return ''; } };
   try{ state.notifNovita = (localStorage.getItem('mc_notif_novita')!=='0'); }catch(e){ state.notifNovita=true; }

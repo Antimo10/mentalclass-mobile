@@ -1,29 +1,26 @@
 //  =====================================================================
 //  MentalClass · Widget iOS (SwiftUI + WidgetKit)
 //  ---------------------------------------------------------------------
-//  Mostra le frasi MentalClass sulla schermata Home, facendole RUOTARE
-//  durante il giorno. Legge le frasi dalla "cassetta condivisa"
-//  (App Group) che l'app aggiorna dal codice web (mc-widget.js).
+//  Mostra le frasi MentalClass sulla Home, a rotazione durante il giorno.
+//  Sfondo unico (nessun bordo). Al tocco apre l'app sulla schermata Home.
 //
-//  IMPORTANTE — sostituire l'intero contenuto del file FraseWidget.swift
-//  del target widget con questo. L'App Group deve essere IDENTICO
-//  sull'app, sul widget e in mc-widget.js:
+//  ATTENZIONE: nella cartella ios/App/FraseWidget/ ci deve essere UN SOLO
+//  file .swift. Se esiste "FraseWidget .swift" (con lo spazio) ELIMINALO,
+//  altrimenti il build fallisce con "invalid redeclaration".
+//
+//  App Group IDENTICO su app, widget e mc-widget.js:
 //        group.it.mentalclass.mentalclass
 //  =====================================================================
 
 import WidgetKit
 import SwiftUI
 
-// Cassetta condivisa: DEVE combaciare con APP_GROUP di mc-widget.js
-let MC_APP_GROUP  = "group.it.mentalclass.mentalclass"
-let MC_KEY_FRASE  = "frase_del_giorno"
+let MC_APP_GROUP = "group.it.mentalclass.mentalclass"
+let MC_KEY_FRASE = "frase_del_giorno"
 let MC_KEY_AUTORE = "autore_del_giorno"
-let MC_KEY_LISTA  = "frasi_widget"   // JSON array [{"q":...,"a":...}]
+let MC_KEY_LISTA = "frasi_widget"   // JSON array [{"q":...,"a":...}]
 
-// Colori del brand
 extension Color {
-    static let mcDeep  = Color(red: 8/255,  green: 68/255,  blue: 76/255)   // #08444C
-    static let mcHi    = Color(red: 14/255, green: 91/255,  blue: 102/255)  // #0e5b66
     static let mcAbyss = Color(red: 5/255,  green: 44/255,  blue: 49/255)   // #052c31
     static let mcCream = Color(red: 241/255, green: 237/255, blue: 226/255) // #F1EDE2
     static let mcLime  = Color(red: 194/255, green: 232/255, blue: 62/255)  // #C2E83E
@@ -35,7 +32,6 @@ struct FraseEntry: TimelineEntry {
     let autore: String
 }
 
-// Una frase decodificata dal JSON
 private struct FraseItem: Decodable {
     let q: String
     let a: String?
@@ -43,23 +39,18 @@ private struct FraseItem: Decodable {
 
 struct FraseProvider: TimelineProvider {
 
-    // Legge la LISTA di frasi dalla cassetta condivisa.
-    // Se manca, ripiega sulla singola, poi su un testo di riserva.
     private func leggiLista() -> [(String, String)] {
         let box = UserDefaults(suiteName: MC_APP_GROUP)
-
         if let raw = box?.string(forKey: MC_KEY_LISTA),
            let data = raw.data(using: .utf8),
            let arr = try? JSONDecoder().decode([FraseItem].self, from: data),
            !arr.isEmpty {
             return arr.map { ($0.q, ($0.a ?? "MentalClass")) }
         }
-
         if let f = box?.string(forKey: MC_KEY_FRASE), !f.isEmpty {
             let a = box?.string(forKey: MC_KEY_AUTORE) ?? "MentalClass"
             return [(f, a)]
         }
-
         return [("Alleniamo la mente, un giorno alla volta.", "MentalClass")]
     }
 
@@ -69,27 +60,22 @@ struct FraseProvider: TimelineProvider {
 
     func getSnapshot(in context: Context, completion: @escaping (FraseEntry) -> Void) {
         let lista = leggiLista()
-        let (frase, autore) = lista[0]
-        completion(FraseEntry(date: Date(), frase: frase, autore: autore))
+        completion(FraseEntry(date: Date(), frase: lista[0].0, autore: lista[0].1))
     }
 
-    // Costruisce una TIMELINE che cambia frase ogni ~2 ore, ruotando
-    // nella lista. iOS mostra così frasi diverse durante la giornata,
-    // senza aprire l'app.
+    // Timeline che cambia frase ogni ~90 minuti, ruotando nella lista.
     func getTimeline(in context: Context, completion: @escaping (Timeline<FraseEntry>) -> Void) {
         let lista = leggiLista()
         var entries: [FraseEntry] = []
         let ora = Date()
-        let passoOre = 2            // cambia frase ogni 2 ore
-        let quante = 12             // prepara le prossime 24 ore (12 x 2h)
+        let passoMin = 90
+        let quante = 16   // ~24 ore
 
         for i in 0..<quante {
-            let quando = Calendar.current.date(byAdding: .hour, value: i * passoOre, to: ora) ?? ora
+            let quando = Calendar.current.date(byAdding: .minute, value: i * passoMin, to: ora) ?? ora
             let (frase, autore) = lista[i % lista.count]
             entries.append(FraseEntry(date: quando, frase: frase, autore: autore))
         }
-
-        // allo scadere dell'ultima, iOS richiede una nuova timeline
         completion(Timeline(entries: entries, policy: .atEnd))
     }
 }
@@ -99,46 +85,36 @@ struct FraseWidgetView: View {
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [.mcHi, .mcDeep, .mcAbyss]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+        VStack(spacing: family == .systemSmall ? 6 : 10) {
+            Text("MENTALCLASS")
+                .font(.system(size: family == .systemSmall ? 8 : 10, weight: .heavy))
+                .tracking(1.6)
+                .foregroundColor(.mcLime)
+                .frame(maxWidth: .infinity, alignment: .center)
 
-            VStack(spacing: family == .systemSmall ? 6 : 10) {
-                // etichetta brand in alto
-                Text("MENTALCLASS")
-                    .font(.system(size: family == .systemSmall ? 8 : 10, weight: .heavy))
-                    .tracking(1.6)
+            Spacer(minLength: 0)
+
+            Text(entry.frase)
+                .font(.system(size: family == .systemSmall ? 15 : 20, weight: .bold, design: .serif))
+                .foregroundColor(.mcCream)
+                .multilineTextAlignment(.center)
+                .lineLimit(family == .systemSmall ? 4 : 5)
+                .minimumScaleFactor(0.6)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity)
+
+            if entry.autore != "MentalClass" && !entry.autore.isEmpty {
+                Text("— \(entry.autore)")
+                    .font(.system(size: family == .systemSmall ? 10 : 12, weight: .semibold))
                     .foregroundColor(.mcLime)
                     .frame(maxWidth: .infinity, alignment: .center)
-
-                Spacer(minLength: 0)
-
-                // FRASE grande e centrata (stile Motivation)
-                Text(entry.frase)
-                    .font(.system(size: family == .systemSmall ? 15 : 20,
-                                  weight: .bold, design: .serif))
-                    .foregroundColor(.mcCream)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(family == .systemSmall ? 4 : 5)
-                    .minimumScaleFactor(0.6)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity)
-
-                // autore in lime
-                if entry.autore != "MentalClass" && !entry.autore.isEmpty {
-                    Text("— \(entry.autore)")
-                        .font(.system(size: family == .systemSmall ? 10 : 12, weight: .semibold))
-                        .foregroundColor(.mcLime)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-
-                Spacer(minLength: 0)
             }
-            .padding(family == .systemSmall ? 14 : 20)
+
+            Spacer(minLength: 0)
         }
+        .padding(family == .systemSmall ? 14 : 20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .widgetURL(URL(string: "mentalclass://home"))   // tocco -> Home
     }
 }
 
@@ -150,13 +126,17 @@ struct FraseWidget: Widget {
         StaticConfiguration(kind: kind, provider: FraseProvider()) { entry in
             if #available(iOS 17.0, *) {
                 FraseWidgetView(entry: entry)
-                    .containerBackground(.clear, for: .widget)
+                    .containerBackground(Color.mcAbyss, for: .widget)   // sfondo unico, no bordi
             } else {
-                FraseWidgetView(entry: entry)
+                ZStack {
+                    Color.mcAbyss
+                    FraseWidgetView(entry: entry)
+                }
             }
         }
         .configurationDisplayName("Frase del giorno")
         .description("Le frasi di MentalClass, che cambiano durante il giorno sulla tua Home.")
         .supportedFamilies([.systemSmall, .systemMedium])
+        .contentMarginsDisabled()
     }
 }

@@ -340,6 +340,11 @@
   body.native:not([data-screen="home"]) .app-screen{ background:#052c31; }
   /* colore unico in tutta l'app, anche dietro la barra di stato e in overscroll */
   html.native, body.native, body.native #app, body.native .main, body.native .app-screen{ background-color:#052c31 !important; background-image:none !important; }
+  /* lo scorrimento avviene DENTRO .main, non nella finestra: cosi' l'indicatore
+     di scorrimento nativo del WebView non compare piu' */
+  html.native, body.native{ height:100%; overflow:hidden; overscroll-behavior:none; }
+  body.native .main{ height:100dvh; height:100vh; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  body.native .main::-webkit-scrollbar{ width:0 !important; height:0 !important; display:none !important; }
   body.native, body.native .main, body.native .app-screen, body.native #deck-feed{ overscroll-behavior:none !important; }
   body.native::before{ content:""; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#052c31; z-index:99; pointer-events:none; }
   html.native, body.native{ overflow:hidden; }
@@ -542,11 +547,11 @@
   .row-title .match{ font-size:10px; font-weight:800; background:rgba(194,232,62,.16); border:1px solid rgba(194,232,62,.4); color:var(--lime); padding:4px 10px; border-radius:100px; letter-spacing:.06em; }
   .a-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
   .a-card{ cursor:pointer; }
-  .a-card .art{ aspect-ratio:16/10; border-radius:16px; padding:16px; display:flex; align-items:flex-end; position:relative; border:1px solid var(--pane-b); transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease; overflow:hidden; }
-  .a-card .art:before{ content:""; position:absolute; inset:0; background:inherit; background-size:cover !important; background-position:center !important; transition:transform .5s ease; z-index:0; }
+  .a-card .art{ aspect-ratio:16/10; border-radius:16px; padding:16px; display:flex; align-items:flex-end; position:relative; border:1px solid var(--pane-b); transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease; overflow:hidden; background-size:cover; background-position:center; }
+  .a-card .art:before{ display:none !important; }
   .a-card .art > *{ position:relative; z-index:1; }
   .a-card:hover .art{ transform:translateY(-5px) scale(1.015); border-color:rgba(194,232,62,.5); box-shadow:0 22px 44px -16px rgba(0,0,0,.6); }
-  .a-card:hover .art:before{ transform:scale(1.07); }
+  .a-card:hover .art:before{ transform:none; }
   .a-card .playov{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(.6); width:52px; height:52px; border-radius:50%; background:var(--lime); color:var(--ink); display:flex; align-items:center; justify-content:center; font-size:19px; opacity:0; transition:.25s; z-index:2; box-shadow:0 12px 30px -8px rgba(194,232,62,.6); }
   .a-card:hover .playov{ opacity:1; transform:translate(-50%,-50%) scale(1); }
   .a-card .art span{ font-family:'Anton',Impact,'Arial Narrow',sans-serif; font-size:16px; text-transform:uppercase; line-height:1.06; color:var(--cream); font-weight:400; }
@@ -3901,6 +3906,7 @@ var REFERRAL_ATTIVO = false;
       var testo = f.q || f.testo || '';
       var autore = (f.a && f.a !== 'MentalClass') ? f.a : 'MentalClass';
       if(testo) await MCW.aggiorna(testo, autore);
+      if(MCW.aggiornaLista && FRASI && FRASI.length) await MCW.aggiornaLista(FRASI);
     }catch(e){}
   }
 

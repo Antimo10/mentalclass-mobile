@@ -422,7 +422,7 @@
   body.native #s-audio .a-row::-webkit-scrollbar{ display:none; }
   body.native #s-audio .a-row .a-card{ flex:0 0 158px; scroll-snap-align:start; }
   body.native #s-audio .a-card .art{ aspect-ratio:auto; height:206px; border-radius:22px; align-items:flex-end; }
-  body.native #s-audio .a-card .art::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.7) 0%,rgba(0,0,0,.25) 40%,transparent 75%); z-index:0; }
+  body.native #s-audio .a-card .art::after{ content:""; position:absolute; left:0; right:0; bottom:0; top:auto; height:42%; background:linear-gradient(to top,rgba(0,0,0,.6),transparent); z-index:0; }
   body.native #s-audio .a-card .art > *{ position:relative; z-index:1; }
   body.native #s-audio .a-card .art:before,
   body.native .a-card .art:before{ display:none !important; }
@@ -468,6 +468,41 @@
   body.native #s-audio .row-title{ margin-top:24px; margin-bottom:12px; opacity:.92; }
   body.native #s-audio .a-card .art{ box-shadow:none; }
   body.native #s-sfide .sfida-card, body.native #s-sfide .sfida-attesa{ box-shadow:0 10px 26px rgba(0,0,0,.22); }
+  /* ============ SFIDE · RESTYLE GRAFICO (solo native) ============ */
+  /* Vetrina: tessere a poster, più grandi e cinematografiche */
+  body.native #s-sfide .sf-griglia > *{ flex:0 0 78%; }
+  body.native #s-sfide .sf-tile{ border-radius:22px; border:1px solid rgba(241,237,226,.10); transition:transform .28s cubic-bezier(.2,.7,.2,1), border-color .28s, box-shadow .28s; box-shadow:0 14px 34px -14px rgba(0,0,0,.55); }
+  body.native #s-sfide .sf-tile:active{ transform:scale(.975); }
+  body.native #s-sfide .sf-tile.attiva{ border-color:var(--lime); box-shadow:0 0 0 1.5px var(--lime) inset, 0 16px 36px -14px rgba(0,0,0,.6); }
+  body.native #s-sfide .sf-tile .cop{ aspect-ratio:3/4; }
+  body.native #s-sfide .sf-tile .cop::after{ background:linear-gradient(to top, rgba(3,20,23,.92) 0%, rgba(3,20,23,.35) 45%, transparent 72%); }
+  /* Badge stato: pill nette, senza emoticon */
+  body.native #s-sfide .sf-tile .stato{ top:12px; left:12px; font-size:9px; letter-spacing:.10em; padding:5px 11px; border-radius:100px; backdrop-filter:blur(6px); }
+  body.native #s-sfide .sf-tile .stato.on{ background:linear-gradient(180deg,#d2f24e,#a9d234); color:#052c31; }
+  body.native #s-sfide .sf-tile .stato.iscritto{ background:linear-gradient(180deg,#f7c948,#e0a92e); color:#2a1c00; }
+  body.native #s-sfide .sf-tile .stato.arrivo{ background:rgba(241,237,226,.12); color:#F1EDE2; border-color:rgba(241,237,226,.3); }
+  /* Titolo + info più leggibili */
+  body.native #s-sfide .sf-tile .info{ padding:14px 15px; }
+  body.native #s-sfide .sf-tile .info h5{ font-size:17px; line-height:1.05; }
+  body.native #s-sfide .sf-tile .info .sub{ font-size:11px; color:rgba(241,237,226,.8); margin-top:5px; }
+  /* Barra posti in lime, più visibile */
+  body.native #s-sfide .sf-tile .posti{ height:4px; margin-top:10px; background:rgba(241,237,226,.18); }
+  body.native #s-sfide .sf-tile .posti i{ background:linear-gradient(90deg,#a9d234,#d2f24e); box-shadow:0 0 10px rgba(194,232,62,.5); }
+  /* Titolo sezione vetrina */
+  body.native #s-sfide .sf-vetrina > .cap, body.native #s-sfide .sec-cap{ margin-bottom:12px; }
+  /* Dettaglio sfida: card premium */
+  body.native #s-sfide .sfida-card{ border-radius:24px; padding:24px; border:1px solid rgba(241,237,226,.10); background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015)); box-shadow:0 18px 42px -18px rgba(0,0,0,.6); }
+  body.native #s-sfide .sfida-card h4{ font-size:24px; margin-top:12px; }
+  body.native #s-sfide .sfida-card .badge{ font-size:9.5px; padding:5px 12px; }
+  /* barra posti del dettaglio in lime */
+  body.native #s-sfide #sfida-spots{ background:linear-gradient(90deg,#a9d234,#d2f24e) !important; }
+  /* pulsante registrazione più deciso + reattivo */
+  body.native #s-sfide #sfida-btn{ transition:transform .18s ease, box-shadow .18s ease; }
+  body.native #s-sfide #sfida-btn:active{ transform:scale(.98); }
+  /* stato "ci sei dentro" / attesa partenza: card pulita, senza icone */
+  body.native #s-sfide .sfida-attesa{ border-radius:22px; padding:30px 24px; background:linear-gradient(160deg,rgba(194,232,62,.08),rgba(255,255,255,.02)); border:1px solid rgba(194,232,62,.2); }
+  body.native #s-sfide .sfida-attesa .sa-ic{ display:none; }
+  body.native #s-sfide .sfida-attesa .sa-t{ font-size:20px; }
   body.native .pills-row{ gap:9px; }
   body.native .pills-row .pill{ padding:9px 16px; }
   /* piccolo suggerimento: si scorre */
@@ -1308,7 +1343,7 @@ button, .pill, .qa, .fav, .ep, .bg-sw, .share-btn, .act{ -webkit-tap-highlight-c
 
 /* --- AUDIO: leggibilità e presenza delle card --- */
 .a-card .art{ box-shadow:0 14px 30px -18px rgba(0,0,0,.55); }
-.a-card .art:after{ content:""; position:absolute; left:0; right:0; bottom:0; height:64%; background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.52)); z-index:0; pointer-events:none; }
+.a-card .art:after{ content:""; position:absolute; left:0; right:0; bottom:0; height:42%; background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.55)); z-index:0; pointer-events:none; }
 .a-card .art span{ font-size:17px; line-height:1.1; text-shadow:0 2px 10px rgba(0,0,0,.35); }
 .a-card .sub{ font-size:12.5px; color:rgba(241,237,226,.78); margin-top:10px; }
 .a-card .sub .fav{ font-size:17px; padding:4px; margin:-4px -4px -4px auto; }
@@ -2262,6 +2297,11 @@ var REFERRAL_ATTIVO = false;
 <!-- ============================================================
      APP WEB
 ============================================================ -->
+<div id="mc-splash" style="position:fixed;inset:0;z-index:99999;background:#052c31;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s ease;">
+  <div style="font-family:'Archivo Black','Arial Black',Impact,sans-serif;font-size:30px;letter-spacing:.5px;"><span style="color:#F1EDE2;">MENTAL</span><span style="color:#C2E83E;">CLASS</span></div>
+  <div style="width:34px;height:34px;border:3px solid rgba(241,237,226,.2);border-top-color:#C2E83E;border-radius:50%;animation:mcspin .8s linear infinite;"></div>
+</div>
+<style>@keyframes mcspin{to{transform:rotate(360deg);}}</style>
 <div id="app" class="view active">
   <div class="app-shell">
 
@@ -3693,6 +3733,7 @@ var REFERRAL_ATTIVO = false;
      routing
   ===================================================== */
   function enterApp(screen){
+    try{ if(window.__mcHideSplash) window.__mcHideSplash(); }catch(e){}
     /* app.html mostra sempre e solo l'app: qui non c'è più una landing
        da nascondere. La funzione resta per compatibilità con tutte le
        chiamate sparse nel resto del codice.
@@ -10178,6 +10219,12 @@ var REFERRAL_ATTIVO = false;
   /* init */
   applyPersonalization();
   if(eAppNativa()) document.body.classList.add('native');
+  /* nasconde lo schermo di caricamento MentalClass */
+  (function(){
+    function nascondiSplash(){ var sp=document.getElementById('mc-splash'); if(sp){ sp.style.opacity='0'; setTimeout(function(){ if(sp&&sp.parentNode) sp.parentNode.removeChild(sp); }, 450); } }
+    window.__mcHideSplash = nascondiSplash;
+    setTimeout(nascondiSplash, 3500); /* sicurezza: non resta mai bloccato */
+  })();
   /* Il widget apre l'app con mentalclass://home -> porto l'utente alla home */
   try{
     if(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App){

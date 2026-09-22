@@ -800,7 +800,6 @@ const MC = (function(){
     async lista(){
       const { data, error } = await sb.from('sfide')
         .select('*, sfida_iscritti(count)')
-        .neq('stato', 'chiusa')
         .order('creato_il', { ascending:false });
       if(error) throw new Error(error.message);
       return (data || []).map(s => ({

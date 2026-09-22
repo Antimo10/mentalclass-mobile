@@ -85,36 +85,32 @@ struct FraseWidgetView: View {
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        VStack(spacing: family == .systemSmall ? 6 : 10) {
-            Text("MENTALCLASS")
-                .font(.system(size: family == .systemSmall ? 8 : 10, weight: .heavy))
-                .tracking(1.6)
-                .foregroundColor(.mcLime)
-                .frame(maxWidth: .infinity, alignment: .center)
-
+        VStack(spacing: family == .systemSmall ? 8 : 12) {
             Spacer(minLength: 0)
 
+            // frase centrata, in orizzontale e in verticale
             Text(entry.frase)
-                .font(.system(size: family == .systemSmall ? 15 : 20, weight: .bold, design: .serif))
+                .font(.system(size: family == .systemSmall ? 16 : 21, weight: .bold, design: .serif))
                 .foregroundColor(.mcCream)
                 .multilineTextAlignment(.center)
-                .lineLimit(family == .systemSmall ? 4 : 5)
-                .minimumScaleFactor(0.6)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity)
+                .lineLimit(family == .systemSmall ? 5 : 5)
+                .minimumScaleFactor(0.55)
+                .frame(maxWidth: .infinity, alignment: .center)
 
             if entry.autore != "MentalClass" && !entry.autore.isEmpty {
                 Text("— \(entry.autore)")
-                    .font(.system(size: family == .systemSmall ? 10 : 12, weight: .semibold))
+                    .font(.system(size: family == .systemSmall ? 11 : 13, weight: .semibold))
                     .foregroundColor(.mcLime)
+                    .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
 
             Spacer(minLength: 0)
         }
-        .padding(family == .systemSmall ? 14 : 20)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .widgetURL(URL(string: "mentalclass://home"))   // tocco -> Home
+        .padding(.horizontal, family == .systemSmall ? 14 : 22)
+        .padding(.vertical, family == .systemSmall ? 12 : 16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        .widgetURL(URL(string: "mentalclass://home"))
     }
 }
 

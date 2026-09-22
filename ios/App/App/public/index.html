@@ -372,6 +372,10 @@
   body.native .mc-native-top{ display:flex; position:absolute; top:0; left:0; right:0; z-index:8; align-items:center; justify-content:space-between; padding:calc(env(safe-area-inset-top) + 10px) 20px 14px; background:linear-gradient(to bottom, rgba(5,44,49,.55), transparent); pointer-events:none; }
   body.native .mc-native-top .mc-logo{ font-family:'Anton',Impact,sans-serif; text-transform:uppercase; letter-spacing:.02em; font-size:17px; color:var(--cream); }
   body.native .mc-native-top .mc-logo b{ color:var(--lime); }
+  body.native .mini{ left:10px !important; right:10px !important; bottom:calc(env(safe-area-inset-bottom) + 78px) !important; z-index:97 !important; border-radius:18px; border:1px solid rgba(241,237,226,.12); background:rgba(8,56,62,.96); box-shadow:0 14px 34px -12px rgba(0,0,0,.6); overflow:visible; }
+  body.native.mini-on .app-screen{ padding-bottom:190px; }
+  body.native .mc-native-top .mc-crown.mc-pro{ width:auto; height:34px; padding:0 13px 0 11px; gap:6px; border-radius:100px; background:linear-gradient(180deg,rgba(194,232,62,.16),rgba(194,232,62,.06)); border:1px solid rgba(194,232,62,.45); font-family:'Anton',Impact,sans-serif; font-size:13px; letter-spacing:.12em; color:var(--lime); }
+  body.native .mc-native-top .mc-crown.mc-pro:active{ transform:scale(.95); }
   body.native .mc-native-top .mc-oggi{ font-size:12px; font-weight:600; color:var(--tx-mut); }
   body.native .mc-native-top .mc-streak{ pointer-events:auto; cursor:pointer; margin-left:auto; margin-right:10px; background:rgba(5,44,49,.55); backdrop-filter:blur(10px); border:1px solid rgba(241,237,226,.14); color:var(--cream); font-size:13px; font-weight:700; padding:6px 12px; border-radius:20px; display:flex; align-items:center; gap:2px; }
   body.native .mc-native-top .mc-streak b{ color:var(--lime); }
@@ -1739,7 +1743,8 @@ button, .pill, .qa, .fav, .ep, .bg-sw, .share-btn, .act{ -webkit-tap-highlight-c
 .art-web{ background:linear-gradient(150deg,#3a2f52,#160f28); }
 .art-web2{ background:linear-gradient(150deg,#22485c,#0a1c28); }
 .a-card .art .replay-tag{ position:absolute; top:9px; left:9px; z-index:2; background:rgba(10,10,10,.55); border:1px solid rgba(241,237,226,.25); color:var(--cream); font-size:8.5px; font-weight:800; letter-spacing:.06em; padding:3px 8px; border-radius:100px; text-transform:uppercase; }
-.a-card .art .lockmini{ position:absolute; top:9px; right:9px; z-index:2; font-size:12px; opacity:.85; }
+.a-card .art .lockmini{ position:absolute; top:10px; right:10px; z-index:3; width:30px; height:30px; border-radius:50%; background:rgba(5,44,49,.62); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid rgba(194,232,62,.55); box-shadow:0 6px 16px -6px rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; }
+.a-card .art .lockmini::after{ content:""; width:14px; height:14px; background:var(--lime); -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2.5'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") center/contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2.5'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") center/contain no-repeat; }
 
 /* composer feed: audio + descrizione breve */
 .composer .rec-timer{ font-size:16px; min-width:44px; }
@@ -2169,6 +2174,79 @@ button, .pill, .qa, .fav, .ep, .bg-sw, .share-btn, .act{ -webkit-tap-highlight-c
   .app-screen{ padding-left:13px !important; padding-right:13px !important; }
 }
 
+
+/* ================= SFIDE · NUOVO LAYOUT ================= */
+#s-sfide .sf-griglia{ display:block !important; overflow:visible !important; margin:0 !important; padding:0 !important; }
+#s-sfide .sf-griglia > *{ flex:none !important; }
+.sfx-sec{ margin:0 0 26px; }
+.sfx-h{ display:flex; align-items:baseline; justify-content:space-between; margin:0 2px 11px; }
+.sfx-h span{ font-size:10.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--tx-mut); }
+.sfx-h em{ font-style:normal; font-size:11px; font-weight:700; color:var(--tx-dim); }
+.sfx-row{ display:flex; align-items:center; gap:12px; padding:10px 12px 10px 10px; margin-bottom:8px; border-radius:16px; background:rgba(241,237,226,.035); border:1px solid rgba(241,237,226,.08); cursor:pointer; transition:transform .18s ease, border-color .18s ease, background .18s ease; }
+.sfx-row:active{ transform:scale(.985); }
+.sfx-row.sel{ border-color:rgba(194,232,62,.5); background:rgba(194,232,62,.05); }
+.sfx-row.sfx-arrivo{ cursor:default; }
+.sfx-row.sfx-arrivo, .sfx-row.sfx-terminata, .sfx-row.sfx-chiuse, .sfx-row.sfx-piena{ opacity:.66; }
+.sfx-th{ flex:0 0 44px; width:44px; height:44px; border-radius:12px; background:linear-gradient(150deg,#1d5a5f,#0b2a2f); background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; font-family:'Anton',Impact,sans-serif; font-size:18px; color:rgba(241,237,226,.5); }
+.sfx-tx{ flex:1; min-width:0; }
+.sfx-tt{ font-family:'Anton',Impact,sans-serif; font-weight:400; font-size:15px; letter-spacing:.01em; text-transform:uppercase; color:var(--cream); line-height:1.12; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sfx-sb{ font-size:11.5px; color:var(--tx-mut); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sfx-chip{ flex:0 0 auto; font-size:8.5px; font-weight:800; letter-spacing:.11em; text-transform:uppercase; padding:5px 9px; border-radius:100px; color:var(--tx-mut); border:1px solid rgba(241,237,226,.16); white-space:nowrap; }
+.sfx-attesa .sfx-chip{ color:#f0c24a; border-color:rgba(240,194,74,.45); }
+.sfx-corso .sfx-chip, .sfx-chip.on{ color:#052c31; background:var(--lime); border-color:var(--lime); }
+.sfx-cards{ display:flex; flex-direction:column; gap:12px; }
+.sfx-card{ border-radius:18px; overflow:hidden; background:rgba(241,237,226,.035); border:1px solid rgba(241,237,226,.09); cursor:pointer; transition:transform .18s ease, border-color .18s ease; }
+.sfx-card:active{ transform:scale(.985); }
+.sfx-card.sel{ border-color:rgba(194,232,62,.5); }
+.sfx-cv{ height:112px; position:relative; background:linear-gradient(150deg,#1d5a5f,#0b2a2f); background-size:cover; background-position:center; }
+.sfx-cv .sfx-chip{ position:absolute; top:11px; left:11px; }
+.sfx-bd{ padding:14px 15px 15px; }
+.sfx-bd .sfx-tt{ font-size:19px; white-space:normal; }
+.sfx-ds{ font-size:12.5px; color:var(--tx-mut); line-height:1.5; margin-top:6px; }
+.sfx-mt{ display:flex; justify-content:space-between; gap:10px; font-size:11.5px; font-weight:700; color:var(--cream); margin-top:12px; }
+.sfx-mt span:last-child{ color:var(--tx-mut); font-weight:600; }
+.sfx-bar{ height:3px; border-radius:3px; background:rgba(241,237,226,.12); overflow:hidden; margin-top:8px; }
+.sfx-bar i{ display:block; height:100%; background:var(--lime); border-radius:3px; transition:width .5s ease; }
+.sfx-nt{ font-size:11px; color:var(--tx-dim); margin-top:8px; }
+.sfx-empty{ font-size:12.5px; color:var(--tx-mut); line-height:1.6; padding:16px 18px; border:1px dashed rgba(241,237,226,.15); border-radius:16px; margin-bottom:26px; }
+.sfx-foot{ font-size:11.5px; color:var(--tx-dim); margin:18px 2px 0; line-height:1.55; }
+/* dettaglio */
+#s-sfide .sfida-card .sfx-hero{ height:150px; margin:-22px -22px 18px; background-size:cover; background-position:center; position:relative; }
+body.native #s-sfide .sfida-card .sfx-hero{ margin:-24px -24px 18px; }
+#s-sfide .sfida-card .sfx-hero::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(8,40,45,.85), transparent 60%); }
+#s-sfide .sfida-card > .spots, #s-sfide .sfida-card > .spots-lb{ display:none !important; }
+#s-sfide .sfida-card .badge{ background:transparent !important; border:1px solid rgba(241,237,226,.2) !important; color:var(--tx-mut) !important; font-size:9px !important; letter-spacing:.13em; padding:5px 11px !important; }
+#s-sfide .sfida-card .badge.sfx-b-aperta, #s-sfide .sfida-card .badge.sfx-b-corso{ background:var(--lime) !important; border-color:var(--lime) !important; color:#052c31 !important; }
+#s-sfide .sfida-card .badge.sfx-b-attesa{ color:#f0c24a !important; border-color:rgba(240,194,74,.45) !important; }
+.sfx-stats{ display:grid; grid-template-columns:repeat(3,1fr); border:1px solid rgba(241,237,226,.09); border-radius:14px; margin:6px 0 2px; }
+.sfx-stats > div{ padding:12px 6px; text-align:center; }
+.sfx-stats > div + div{ border-left:1px solid rgba(241,237,226,.09); }
+.sfx-stats b{ display:block; font-family:'Anton',Impact,sans-serif; font-weight:400; font-size:18px; color:var(--cream); line-height:1.1; white-space:nowrap; }
+.sfx-stats b small{ font-size:12px; color:var(--tx-mut); }
+.sfx-stats span{ display:block; font-size:9.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--tx-dim); margin-top:5px; }
+#s-sfide #sfida-btn{ width:100%; margin-top:16px; padding:14px 18px !important; font-size:14px !important; }
+#s-sfide #sfida-btn.sfx-off, #s-sfide #sfida-btn:disabled{ background:rgba(241,237,226,.07) !important; color:var(--tx-mut) !important; box-shadow:none !important; border:1px solid rgba(241,237,226,.12) !important; }
+.sfx-dh{ font-size:10.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--lime); margin:6px 0 2px; }
+/* attesa partenza */
+.sfx-wait{ border:1px solid rgba(194,232,62,.22); border-radius:18px; padding:18px; background:linear-gradient(160deg,rgba(194,232,62,.07),rgba(255,255,255,.01)); }
+.sfx-ok{ display:flex; align-items:center; gap:12px; }
+.sfx-okic{ flex:0 0 32px; width:32px; height:32px; border-radius:50%; background:var(--lime); position:relative; }
+.sfx-okic::after{ content:""; position:absolute; left:11.5px; top:7px; width:7px; height:13px; border:solid #052c31; border-width:0 2.5px 2.5px 0; transform:rotate(45deg); }
+.sfx-ok b{ display:block; font-size:14px; color:var(--cream); }
+.sfx-ok em{ display:block; font-style:normal; font-size:12px; color:var(--tx-mut); margin-top:2px; }
+.sfx-count{ display:flex; align-items:center; gap:14px; margin:16px 0; padding:14px 0; border-top:1px solid rgba(241,237,226,.08); border-bottom:1px solid rgba(241,237,226,.08); }
+.sfx-cn{ font-family:'Anton',Impact,sans-serif; font-size:44px; line-height:1; color:var(--lime); }
+.sfx-cl{ font-size:12px; color:var(--tx-mut); line-height:1.45; }
+.sfx-cl b{ color:var(--cream); font-size:13px; }
+.sfx-steps{ list-style:none; margin:0; padding:0; counter-reset:sfx; }
+.sfx-steps li{ position:relative; padding:0 0 12px 34px; counter-increment:sfx; }
+.sfx-steps li:last-child{ padding-bottom:0; }
+.sfx-steps li::before{ content:counter(sfx); position:absolute; left:0; top:0; width:22px; height:22px; border-radius:50%; border:1px solid rgba(241,237,226,.25); font-size:11px; font-weight:800; color:var(--cream); display:flex; align-items:center; justify-content:center; }
+.sfx-steps b{ display:block; font-size:13px; color:var(--cream); }
+.sfx-steps span{ display:block; font-size:12px; color:var(--tx-mut); margin-top:2px; line-height:1.45; }
+/* icona PRO con la M */
+body.native .mc-native-top .mc-crown.mc-pro{ padding:0 12px 0 5px; gap:7px; }
+.mc-pro .mc-m{ width:24px; height:24px; border-radius:50%; background:var(--lime); color:#052c31; display:flex; align-items:center; justify-content:center; font-family:'Anton',Impact,sans-serif; font-weight:400; font-size:13px; letter-spacing:0; line-height:1; }
 </style>
 </head>
 <body>
@@ -2298,7 +2376,7 @@ var REFERRAL_ATTIVO = false;
      APP WEB
 ============================================================ -->
 <div id="mc-splash" style="position:fixed;inset:0;z-index:99999;background:#052c31;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s ease;">
-  <div style="font-family:'Archivo Black','Arial Black',Impact,sans-serif;font-size:30px;letter-spacing:.5px;"><span style="color:#F1EDE2;">MENTAL</span><span style="color:#C2E83E;">CLASS</span></div>
+  <div style="font-family:'Anton',Impact,sans-serif;font-size:34px;letter-spacing:.02em;"><span style="color:#F1EDE2;">MENTAL</span><span style="color:#C2E83E;">CLASS</span></div>
   <div style="width:34px;height:34px;border:3px solid rgba(241,237,226,.2);border-top-color:#C2E83E;border-radius:50%;animation:mcspin .8s linear infinite;"></div>
 </div>
 <style>@keyframes mcspin{to{transform:rotate(360deg);}}</style>
@@ -2342,7 +2420,7 @@ var REFERRAL_ATTIVO = false;
 
       <!-- HOME -->
       <section class="app-screen" id="s-home">
-        <div class="mc-native-top"><span class="mc-logo">Mental<b>Class</b></span><span class="mc-streak" id="mc-streak" onclick="goScreen('diario')" style="display:none;">🔥 <b id="mc-streak-n">0</b></span><span class="mc-crown" onclick="goScreen('plan')" style="pointer-events:auto;cursor:pointer;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/></svg></span></div>
+        <div class="mc-native-top"><span class="mc-logo">Mental<b>Class</b></span><span class="mc-streak" id="mc-streak" onclick="goScreen('diario')" style="display:none;">🔥 <b id="mc-streak-n">0</b></span><span class="mc-crown mc-pro" onclick="goScreen('plan')" style="pointer-events:auto;cursor:pointer;"><b class="mc-m">M</b><span>PRO</span></span></div>
         <div class="screen-title"><h1 class="disp" id="greet">Buongiorno</h1></div>
         <p class="screen-sub" id="greet-sub">Il tuo allenamento di oggi ti aspetta.</p>
 
@@ -2567,17 +2645,19 @@ var REFERRAL_ATTIVO = false;
         </div>
 
         <div class="feed-col">
-          <div class="pane sfida-card">
+          <div class="pane sfida-card" id="sfida-dettaglio" style="display:none;">
+            <div class="sfx-hero" id="sfida-hero" style="display:none;"></div>
             <span class="badge" id="sfida-badge">Aperta · 7 giorni</span>
             <h4 id="sfida-tit">Me contro Me</h4>
             <p id="sfida-desc">Una prova al giorno per 7 giorni. Alla fine condividi l'esperienza con un vocale nel gruppo e sblocchi il badge.</p>
+            <div id="sfida-stats"></div>
             <div class="spots"><i id="sfida-spots" style="width:87%"></i></div>
             <div class="spots-lb"><b id="sfida-n">87</b>/<span id="sfida-posti">100</span> posti occupati<span id="sfida-chiusura"> · chiude tra 2 giorni</span></div>
             <div id="sfida-extra" style="display:none;font-size:12px;color:var(--tx-mut);line-height:1.6;margin:10px 0 4px;"></div>
             <button class="btn btn-lime" id="sfida-btn" style="padding:11px 18px;font-size:12.5px;" onclick="iscrivitiSfida()">Prendi il tuo posto</button>
             <div class="sfida-prog" id="sfida-prog">
-              <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:6px;">GIORNO <span id="sfida-day">1</span> DI 7 · Sei dentro</div>
-              <div class="spots"><i id="sfida-dayfill" style="width:14%;background:var(--lime);"></i></div>
+              <div id="sfida-dayhead"><div class="sfx-dh">Giorno <span id="sfida-day">1</span> di <span id="sfida-tot">7</span></div>
+              <div class="sfx-bar"><i id="sfida-dayfill" style="width:14%;"></i></div></div>
               <div class="sfida-toggle open" id="sfida-toggle" onclick="toggleSfidaDays()">
                 <span id="sfida-toggle-tx">Nascondi i 7 giorni</span>
                 <span class="chev">⌄</span>
@@ -2585,7 +2665,7 @@ var REFERRAL_ATTIVO = false;
               <div class="sfida-days-wrap open" id="sfida-days-wrap">
                 <div class="sfida-days" id="sfida-days"><!-- render JS --></div>
               </div>
-              <p style="font-size:11px;color:var(--tx-dim);margin:14px 0 0;">Al giorno 7 racconti l'esperienza con un vocale nel feed del gruppo — qui i post si fanno con la voce, non con i testi.</p>
+              <p style="font-size:11px;color:var(--tx-dim);margin:14px 0 0;">Nell'ultimo giorno racconti l'esperienza con un vocale nel feed del gruppo.</p>
             </div>
           </div>
           <div class="pane sfida-card" id="sfida-prossima" style="opacity:.8;">
@@ -2594,7 +2674,7 @@ var REFERRAL_ATTIVO = false;
             <p>Due settimane di sveglia anticipata. Le iscrizioni aprono il 1 agosto: 150 posti.</p>
             <button class="btn btn-ghost" style="padding:11px 18px;font-size:12.5px;" onclick="toast('🔔 Ti avvisiamo quando aprono le iscrizioni')">Avvisami</button>
           </div>
-          <p style="font-size:11.5px;color:var(--tx-dim);margin:18px 0 0;">👁 Dall'altra parte c'è l'esperto che segue la sfida e ascolta il tuo vocale.</p>
+          <p class="sfx-foot">Ogni sfida è seguita da un esperto che ascolta i tuoi vocali e ti risponde.</p>
         </div>
       </section>
 
@@ -3182,8 +3262,7 @@ var REFERRAL_ATTIVO = false;
     <div style="margin-top:16px;background:rgba(194,232,62,.10);border:1px solid rgba(194,232,62,.25);border-radius:14px;padding:13px 15px;font-size:12.5px;color:var(--tx-mut);line-height:1.6;">
       💡 Se non vedi ancora “MentalClass” tra i widget, apri l’app una volta e riprova: la prima frase viene preparata all’apertura.
     </div>
-    <button class="btn btn-ghost" style="width:100%;margin-top:14px;" onclick="verificaWidget(this)">Verifica il widget</button>
-    <pre id="wz-diag" style="display:none;margin-top:12px;white-space:pre-wrap;font-size:11.5px;line-height:1.6;color:var(--cream);background:rgba(0,0,0,.25);border:1px solid var(--pane-b);border-radius:12px;padding:12px;"></pre>
+
   </div>
 </div>
 
@@ -4105,7 +4184,7 @@ var REFERRAL_ATTIVO = false;
           var min = a.durata_sec ? Math.round(a.durata_sec/60)+' min' : '';
           var p = prog[a.id];
           var ripresa = (p && p.posizione_sec > 5 && !p.completato) ? ' · ripresa' : (p && p.completato ? ' · ✓' : '');
-          var lucchetto = (!a.gratuito && !MCabbonato()) ? '<span class="lockmini">🔒</span>' : '';
+          var lucchetto = (!a.gratuito && !MCabbonato()) ? '<span class="lockmini" aria-label="Contenuto premium"></span>' : '';
           var cop = a.copertina_url
             ? '<div class="art" style="background-image:url('+a.copertina_url+');background-size:cover;background-position:center;">'+lucchetto+'<span>'+escapeHtml(a.titolo)+'</span><div class="playov">▶</div></div>'
             : '<div class="art art-'+(a.colore || 'abcde'[i%5])+'">'+lucchetto+'<span>'+escapeHtml(a.titolo)+'</span><div class="playov">▶</div></div>';
@@ -6149,52 +6228,101 @@ var REFERRAL_ATTIVO = false;
 
       disegnaVetrinaSfide();
 
-      /* apro quella a cui sono già iscritto, altrimenti la prima */
-      var daAprire = SFIDE_TUTTE.find(function(x){ return x._iscritto; }) || SFIDE_TUTTE[0];
-      await apriSfida(daAprire.id);
+      /* apro solo la sfida che ti riguarda; altrimenti il dettaglio resta chiuso
+         finche' non ne tocchi una */
+      var daAprire = SFIDE_TUTTE.find(function(x){ return x._st === 'corso'; })
+                  || SFIDE_TUTTE.find(function(x){ return x._st === 'attesa'; })
+                  || (SFIDA_SCELTA && SFIDE_TUTTE.find(function(x){ return x.id === SFIDA_SCELTA && x._st !== 'arrivo'; }));
+      if(daAprire){ await apriSfida(daAprire.id); }
+      else if(card){ card.style.display = 'none'; }
     }catch(e){ console.warn('Sfide:', e.message); }
+  }
+
+  /* Stato unico di ogni sfida, usato sia dalla vetrina sia dal dettaglio */
+  var SFX_LABEL = { aperta:'Iscrizioni aperte', chiuse:'Iscrizioni chiuse', piena:'Posti esauriti',
+                    arrivo:'In arrivo', attesa:'Iscritto', corso:'In corso', terminata:'Terminata' };
+  function statoSfida(sf){
+    var posti = sf.posti_totali || 100, presi = sf.iscritti || 0;
+    if(sf.stato === 'chiusa') return 'terminata';
+    if(sf.stato === 'in_arrivo') return 'arrivo';
+    if(sf._iscritto) return sfidaNonAncoraPartita(sf) ? 'attesa' : 'corso';
+    if(sf.data_chiusura && String(sf.data_chiusura).slice(0,10) < dataLocale(new Date())) return 'chiuse';
+    if(presi >= posti) return 'piena';
+    return 'aperta';
+  }
+  function sfxData(d){ return d ? formattaData(String(d).slice(0,10)) : ''; }
+
+  function sfxRiga(sf){
+    var st = sf._st, TOT = sf.giorni || 7, posti = sf.posti_totali || 100, presi = sf.iscritti || 0, sub;
+    if(st === 'attesa'){ var g = giorniAllaData(String(sf.data_inizio).slice(0,10)); sub = 'Parte il ' + sfxData(sf.data_inizio) + ' · ' + (g === 1 ? 'manca 1 giorno' : 'mancano ' + g + ' giorni'); }
+    else if(st === 'corso') sub = TOT + ' giorni · in corso';
+    else if(st === 'arrivo') sub = sf.data_inizio ? 'Parte il ' + sfxData(sf.data_inizio) : 'Presto disponibile';
+    else if(st === 'terminata') sub = TOT + ' giorni · conclusa';
+    else sub = TOT + ' giorni · ' + Math.max(0, posti - presi) + ' posti liberi';
+    var cop = sf.copertina_url ? ' style="background-image:url(' + sf.copertina_url + ')"' : '';
+    var click = st === 'arrivo' ? '' : ' onclick="apriSfida(\'' + sf.id + '\', true)"';
+    return '<div class="sfx-row sfx-' + st + (SFIDA_SCELTA === sf.id ? ' sel' : '') + '"' + click + '>' +
+      '<div class="sfx-th"' + cop + '>' + (sf.copertina_url ? '' : escapeHtml((sf.titolo || 'S').charAt(0))) + '</div>' +
+      '<div class="sfx-tx"><div class="sfx-tt">' + escapeHtml(sf.titolo || 'Sfida') + '</div><div class="sfx-sb">' + sub + '</div></div>' +
+      '<span class="sfx-chip">' + SFX_LABEL[st] + '</span></div>';
+  }
+
+  function sfxCard(sf){
+    var TOT = sf.giorni || 7, posti = sf.posti_totali || 100, presi = sf.iscritti || 0, nota = '';
+    if(sf.data_chiusura){ var gg = giorniAllaData(String(sf.data_chiusura).slice(0,10)); nota = gg === 0 ? 'Iscrizioni aperte fino a oggi' : 'Iscrizioni aperte fino al ' + sfxData(sf.data_chiusura); }
+    var cop = sf.copertina_url ? 'background-image:url(' + sf.copertina_url + ')' : '';
+    return '<div class="sfx-card' + (SFIDA_SCELTA === sf.id ? ' sel' : '') + '" onclick="apriSfida(\'' + sf.id + '\', true)">' +
+      '<div class="sfx-cv" style="' + cop + '"><span class="sfx-chip on">' + SFX_LABEL.aperta + '</span></div>' +
+      '<div class="sfx-bd"><div class="sfx-tt">' + escapeHtml(sf.titolo || 'Sfida') + '</div>' +
+        (sf.sottotitolo ? '<div class="sfx-ds">' + escapeHtml(sf.sottotitolo) + '</div>' : '') +
+        '<div class="sfx-mt"><span>' + TOT + ' giorni' + (sf.data_inizio ? ' · dal ' + sfxData(sf.data_inizio) : '') + '</span><span>' + Math.max(0, posti - presi) + ' liberi su ' + posti + '</span></div>' +
+        '<div class="sfx-bar"><i style="width:' + Math.min(presi / posti * 100, 100) + '%"></i></div>' +
+        (nota ? '<div class="sfx-nt">' + nota + '</div>' : '') +
+      '</div></div>';
   }
 
   function disegnaVetrinaSfide(){
     var vetrina = document.getElementById('sf-vetrina');
     var griglia = document.getElementById('sf-griglia');
     if(!vetrina || !griglia) return;
-
-    /* con una sola sfida la vetrina non serve a niente */
-    if(SFIDE_TUTTE.length < 2){ vetrina.style.display = 'none'; return; }
+    if(!SFIDE_TUTTE.length){ vetrina.style.display = 'none'; return; }
     vetrina.style.display = 'block';
-
-    griglia.innerHTML = SFIDE_TUTTE.map(function(sf){
-      var presi = sf.iscritti || 0;
-      var posti = sf.posti_totali || 100;
-      var pieno = presi >= posti;
-      var inArrivo = sf.stato === 'in_arrivo';
-      var etichetta = inArrivo ? 'In arrivo'
-                    : sf._iscritto ? 'Ci sei dentro'
-                    : pieno         ? 'Posti esauriti'
-                    : sf.stato === 'in_corso' ? 'In corso' : 'Aperta';
-      var classe = inArrivo ? 'stato arrivo' : (sf._iscritto ? 'stato iscritto' : (pieno ? 'stato' : 'stato on'));
-      var copertina = sf.copertina_url ? 'background-image:url(' + sf.copertina_url + ')' : '';
-      /* Le sfide "in arrivo" si vedono ma non si aprono: avvisano soltanto
-         che stanno per uscire. */
-      var azione = inArrivo ? '' : 'onclick="apriSfida(\'' + sf.id + '\')"';
-
-      return '<div class="sf-tile' + (inArrivo ? ' in-arrivo' : '') + (SFIDA_SCELTA === sf.id ? ' attiva' : '') + '" ' + azione + '>' +
-        '<div class="cop" style="' + copertina + (inArrivo ? ';opacity:.72' : '') + '">' +
-          '<span class="' + classe + '">' + etichetta + '</span>' +
-          '<div class="info">' +
-            '<h5>' + escapeHtml(sf.titolo || 'Sfida') + '</h5>' +
-            '<div class="sub">' + (inArrivo ? 'Presto disponibile' : ((sf.giorni || 7) + ' giorni · ' + Math.max(0,(posti - presi)) + ' posti liberi su ' + posti)) + '</div>' +
-            (inArrivo ? '' : '<div class="posti"><i style="width:' + Math.min(presi / posti * 100, 100) + '%"></i></div>') +
-          '</div>' +
-        '</div>' +
-      '</div>';
-    }).join('');
+    var mie = [], aperte = [], arrivo = [], chiuse = [], finite = [];
+    SFIDE_TUTTE.forEach(function(sf){
+      sf._st = statoSfida(sf);
+      if(sf._st === 'attesa' || sf._st === 'corso') mie.push(sf);
+      else if(sf._st === 'aperta') aperte.push(sf);
+      else if(sf._st === 'arrivo') arrivo.push(sf);
+      else if(sf._st === 'terminata') finite.push(sf);
+      else chiuse.push(sf);
+    });
+    function sez(t, lista, html){ return '<div class="sfx-sec"><div class="sfx-h"><span>' + t + '</span><em>' + lista.length + '</em></div>' + html + '</div>'; }
+    function righe(l){ return l.map(sfxRiga).join(''); }
+    var out = '';
+    if(mie.length)    out += sez('Le tue sfide', mie, righe(mie));
+    if(aperte.length) out += sez('Iscrizioni aperte', aperte, '<div class="sfx-cards">' + aperte.map(sfxCard).join('') + '</div>');
+    if(!mie.length && !aperte.length) out += '<div class="sfx-empty">In questo momento non ci sono iscrizioni aperte. Le nuove sfide compaiono qui appena si aprono i posti.</div>';
+    if(arrivo.length) out += sez('In arrivo', arrivo, righe(arrivo));
+    if(chiuse.length) out += sez('Iscrizioni chiuse', chiuse, righe(chiuse));
+    if(finite.length) out += sez('Terminate', finite, righe(finite.slice(0, 5)));
+    griglia.innerHTML = out;
   }
 
-  async function apriSfida(sfidaId){
+  async function apriSfida(sfidaId, scorri){
     var sf = SFIDE_TUTTE.find(function(x){ return x.id === sfidaId; });
     if(!sf) return;
+    var st = sf._st || statoSfida(sf);
+    if(st === 'arrivo') return;
+    var det = document.getElementById('sfida-dettaglio');
+    if(det){
+      det.style.display = '';
+      if(scorri) setTimeout(function(){ try{ det.scrollIntoView({ behavior:'smooth', block:'start' }); }catch(e){} }, 60);
+    }
+    var hero = document.getElementById('sfida-hero');
+    if(hero){
+      if(sf.copertina_url){ hero.style.backgroundImage = 'url(' + sf.copertina_url + ')'; hero.style.display = ''; }
+      else hero.style.display = 'none';
+    }
     SFIDA_SCELTA = sfidaId;
     SFIDA_CORRENTE = sf;
     SFIDA_TOT_GIORNI = sf.giorni || 7;
@@ -6205,7 +6333,7 @@ var REFERRAL_ATTIVO = false;
     }catch(e){ ISCRIZIONE = null; }
 
     var badge = document.getElementById('sfida-badge');
-    if(badge) badge.textContent = (sf.stato === 'in_corso' ? 'In corso' : 'Aperta') + ' · ' + SFIDA_TOT_GIORNI + ' giorni';
+    if(badge){ badge.textContent = SFX_LABEL[st] || 'Sfida'; badge.className = 'badge sfx-b-' + st; }
     var tit = document.getElementById('sfida-tit');
     if(tit) tit.textContent = sf.titolo || 'Sfida';
     var des = document.getElementById('sfida-desc');
@@ -6218,6 +6346,18 @@ var REFERRAL_ATTIVO = false;
     var barra = document.getElementById('sfida-spots');
     if(barra) barra.style.width = Math.min(presi / posti * 100, 100) + '%';
 
+    var stw = document.getElementById('sfida-stats');
+    if(stw){
+      var liberi = Math.max(0, posti - presi);
+      stw.innerHTML =
+        '<div class="sfx-stats">' +
+          '<div><b>' + SFIDA_TOT_GIORNI + '</b><span>giorni</span></div>' +
+          '<div><b>' + liberi + '<small>/' + posti + '</small></b><span>posti liberi</span></div>' +
+          '<div><b>' + (sf.data_inizio ? sfxData(sf.data_inizio) : 'Subito') + '</b><span>' + ((st === 'corso' || st === 'terminata') ? 'iniziata' : 'inizio') + '</span></div>' +
+        '</div>' +
+        '<div class="sfx-bar"><i style="width:' + Math.min(presi / posti * 100, 100) + '%"></i></div>' +
+        (st === 'aperta' && sf.data_chiusura ? '<div class="sfx-nt">Iscrizioni aperte fino al ' + sfxData(sf.data_chiusura) + '</div>' : '');
+    }
     var ch = document.getElementById('sfida-chiusura');
     if(ch){
       if(sf.data_chiusura){
@@ -6270,11 +6410,14 @@ var REFERRAL_ATTIVO = false;
         }
       }
     }else{
-      var esauriti = presi >= posti;
       if(btn){
+        var puo = (st === 'aperta');
         btn.style.display = '';
-        btn.textContent = esauriti ? 'Posti esauriti' : 'Prendi il tuo posto';
-        btn.disabled = esauriti;
+        btn.textContent = puo ? 'Iscriviti alla sfida'
+                        : st === 'piena' ? 'Posti esauriti'
+                        : st === 'terminata' ? 'Sfida terminata' : 'Iscrizioni chiuse';
+        btn.disabled = !puo;
+        btn.classList.toggle('sfx-off', !puo);
       }
       if(prog){ prog.classList.remove('show'); prog.style.display = 'none'; }
     }
@@ -6282,13 +6425,14 @@ var REFERRAL_ATTIVO = false;
 
   async function iscrivitiSfida(){
     if(!COLLEGATO || !SFIDA_CORRENTE) return joinSfida();
+    if((SFIDA_CORRENTE._st || statoSfida(SFIDA_CORRENTE)) !== 'aperta'){ toast('Le iscrizioni a questa sfida non sono aperte'); return; }
+    var b = document.getElementById('sfida-btn'); if(b){ b.disabled = true; b.textContent = 'Iscrizione in corso…'; }
     try{
       ISCRIZIONE = await MC.sfide.iscriviti(SFIDA_CORRENTE.id);
       if(window.MCA) MCA.evento('sfida iscrizione', { sfida: SFIDA_CORRENTE.titolo || '' });
-      confetti(30); chime();
-      toast('Sei dentro: la sfida comincia');
+      toast('Iscrizione confermata');
       caricaSfide();
-    }catch(e){ toast('Non riesco a iscriverti: ' + e.message); }
+    }catch(e){ toast('Non riesco a iscriverti: ' + e.message); if(b){ b.disabled = false; b.textContent = 'Iscriviti alla sfida'; } }
   }
 
   /* ---------- COMPAGNO ---------- */
@@ -7737,6 +7881,7 @@ var REFERRAL_ATTIVO = false;
     document.getElementById('mini-t').textContent = c.title.replace(/<[^>]+>/g,'');
     document.getElementById('mini-s').textContent = c.cat;
     document.getElementById('mini').classList.add('show');
+    document.body.classList.add('mini-on');
     startKeyRotation(); startProgress();
   }
   function closePlayer(){
@@ -7751,6 +7896,7 @@ var REFERRAL_ATTIVO = false;
 
   function stopMini(){
     document.getElementById('mini').classList.remove('show');
+    document.body.classList.remove('mini-on');
     state.playing = false;
     stopProgress(); stopKeyRotation();
   }
@@ -8365,16 +8511,6 @@ var REFERRAL_ATTIVO = false;
     document.getElementById('rp-vuoto').style.display=(audioN===0 && diarioN===0)?'block':'none';
   }
   function closeRiepilogo(){ var m=document.getElementById('riepilogo-bg'); if(m) m.classList.remove('show'); }
-  async function verificaWidget(btn){
-    var box=document.getElementById('wz-diag'); if(!box) return;
-    box.style.display='block'; box.textContent='Verifico…';
-    if(btn) btn.disabled=true;
-    try{
-      if(!window.MCW){ box.textContent='mc-widget.js non caricato'; }
-      else { box.textContent = await MCW.diagnostica(typeof FRASI!=='undefined' ? FRASI : []); }
-    }catch(e){ box.textContent='Errore verifica: '+(e&&e.message?e.message:e); }
-    if(btn) btn.disabled=false;
-  }
   function openWidget(){ var m=document.getElementById('widget-bg'); if(m) m.classList.add('show'); }
   function closeWidget(){ var m=document.getElementById('widget-bg'); if(m) m.classList.remove('show'); }
   function updateNotifSum(){
@@ -8930,18 +9066,21 @@ var REFERRAL_ATTIVO = false;
   function mostraAttesaPartenza(sf){
     var wrap = document.getElementById('sfida-days');
     if(!wrap) return;
-    var giorni = giorniAllaData(sf.data_inizio);
-    var quando = formattaData(sf.data_inizio);
-    var testo = giorni === 1 ? 'Manca 1 giorno' : 'Mancano ' + giorni + ' giorni';
+    var d = String(sf.data_inizio).slice(0,10);
+    var giorni = giorniAllaData(d), quando = formattaData(d);
+    ['sfida-dayhead','sfida-toggle'].forEach(function(id){ var e = document.getElementById(id); if(e) e.style.display = 'none'; });
+    var dw = document.getElementById('sfida-days-wrap'); if(dw) dw.classList.add('open');
     wrap.innerHTML =
-      '<div class="sfida-attesa">' +
-        '<div class="sa-ic">🗓️</div>' +
-        '<div class="sa-t">Sei dentro. La sfida parte il ' + quando + '</div>' +
-        '<div class="sa-s">' + testo + '. Da quel giorno si apre la prima prova, poi una al giorno fino alla fine.</div>' +
+      '<div class="sfx-wait">' +
+        '<div class="sfx-ok"><span class="sfx-okic"></span><div><b>Iscrizione confermata</b><em>Il tuo posto è riservato</em></div></div>' +
+        '<div class="sfx-count"><div class="sfx-cn">' + giorni + '</div><div class="sfx-cl">' + (giorni === 1 ? 'giorno' : 'giorni') + ' alla partenza<br><b>' + quando + '</b></div></div>' +
+        '<ol class="sfx-steps">' +
+          '<li><b>Il ' + quando + ' si apre la prima prova</b><span>Ne arriva una nuova ogni giorno, a mezzanotte.</span></li>' +
+          '<li><b>Chiudi ogni giorno con un vocale</b><span>Trenta secondi per raccontare com\'è andata.</span></li>' +
+          '<li><b>L\'esperto ti risponde</b><span>Ascolta i tuoi vocali e ti segue giorno per giorno.</span></li>' +
+        '</ol>' +
       '</div>';
-    /* azzero la barra di avanzamento: nulla è ancora iniziato */
     var df = document.getElementById('sfida-dayfill'); if(df) df.style.width = '0%';
-    var dn = document.getElementById('sfida-day');     if(dn) dn.textContent = '0';
   }
 
   function giorniAllaData(dataStr){
@@ -8963,6 +9102,8 @@ var REFERRAL_ATTIVO = false;
     var today = sfidaDone.length + 1;
     var TOT = SFIDA_TOT_GIORNI || 7;
     document.getElementById('sfida-day').textContent = Math.min(today,TOT);
+    ['sfida-dayhead','sfida-toggle'].forEach(function(id){ var e = document.getElementById(id); if(e) e.style.display = ''; });
+    var tt = document.getElementById('sfida-tot'); if(tt) tt.textContent = TOT;
     document.getElementById('sfida-dayfill').style.width = Math.round(sfidaDone.length/TOT*100)+'%';
     var wrap = document.getElementById('sfida-days');
     wrap.innerHTML = SFIDA_DAYS.map(function(d, i){
@@ -8970,14 +9111,14 @@ var REFERRAL_ATTIVO = false;
       var isDone = sfidaDone.indexOf(n)>=0;
       var isToday = (n===today && !inAttesa && today<=TOT);
       var cls = isDone ? 'done' : (isToday ? 'today' : 'locked');
-      var st = isDone ? '✓ Fatto' : (isToday ? 'OGGI' : '🔒');
+      var st = isDone ? 'Completato' : (isToday ? 'Oggi' : 'Bloccato');
       /* niente anteprima: i giorni futuri non rivelano nulla */
       var title = (isDone || isToday) ? d.t : 'Giorno '+n;
       var sub = (isDone || isToday) ? d.s : 'La prova si svela a mezzanotte.';
       var rec = '';
       if(isToday){
         rec = '<div class="sday-rec"><div class="micbtn" id="sday-mic" onclick="sfidaComplete('+n+')"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></div><span>'+(n===7?'Registra la voce finale per il gruppo':'Racconta com\'è andata (30s) e chiudi il giorno')+'</span>'+
-          '<div class="sday-allega" onclick="event.stopPropagation();document.getElementById(\'sday-file\').click()">📎 Allega un file</div>'+
+          '<div class="sday-allega" onclick="event.stopPropagation();document.getElementById(\'sday-file\').click()">Allega un file</div>'+
           '<input type="file" id="sday-file" style="display:none;" onchange="sfidaAllegaFile(this,'+n+')">'+
         '</div>';
       }
@@ -8990,13 +9131,13 @@ var REFERRAL_ATTIVO = false;
         }).join('')
         + (sfidaChat[n].some(function(m){ return m.who==='exp'; })
             ? '<div class="sday-rec" style="margin-top:10px;"><div class="micbtn" style="width:34px;height:34px;" onclick="sfidaReply('+n+')"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></div><span>Rispondi all\'esperto</span></div>'
-            : '<div class="wait">⏳ L\'esperto ascolterà il tuo vocale e ti risponderà qui.</div>')
+            : '<div class="wait">L\'esperto ascolterà il tuo vocale e ti risponderà qui.</div>')
         + '</div>';
       }
       var midnight = '';
       if(inAttesa && n===today){
         /* il giorno successivo si apre da solo alla mezzanotte */
-        midnight = '<div class="midnight-wait">🌙 Hai chiuso la prova di oggi. Il giorno ' + n +
+        midnight = '<div class="midnight-wait">Hai chiuso la prova di oggi. Il giorno ' + n +
                    ' si apre a mezzanotte<span class="mw-t"> · mancano ' + mancaAMezzanotte() + '</span></div>';
       }
       return '<div class="sday '+cls+'"><div class="n">'+(isDone?'✓':(isToday?n:'🔒'))+'</div><div class="tt"><b>'+title+'</b><span>'+sub+'</span>'+rec+chat+midnight+'</div><div class="st">'+st+'</div></div>';

@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#052c31">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2247,6 +2247,63 @@ body.native #s-sfide .sfida-card .sfx-hero{ margin:-24px -24px 18px; }
 /* icona PRO con la M */
 body.native .mc-native-top .mc-crown.mc-pro{ padding:0 12px 0 5px; gap:7px; }
 .mc-pro .mc-m{ width:24px; height:24px; border-radius:50%; background:var(--lime); color:#052c31; display:flex; align-items:center; justify-content:center; font-family:'Anton',Impact,sans-serif; font-weight:400; font-size:13px; letter-spacing:0; line-height:1; }
+
+/* ====== rifiniture finali ====== */
+/* copertine audio: niente bordo chiaro, titolo sempre dentro la card */
+body.native #s-audio .a-card .art{ border-color:transparent !important; padding-bottom:14px; }
+body.native #s-audio .a-card .art span{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+/* lucchetto: pillola sobria nella riga sotto la copertina */
+.a-card .sub .lk-chip{ flex:0 0 auto; display:inline-flex; align-items:center; gap:5px; font-size:9px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--lime); border:1px solid rgba(194,232,62,.4); border-radius:100px; padding:3px 8px 3px 6px; margin-right:2px; }
+.a-card .sub .lk-chip::before{ content:""; width:10px; height:10px; background:var(--lime); -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2.5'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") center/contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2.5'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") center/contain no-repeat; }
+/* logo MentalClass dentro il player */
+.pl-art .pl-wm{ font-family:'Anton',Impact,sans-serif; font-size:34px; letter-spacing:.02em; text-transform:uppercase; color:var(--cream); position:relative; z-index:1; text-shadow:0 6px 18px rgba(0,0,0,.35); }
+.pl-art .pl-wm b{ color:var(--lime); font-weight:400; }
+/* barre di scorrimento: invisibili ovunque, verticali e orizzontali */
+*::-webkit-scrollbar{ width:0 !important; height:0 !important; display:none !important; background:transparent !important; }
+*{ scrollbar-width:none !important; -ms-overflow-style:none !important; }
+/* la barra di avanzamento in cima non serve nell'app */
+body.native #scrollbar{ display:none !important; }
+/* niente zoom con doppio tocco o pizzico */
+body.native{ touch-action:pan-x pan-y; }
+
+/* ====== SFIDE: poster, filtri, timer, chat ====== */
+.sfx-pills{ margin-bottom:18px; }
+.sfx-sec{ margin:0 0 24px; }
+.sfx-rail{ display:flex; gap:13px; overflow-x:auto; scroll-snap-type:x proximity; padding:2px 18px 6px 0; margin-right:-18px; }
+.sfx-rail > *{ flex:0 0 158px; scroll-snap-align:start; }
+.sfx-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px 12px; }
+.sfx-po{ cursor:pointer; transition:transform .25s cubic-bezier(.2,.7,.2,1); }
+.sfx-po:active{ transform:scale(.97); }
+.sfx-po.sfx-arrivo{ cursor:default; }
+.sfx-poart{ position:relative; height:206px; border-radius:22px; overflow:hidden; display:flex; align-items:flex-end; padding:14px 14px 16px;
+  background:linear-gradient(150deg,#1d5a5f,#0b2a2f); background-size:cover; background-position:center; }
+.sfx-grid .sfx-poart{ height:188px; }
+.sfx-poart::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:62%; background:linear-gradient(to top, rgba(2,18,21,.92), rgba(2,18,21,.35) 45%, transparent); }
+.sfx-poart > *{ position:relative; z-index:2; }
+.sfx-potit{ font-family:'Anton',Impact,sans-serif; font-weight:400; font-size:16px; line-height:1.08; text-transform:uppercase; color:var(--cream);
+  text-shadow:0 2px 10px rgba(0,0,0,.45); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.sfx-poart .sfx-chip{ position:absolute; top:11px; left:11px; z-index:3; background:rgba(2,18,21,.6); backdrop-filter:blur(6px); }
+.sfx-aperta .sfx-poart .sfx-chip{ background:var(--lime); color:#052c31; border-color:var(--lime); }
+.sfx-corso .sfx-poart .sfx-chip{ background:var(--lime); color:#052c31; border-color:var(--lime); }
+.sfx-attesa .sfx-poart .sfx-chip{ background:#f0c24a; color:#2a1c00; border-color:#f0c24a; }
+.sfx-po.sfx-terminata .sfx-poart, .sfx-po.sfx-chiuse .sfx-poart, .sfx-po.sfx-piena .sfx-poart, .sfx-po.sfx-arrivo .sfx-poart{ filter:saturate(.6); opacity:.8; }
+.sfx-po.sel .sfx-poart{ box-shadow:0 0 0 2px var(--lime); }
+.sfx-timer{ position:absolute; top:11px; right:11px; z-index:3; font-size:9.5px; font-weight:800; letter-spacing:.04em; color:var(--cream);
+  background:rgba(2,18,21,.66); backdrop-filter:blur(6px); border:1px solid rgba(241,237,226,.2); border-radius:100px; padding:4px 9px; white-space:nowrap; }
+.sfx-timer.via{ color:#f0c24a; border-color:rgba(240,194,74,.4); }
+.sfx-posub{ font-size:11.5px; color:var(--tx-mut); margin-top:9px; line-height:1.35; }
+/* ====== CHAT CON L'ESPERTO (stile messaggistica) ====== */
+.sday-chat{ margin-top:12px; border-left:none; padding:12px; background:rgba(2,18,21,.35); border:1px solid rgba(241,237,226,.07); border-radius:16px; display:flex; flex-direction:column; gap:10px; }
+.sday-chat .scmsg{ display:flex; flex-direction:column; align-items:flex-end; gap:3px; max-width:86%; margin-left:auto; }
+.sday-chat .scmsg.exp{ align-items:flex-start; margin-left:0; margin-right:auto; }
+.sday-chat .scmsg .who{ font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--tx-dim); width:auto; padding:0 6px; }
+.sday-chat .scmsg.exp .who{ color:#f0c24a; }
+.sday-chat .scmsg .vplayer{ width:100%; border-radius:18px 18px 4px 18px; background:rgba(194,232,62,.14); border:1px solid rgba(194,232,62,.28); padding:6px 14px 6px 6px; }
+.sday-chat .scmsg.exp .vplayer{ border-radius:18px 18px 18px 4px; background:rgba(241,237,226,.06); border-color:rgba(241,237,226,.12); }
+.sday-chat .scmsg .vplayer .pp{ width:32px; height:32px; font-size:12px; }
+.sday-chat .scmsg.exp .vplayer .pp{ background:#f0c24a; }
+.sday-chat .wait{ align-self:center; text-align:center; font-size:11px; color:var(--tx-dim); background:rgba(241,237,226,.05); border-radius:100px; padding:6px 14px; margin:0; }
+.sday-chat .sday-rec{ margin-top:2px; background:rgba(241,237,226,.04); border:1px solid rgba(241,237,226,.1); border-radius:100px; padding:6px 14px 6px 6px; }
 </style>
 </head>
 <body>
@@ -2640,6 +2697,13 @@ var REFERRAL_ATTIVO = false;
         <div class="screen-title"><h1 class="disp">Sfide</h1></div>
         <p class="screen-sub">A numero chiuso, a tempo, senza scuse. Alla fine racconti com'è andata: con la voce.</p>
 
+        <div class="pills-row sfx-pills" id="sfx-pills" style="display:none;">
+          <button class="pill on" data-f="tutte" onclick="sfxFiltro('tutte',this)">Tutte</button>
+          <button class="pill" data-f="mie" onclick="sfxFiltro('mie',this)">Le tue</button>
+          <button class="pill" data-f="aperte" onclick="sfxFiltro('aperte',this)">Aperte</button>
+          <button class="pill" data-f="arrivo" onclick="sfxFiltro('arrivo',this)">In arrivo</button>
+          <button class="pill" data-f="finite" onclick="sfxFiltro('finite',this)">Terminate</button>
+        </div>
         <div class="sf-vetrina" id="sf-vetrina" style="display:none;">
           <div class="sf-griglia" id="sf-griglia"></div>
         </div>
@@ -3137,7 +3201,7 @@ var REFERRAL_ATTIVO = false;
         <div class="fav" id="pl-fav" style="margin-left:0;font-size:20px;" onclick="favAudioPlayer()">♡</div>
       </div>
     </div>
-    <div class="pl-art"><div class="halo"></div><span class="logo"></span></div>
+    <div class="pl-art"><div class="halo"></div><span class="pl-wm">Mental<b>Class</b></span></div>
     <div class="pl-cat" id="pl-cat">Decompressione · Ep.1</div>
     <div class="pl-title" id="pl-title">Respirare<br>sotto pressione</div>
     <div class="pl-auth" id="pl-auth">Percorso MentalClass</div>
@@ -4184,12 +4248,12 @@ var REFERRAL_ATTIVO = false;
           var min = a.durata_sec ? Math.round(a.durata_sec/60)+' min' : '';
           var p = prog[a.id];
           var ripresa = (p && p.posizione_sec > 5 && !p.completato) ? ' · ripresa' : (p && p.completato ? ' · ✓' : '');
-          var lucchetto = (!a.gratuito && !MCabbonato()) ? '<span class="lockmini" aria-label="Contenuto premium"></span>' : '';
+          var lucchetto = (!a.gratuito && !MCabbonato()) ? '<span class="lk-chip" aria-label="Contenuto premium">Premium</span>' : '';
           var cop = a.copertina_url
-            ? '<div class="art" style="background-image:url('+a.copertina_url+');background-size:cover;background-position:center;">'+lucchetto+'<span>'+escapeHtml(a.titolo)+'</span><div class="playov">▶</div></div>'
-            : '<div class="art art-'+(a.colore || 'abcde'[i%5])+'">'+lucchetto+'<span>'+escapeHtml(a.titolo)+'</span><div class="playov">▶</div></div>';
+            ? '<div class="art" style="background-image:url('+a.copertina_url+');background-size:cover;background-position:center;"><span>'+escapeHtml(a.titolo)+'</span><div class="playov">▶</div></div>'
+            : '<div class="art art-'+(a.colore || 'abcde'[i%5])+'"><span>'+escapeHtml(a.titolo)+'</span><div class="playov">▶</div></div>';
           return '<div class="a-card" onclick="apriAudioVero(\''+a.id+'\')">'+ cop +
-            '<div class="sub">'+escapeHtml(c.nome)+(min?' · '+min:'')+ripresa+
+            '<div class="sub">'+lucchetto+escapeHtml(c.nome)+(min?' · '+min:'')+ripresa+
             '<span class="fav" onclick="event.stopPropagation();preferitoAudio(this,\''+a.id+'\')">♡</span></div></div>';
         }
 
@@ -6252,41 +6316,71 @@ var REFERRAL_ATTIVO = false;
   }
   function sfxData(d){ return d ? formattaData(String(d).slice(0,10)) : ''; }
 
-  function sfxRiga(sf){
-    var st = sf._st, TOT = sf.giorni || 7, posti = sf.posti_totali || 100, presi = sf.iscritti || 0, sub;
-    if(st === 'attesa'){ var g = giorniAllaData(String(sf.data_inizio).slice(0,10)); sub = 'Parte il ' + sfxData(sf.data_inizio) + ' · ' + (g === 1 ? 'manca 1 giorno' : 'mancano ' + g + ' giorni'); }
-    else if(st === 'corso') sub = TOT + ' giorni · in corso';
-    else if(st === 'arrivo') sub = sf.data_inizio ? 'Parte il ' + sfxData(sf.data_inizio) : 'Presto disponibile';
-    else if(st === 'terminata') sub = TOT + ' giorni · conclusa';
-    else sub = TOT + ' giorni · ' + Math.max(0, posti - presi) + ' posti liberi';
-    var cop = sf.copertina_url ? ' style="background-image:url(' + sf.copertina_url + ')"' : '';
-    var click = st === 'arrivo' ? '' : ' onclick="apriSfida(\'' + sf.id + '\', true)"';
-    return '<div class="sfx-row sfx-' + st + (SFIDA_SCELTA === sf.id ? ' sel' : '') + '"' + click + '>' +
-      '<div class="sfx-th"' + cop + '>' + (sf.copertina_url ? '' : escapeHtml((sf.titolo || 'S').charAt(0))) + '</div>' +
-      '<div class="sfx-tx"><div class="sfx-tt">' + escapeHtml(sf.titolo || 'Sfida') + '</div><div class="sfx-sb">' + sub + '</div></div>' +
-      '<span class="sfx-chip">' + SFX_LABEL[st] + '</span></div>';
+  var SFX_FILTRO = 'tutte';
+  function sfxFiltro(f, el){
+    SFX_FILTRO = f;
+    var box = document.getElementById('sfx-pills');
+    if(box) box.querySelectorAll('.pill').forEach(function(b){ b.classList.toggle('on', b === el); });
+    disegnaVetrinaSfide();
   }
 
-  function sfxCard(sf){
-    var TOT = sf.giorni || 7, posti = sf.posti_totali || 100, presi = sf.iscritti || 0, nota = '';
-    if(sf.data_chiusura){ var gg = giorniAllaData(String(sf.data_chiusura).slice(0,10)); nota = gg === 0 ? 'Iscrizioni aperte fino a oggi' : 'Iscrizioni aperte fino al ' + sfxData(sf.data_chiusura); }
-    var cop = sf.copertina_url ? 'background-image:url(' + sf.copertina_url + ')' : '';
-    return '<div class="sfx-card' + (SFIDA_SCELTA === sf.id ? ' sel' : '') + '" onclick="apriSfida(\'' + sf.id + '\', true)">' +
-      '<div class="sfx-cv" style="' + cop + '"><span class="sfx-chip on">' + SFX_LABEL.aperta + '</span></div>' +
-      '<div class="sfx-bd"><div class="sfx-tt">' + escapeHtml(sf.titolo || 'Sfida') + '</div>' +
-        (sf.sottotitolo ? '<div class="sfx-ds">' + escapeHtml(sf.sottotitolo) + '</div>' : '') +
-        '<div class="sfx-mt"><span>' + TOT + ' giorni' + (sf.data_inizio ? ' · dal ' + sfxData(sf.data_inizio) : '') + '</span><span>' + Math.max(0, posti - presi) + ' liberi su ' + posti + '</span></div>' +
-        '<div class="sfx-bar"><i style="width:' + Math.min(presi / posti * 100, 100) + '%"></i></div>' +
-        (nota ? '<div class="sfx-nt">' + nota + '</div>' : '') +
-      '</div></div>';
+  /* Tempo che manca, in forma breve: 3g 5h / 5h 20m / 12m */
+  function sfxManca(dataStr, oraFine){
+    if(!dataStr) return null;
+    var t = new Date(String(dataStr).slice(0,10) + 'T' + (oraFine || '23:59') + ':59');
+    var ms = t - new Date();
+    if(ms <= 0) return null;
+    var g = Math.floor(ms / 86400000), h = Math.floor(ms % 86400000 / 3600000), m = Math.floor(ms % 3600000 / 60000);
+    if(g > 0) return g + 'g ' + h + 'h';
+    if(h > 0) return h + 'h ' + m + 'm';
+    return m + 'm';
   }
+
+  /* Poster: stessa misura delle card audio, con copertina dal pannello */
+  function sfxPoster(sf){
+    var st = sf._st, TOT = sf.giorni || 7, posti = sf.posti_totali || 100, presi = sf.iscritti || 0;
+    var cop = sf.copertina_url ? ' style="background-image:url(' + sf.copertina_url + ')"' : '';
+    var sotto, timer = '';
+    if(st === 'aperta'){
+      sotto = TOT + ' giorni · ' + Math.max(0, posti - presi) + ' posti';
+      var m = sfxManca(sf.data_chiusura);
+      if(m) timer = '<span class="sfx-timer" data-scad="' + String(sf.data_chiusura).slice(0,10) + '">Chiude tra ' + m + '</span>';
+    } else if(st === 'attesa'){
+      sotto = 'Parte il ' + sfxData(sf.data_inizio);
+      var mi = sfxManca(sf.data_inizio, '00:00');
+      if(mi) timer = '<span class="sfx-timer via" data-scad="' + String(sf.data_inizio).slice(0,10) + '" data-ora="00:00">Parte tra ' + mi + '</span>';
+    } else if(st === 'corso'){ sotto = 'In corso · ' + TOT + ' giorni'; }
+    else if(st === 'arrivo'){ sotto = sf.data_inizio ? 'Dal ' + sfxData(sf.data_inizio) : 'Presto disponibile'; }
+    else if(st === 'terminata'){ sotto = 'Conclusa'; }
+    else { sotto = st === 'piena' ? 'Posti esauriti' : 'Iscrizioni chiuse'; }
+    var click = st === 'arrivo' ? '' : ' onclick="apriSfida(\'' + sf.id + '\', true)"';
+    return '<div class="sfx-po sfx-' + st + (SFIDA_SCELTA === sf.id ? ' sel' : '') + '"' + click + '>' +
+      '<div class="sfx-poart"' + cop + '>' +
+        '<span class="sfx-chip">' + SFX_LABEL[st] + '</span>' + timer +
+        '<div class="sfx-potit">' + escapeHtml(sf.titolo || 'Sfida') + '</div>' +
+      '</div>' +
+      '<div class="sfx-posub">' + sotto + '</div></div>';
+  }
+
+  /* Aggiorna i conti alla rovescia senza ridisegnare tutto */
+  function sfxTimerTick(){
+    document.querySelectorAll('.sfx-timer[data-scad]').forEach(function(el){
+      var m = sfxManca(el.getAttribute('data-scad'), el.getAttribute('data-ora'));
+      if(!m){ el.remove(); return; }
+      el.textContent = (el.classList.contains('via') ? 'Parte tra ' : 'Chiude tra ') + m;
+    });
+  }
+  setInterval(sfxTimerTick, 30000);
 
   function disegnaVetrinaSfide(){
     var vetrina = document.getElementById('sf-vetrina');
     var griglia = document.getElementById('sf-griglia');
+    var pills = document.getElementById('sfx-pills');
     if(!vetrina || !griglia) return;
-    if(!SFIDE_TUTTE.length){ vetrina.style.display = 'none'; return; }
+    if(!SFIDE_TUTTE.length){ vetrina.style.display = 'none'; if(pills) pills.style.display = 'none'; return; }
     vetrina.style.display = 'block';
+    if(pills) pills.style.display = '';
+
     var mie = [], aperte = [], arrivo = [], chiuse = [], finite = [];
     SFIDE_TUTTE.forEach(function(sf){
       sf._st = statoSfida(sf);
@@ -6296,16 +6390,33 @@ var REFERRAL_ATTIVO = false;
       else if(sf._st === 'terminata') finite.push(sf);
       else chiuse.push(sf);
     });
-    function sez(t, lista, html){ return '<div class="sfx-sec"><div class="sfx-h"><span>' + t + '</span><em>' + lista.length + '</em></div>' + html + '</div>'; }
-    function righe(l){ return l.map(sfxRiga).join(''); }
+
+    function rail(t, lista){
+      if(!lista.length) return '';
+      return '<div class="sfx-sec"><div class="sfx-h"><span>' + t + '</span><em>' + lista.length + '</em></div>' +
+             '<div class="sfx-rail">' + lista.map(sfxPoster).join('') + '</div></div>';
+    }
+    function griglia2(lista, vuoto){
+      if(!lista.length) return '<div class="sfx-empty">' + vuoto + '</div>';
+      return '<div class="sfx-grid">' + lista.map(sfxPoster).join('') + '</div>';
+    }
+
     var out = '';
-    if(mie.length)    out += sez('Le tue sfide', mie, righe(mie));
-    if(aperte.length) out += sez('Iscrizioni aperte', aperte, '<div class="sfx-cards">' + aperte.map(sfxCard).join('') + '</div>');
-    if(!mie.length && !aperte.length) out += '<div class="sfx-empty">In questo momento non ci sono iscrizioni aperte. Le nuove sfide compaiono qui appena si aprono i posti.</div>';
-    if(arrivo.length) out += sez('In arrivo', arrivo, righe(arrivo));
-    if(chiuse.length) out += sez('Iscrizioni chiuse', chiuse, righe(chiuse));
-    if(finite.length) out += sez('Terminate', finite, righe(finite.slice(0, 5)));
+    if(SFX_FILTRO === 'tutte'){
+      out += rail('Le tue sfide', mie);
+      out += rail('Iscrizioni aperte', aperte);
+      out += rail('In arrivo', arrivo);
+      out += rail('Iscrizioni chiuse', chiuse);
+      out += rail('Terminate', finite.slice(0, 6));
+      if(!out) out = '<div class="sfx-empty">Nessuna sfida al momento. Le nuove compaiono qui appena aprono i posti.</div>';
+    }
+    else if(SFX_FILTRO === 'mie')    out = griglia2(mie, 'Non sei iscritto a nessuna sfida. Guarda quelle con le iscrizioni aperte.');
+    else if(SFX_FILTRO === 'aperte') out = griglia2(aperte, 'In questo momento non ci sono iscrizioni aperte.');
+    else if(SFX_FILTRO === 'arrivo') out = griglia2(arrivo, 'Nessuna sfida in arrivo.');
+    else                             out = griglia2(finite, 'Nessuna sfida terminata.');
+
     griglia.innerHTML = out;
+    sfxTimerTick();
   }
 
   async function apriSfida(sfidaId, scorri){

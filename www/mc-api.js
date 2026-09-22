@@ -413,14 +413,24 @@ const MC = (function(){
       q = q.order('ordine').order('creato_il', { ascending:false });
       const { data, error } = await q;
       if(error) throw new Error(error.message);
-      return data || [];
+      return (data || []).map(a => ({
+        ...a,
+        copertina_url: a.copertina_path
+          ? sb.storage.from('pubblico').getPublicUrl(a.copertina_path).data.publicUrl
+          : null
+      }));
     },
 
     async percorsi(){
       const { data, error } = await sb.from('percorsi')
         .select('*, audio(count)').eq('pubblicato', true).order('titolo');
       if(error) throw new Error(error.message);
-      return data || [];
+      return (data || []).map(p => ({
+        ...p,
+        copertina_url: p.copertina_path
+          ? sb.storage.from('pubblico').getPublicUrl(p.copertina_path).data.publicUrl
+          : null
+      }));
     },
 
     /* Restituisce il link per ascoltare. Se l'utente non ha diritto,

@@ -343,18 +343,28 @@ const MC = (function(){
       return (data && data[0]) || null;
     },
 
+    /* Archivio completo dei contenuti pubblicati di un tipo:
+       serve a variare ogni giorno home, widget e notifiche. */
+    async archivio(tipo){
+      const { data, error } = await sb.from('contenuti_giornalieri')
+        .select('id,testo,extra,data').eq('tipo', tipo).eq('pubblicato', true).limit(2000);
+      if(error) return [];
+      return data || [];
+    },
+
     /* Tutto il necessario per la home, in una sola chiamata */
     async perLaHome(){
       const p = profilo || {};
-      const [frasi, pensieri, dizionario, oroscopo, consumi] = await Promise.all([
+      const [frasi, pensieri, dizionario, oroscopo, consumi, archivioFrasi] = await Promise.all([
         contenuti.delGiorno('frase'),
         contenuti.delGiorno('pensiero'),
         contenuti.delGiorno('dizionario'),
         contenuti.oroscopoDelSegno(p.segno_zodiacale || null).catch(() => null),
-        utente ? contenuti.consumiDiOggi() : Promise.resolve({})
+        utente ? contenuti.consumiDiOggi() : Promise.resolve({}),
+        contenuti.archivio('frase').catch(() => [])
       ]);
       return {
-        frasi, pensieri, dizionario, oroscopo, consumi,
+        frasi, pensieri, dizionario, oroscopo, consumi, archivioFrasi,
         massimi: {
           frasi:      p.notif_frasi ?? 5,
           pensieri:   p.notif_pensieri ?? 1,
@@ -413,24 +423,14 @@ const MC = (function(){
       q = q.order('ordine').order('creato_il', { ascending:false });
       const { data, error } = await q;
       if(error) throw new Error(error.message);
-      return (data || []).map(a => ({
-        ...a,
-        copertina_url: a.copertina_path
-          ? sb.storage.from('pubblico').getPublicUrl(a.copertina_path).data.publicUrl
-          : null
-      }));
+      return data || [];
     },
 
     async percorsi(){
       const { data, error } = await sb.from('percorsi')
         .select('*, audio(count)').eq('pubblicato', true).order('titolo');
       if(error) throw new Error(error.message);
-      return (data || []).map(p => ({
-        ...p,
-        copertina_url: p.copertina_path
-          ? sb.storage.from('pubblico').getPublicUrl(p.copertina_path).data.publicUrl
-          : null
-      }));
+      return data || [];
     },
 
     /* Restituisce il link per ascoltare. Se l'utente non ha diritto,

@@ -2304,6 +2304,57 @@ body.native{ touch-action:pan-x pan-y; }
 .sday-chat .scmsg.exp .vplayer .pp{ background:#f0c24a; }
 .sday-chat .wait{ align-self:center; text-align:center; font-size:11px; color:var(--tx-dim); background:rgba(241,237,226,.05); border-radius:100px; padding:6px 14px; margin:0; }
 .sday-chat .sday-rec{ margin-top:2px; background:rgba(241,237,226,.04); border:1px solid rgba(241,237,226,.1); border-radius:100px; padding:6px 14px 6px 6px; }
+
+/* Sfide in arrivo: etichetta sul pulsante */
+button.tab-soon{ position:relative; opacity:.55; }
+button.tab-soon .soon-tag{ font-style:normal; font-size:7.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#052c31; background:var(--lime); border-radius:100px; padding:2px 5px; margin-left:6px; vertical-align:middle; }
+.m-tabs button.tab-soon .soon-tag{ position:absolute; top:-3px; left:50%; transform:translateX(-10%); margin:0; font-size:6.5px; padding:2px 4px; white-space:nowrap; }
+
+.riv-vuoto{ padding:28px 20px; text-align:center; font-size:13px; color:var(--tx-mut); border:1px dashed rgba(241,237,226,.15); border-radius:16px; }
+
+/* ================= SUPPORTO · COMPAGNO INVISIBILE ================= */
+.ci-hero{ position:relative; overflow:hidden; border-radius:24px; padding:24px 20px 20px; margin-bottom:16px;
+  background:radial-gradient(120% 80% at 0% 0%, rgba(194,232,62,.16), transparent 55%), linear-gradient(160deg,#0f4f55 0%,#08383d 60%,#062e33 100%);
+  border:1px solid rgba(241,237,226,.10); box-shadow:0 20px 44px -22px rgba(0,0,0,.6); }
+.ci-eyebrow{ display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--lime); border:1px solid rgba(194,232,62,.4); border-radius:100px; padding:5px 11px; }
+.ci-title{ font-family:'Anton',Impact,sans-serif; font-weight:400; font-size:30px; line-height:1.04; text-transform:uppercase; color:var(--cream); margin:14px 0 10px; letter-spacing:.005em; }
+.ci-title span{ color:var(--lime); }
+.ci-lead{ font-size:13.5px; line-height:1.6; color:var(--tx-mut); margin:0; max-width:520px; }
+.ci-wave{ display:flex; align-items:center; gap:4px; height:44px; margin:18px 0 18px; }
+.ci-wave i{ flex:1; max-width:6px; border-radius:3px; background:linear-gradient(180deg,var(--lime),rgba(194,232,62,.35)); transform-origin:center; animation:ciWave 1.6s ease-in-out infinite; }
+@keyframes ciWave{ 0%,100%{ transform:scaleY(.35); opacity:.55; } 50%{ transform:scaleY(1); opacity:1; } }
+.ci-actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.ci-btn{ display:flex; align-items:center; gap:11px; text-align:left; padding:13px 12px; border-radius:18px; cursor:pointer;
+  background:rgba(241,237,226,.06); border:1px solid rgba(241,237,226,.14); color:var(--cream); font:inherit; transition:transform .18s ease, background .18s ease; }
+.ci-btn:active{ transform:scale(.97); }
+.ci-btn.primary{ background:linear-gradient(180deg,#d2f24e 0%,var(--lime) 55%,#a9d234 100%); border-color:var(--lime); color:#052c31; box-shadow:0 10px 24px -10px rgba(194,232,62,.6); }
+.ci-bic{ flex:0 0 38px; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(5,44,49,.35); }
+.ci-btn:not(.primary) .ci-bic{ background:rgba(194,232,62,.12); color:var(--lime); }
+.ci-bic svg{ width:19px; height:19px; }
+.ci-bt b{ display:block; font-size:14.5px; font-weight:800; }
+.ci-bt em{ display:block; font-style:normal; font-size:11px; line-height:1.3; opacity:.75; margin-top:2px; }
+.ci-quota{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+.ci-quota .cq-box{ background:rgba(2,18,21,.32); border:1px solid rgba(241,237,226,.08); border-radius:14px; padding:11px 12px; }
+.ci-quota .cq-top{ display:flex; justify-content:space-between; align-items:baseline; }
+.ci-quota .cq-lab{ font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--tx-mut); }
+.ci-quota .cq-num b{ font-family:'Anton',Impact,sans-serif; font-weight:400; font-size:20px; color:var(--cream); }
+.ci-quota .cq-num i{ font-style:normal; font-size:12px; color:var(--tx-dim); }
+.ci-quota .cq-bar{ height:3px; border-radius:3px; background:rgba(241,237,226,.12); overflow:hidden; margin:8px 0 6px; }
+.ci-quota .cq-bar i{ display:block; height:100%; background:var(--lime); border-radius:3px; transition:width .4s ease; }
+.ci-quota .cq-sub{ font-size:10.5px; color:var(--tx-dim); }
+.ci-quota .cq-box.esaurita{ opacity:.55; }
+.ci-block{ border-radius:20px; padding:18px; margin-bottom:14px; background:rgba(241,237,226,.035); border:1px solid rgba(241,237,226,.08); }
+.ci-bh{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.ci-bh > span:first-child{ font-size:10.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--tx-mut); }
+.ci-empty{ font-size:12.5px; color:var(--tx-dim); line-height:1.55; margin:0; }
+.ci-steps{ list-style:none; margin:0; padding:0; counter-reset:ci; }
+.ci-steps li{ position:relative; padding:0 0 14px 38px; counter-increment:ci; }
+.ci-steps li:last-child{ padding-bottom:4px; }
+.ci-steps li::before{ content:counter(ci); position:absolute; left:0; top:0; width:26px; height:26px; border-radius:50%; background:rgba(194,232,62,.12); border:1px solid rgba(194,232,62,.4); color:var(--lime); font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+.ci-steps b{ display:block; font-size:13.5px; color:var(--cream); }
+.ci-steps span{ display:block; font-size:12px; color:var(--tx-mut); line-height:1.5; margin-top:2px; }
+.ci-note{ font-size:10.5px; color:var(--tx-dim); line-height:1.55; margin:12px 0 0; }
+@media (min-width:900px){ .ci-hero{ padding:30px 30px 26px; } .ci-title{ font-size:38px; } .ci-actions, .ci-quota{ max-width:560px; } }
 </style>
 </head>
 <body>
@@ -2446,7 +2497,7 @@ var REFERRAL_ATTIVO = false;
         <button data-s="home" class="on" onclick="goScreen('home')"><svg viewBox="0 0 24 24"><path d="M4 11L12 4l8 7M6 10v9h12v-9"/></svg>Home</button>
         <button data-s="audio" onclick="goScreen('audio')"><svg viewBox="0 0 24 24"><path d="M9 18V6l11-2v12M9 18a3 3 0 11-3-3M20 16a3 3 0 11-3-3"/></svg>Audio</button>
         <button data-s="feed" style="display:none;" onclick="goScreen('feed')"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>Feed</button>
-        <button data-s="sfide" onclick="goScreen('sfide')"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M6 3h12v5a6 6 0 01-12 0zM6 5H3v2a4 4 0 004 4M18 5h3v2a4 4 0 01-4 4"/></svg>Sfide</button>
+        <button data-s="sfide" class="tab-soon" onclick="goScreen(\'sfide\')"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M6 3h12v5a6 6 0 01-12 0zM6 5H3v2a4 4 0 004 4M18 5h3v2a4 4 0 01-4 4"/></svg>Sfide<em class="soon-tag">In arrivo</em></button>
         <button data-s="supporto" onclick="goScreen('supporto')"><svg viewBox="0 0 24 24"><path d="M7 11a5 5 0 0110 0v4a5 5 0 01-10 0zM3 13v-2M21 13v-2"/></svg>Supporto</button>
         <button data-s="riviste" onclick="goScreen('riviste')"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="17" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Riviste</button>
         <button data-s="diario" onclick="goScreen('diario')"><svg viewBox="0 0 24 24"><path d="M6 4h9l3 3v13H6z"/><path d="M15 4v3h3"/></svg>Diario</button>
@@ -2745,49 +2796,50 @@ var REFERRAL_ATTIVO = false;
       <!-- COMPAGNO INVISIBILE (sezione separata) -->
       <section class="app-screen" id="s-supporto" style="display:none;">
         <div class="screen-title"><h1 class="disp">Supporto</h1></div>
-        <p class="screen-sub">Il Compagno Invisibile: supporto vocale 1-a-1 con chi ha il tuo obiettivo. Anonimo, se vuoi.</p>
-        <div class="feed-col">
-          <div class="pane comp-card">
-            <span class="badge">Compagno Invisibile</span>
-            <h4>Non sei solo</h4>
-            <p>Massimo 7 scambi da 60 secondi, niente testo, niente follow. Si parla, si ascolta, si chiude. La stanza resta aperta finché non finiscono gli scambi: rispondi quando è il tuo momento.</p>
-            <div class="comp-btns">
-              <button class="btn btn-lime" style="padding:12px 20px;font-size:13px;" onclick="openCompagno('parla')">🎙 Parla con qualcuno</button>
-              <button class="btn btn-ghost" style="padding:12px 20px;font-size:13px;" onclick="openCompagno('ascolta')">👂 Posso ascoltare</button>
+
+        <div class="ci-hero">
+          <div class="ci-eyebrow">Compagno Invisibile</div>
+          <h2 class="ci-title">Un partner per il tuo obiettivo, <span>ogni giorno.</span></h2>
+          <p class="ci-lead">Ti abbiniamo, uno a uno e in forma anonima, a chi insegue il tuo stesso traguardo. Vi tenete sul piano con vocali da 60 secondi.</p>
+          <div class="ci-wave" aria-hidden="true"><i style="animation-delay:-0.00s;height:30%"></i><i style="animation-delay:-0.13s;height:55%"></i><i style="animation-delay:-0.26s;height:80%"></i><i style="animation-delay:-0.39s;height:45%"></i><i style="animation-delay:-0.52s;height:95%"></i><i style="animation-delay:-0.65s;height:60%"></i><i style="animation-delay:-0.78s;height:35%"></i><i style="animation-delay:-0.91s;height:70%"></i><i style="animation-delay:-1.04s;height:100%"></i><i style="animation-delay:-1.17s;height:50%"></i><i style="animation-delay:-1.30s;height:75%"></i><i style="animation-delay:-1.43s;height:40%"></i><i style="animation-delay:-1.56s;height:88%"></i><i style="animation-delay:-1.69s;height:58%"></i><i style="animation-delay:-1.82s;height:30%"></i><i style="animation-delay:-1.95s;height:66%"></i><i style="animation-delay:-2.08s;height:92%"></i><i style="animation-delay:-2.21s;height:48%"></i><i style="animation-delay:-2.34s;height:72%"></i><i style="animation-delay:-2.47s;height:38%"></i><i style="animation-delay:-2.60s;height:84%"></i><i style="animation-delay:-2.73s;height:54%"></i><i style="animation-delay:-2.86s;height:28%"></i><i style="animation-delay:-2.99s;height:62%"></i></div>
+          <div class="ci-actions">
+            <button class="ci-btn primary" onclick="openCompagno('parla')">
+              <span class="ci-bic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></span>
+              <span class="ci-bt"><b>Parla</b><em>Dichiara l'obiettivo di oggi</em></span>
+            </button>
+            <button class="ci-btn" onclick="openCompagno('ascolta')">
+              <span class="ci-bic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg></span>
+              <span class="ci-bt"><b>Ascolta</b><em>Aiuta qualcuno a restare sul piano</em></span>
+            </button>
+          </div>
+          <div class="comp-quota ci-quota">
+            <div class="cq-box" id="cq-box-parla">
+              <div class="cq-top"><span class="cq-lab">Parla</span><span class="cq-num"><b id="quota-parla">3</b><i>/<span id="quota-parla-max">3</span></i></span></div>
+              <div class="cq-bar"><i id="cq-fill-parla" style="width:100%"></i></div>
+              <div class="cq-sub" id="cq-sub-parla">disponibili oggi</div>
             </div>
-            <div class="comp-quota">
-              <div class="cq-box" id="cq-box-parla">
-                <div class="cq-top">
-                  <span class="cq-ic">🎙</span>
-                  <span class="cq-lab">Parla</span>
-                  <span class="cq-num"><b id="quota-parla">3</b><i>/<span id="quota-parla-max">3</span></i></span>
-                </div>
-                <div class="cq-bar"><i id="cq-fill-parla" style="width:100%"></i></div>
-                <div class="cq-sub" id="cq-sub-parla">disponibili oggi</div>
-              </div>
-              <div class="cq-box" id="cq-box-ascolta">
-                <div class="cq-top">
-                  <span class="cq-ic">👂</span>
-                  <span class="cq-lab">Ascolta</span>
-                  <span class="cq-num"><b id="quota-ascolta">3</b><i>/<span id="quota-ascolta-max">3</span></i></span>
-                </div>
-                <div class="cq-bar"><i id="cq-fill-ascolta" style="width:100%"></i></div>
-                <div class="cq-sub" id="cq-sub-ascolta">disponibili oggi</div>
-              </div>
+            <div class="cq-box" id="cq-box-ascolta">
+              <div class="cq-top"><span class="cq-lab">Ascolta</span><span class="cq-num"><b id="quota-ascolta">3</b><i>/<span id="quota-ascolta-max">3</span></i></span></div>
+              <div class="cq-bar"><i id="cq-fill-ascolta" style="width:100%"></i></div>
+              <div class="cq-sub" id="cq-sub-ascolta">disponibili oggi</div>
             </div>
           </div>
+        </div>
 
-          <div class="pane" style="padding:20px 22px;" id="conv-pane">
-            <div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-dim);margin-bottom:4px;">Le tue conversazioni <span class="conv-badge" id="conv-new" style="display:none;">1</span></div>
-            <div id="conv-list"><p style="font-size:12px;color:var(--tx-dim);margin:8px 0 4px;">Nessuna conversazione ancora. Parla o ascolta: da qui le riprendi quando vuoi.</p></div>
-          </div>
+        <div class="ci-block" id="conv-pane">
+          <div class="ci-bh"><span>Le tue conversazioni</span><span class="conv-badge" id="conv-new" style="display:none;"></span></div>
+          <div id="conv-list"><p class="ci-empty">Nessuna conversazione aperta. Quando parli o ascolti, la ritrovi qui e la riprendi quando vuoi.</p></div>
+        </div>
 
-          <div class="pane" style="padding:20px 22px;">
-            <div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-dim);margin-bottom:8px;">Come funziona il Compagno Invisibile</div>
-            <p style="font-size:12.5px;color:var(--tx-mut);line-height:1.6;margin:0 0 12px;">Registri un vocale sul tuo obiettivo e vieni messo in contatto, uno a uno, con qualcuno che insegue lo stesso traguardo. Quando qualcun altro del tuo gruppo lascia una voce, la trovi qui e puoi risponderle.</p>
-            <div id="voci-gruppo"></div>
-            <p style="font-size:10.5px;color:var(--tx-dim);margin:12px 0 0;">Limite giornaliero: 3 "parla" e 3 "ascolta" (fino a 6 conversazioni aperte). Il Compagno è uno strumento di accountability sugli obiettivi, non un servizio di supporto psicologico o clinico. Per un bisogno di salute o un'emergenza rivolgiti a un professionista sanitario o ai numeri dedicati.</p>
-          </div>
+        <div class="ci-block">
+          <div class="ci-bh"><span>Come funziona</span></div>
+          <ol class="ci-steps">
+            <li><b>Registra 60 secondi</b><span>Dichiari l'obiettivo di oggi e l'unica azione che deve succedere.</span></li>
+            <li><b>Ti abbiniamo</b><span>Un compagno con il tuo stesso traguardo ascolta e ti risponde a voce.</span></li>
+            <li><b>Sette scambi, poi si chiude</b><span>La stanza resta aperta finché non finiscono gli scambi: rispondi quando è il tuo momento.</span></li>
+          </ol>
+          <div id="voci-gruppo"></div>
+          <p class="ci-note">Ogni giorno hai 3 "parla" e 3 "ascolta". Il Compagno Invisibile è uno strumento di allenamento sugli obiettivi: per un supporto clinico o psicologico, la persona giusta è un professionista sanitario.</p>
         </div>
       </section>
 
@@ -2800,38 +2852,7 @@ var REFERRAL_ATTIVO = false;
         <p class="screen-sub">Il Magazine di MentalClass: parte del tuo abbonamento, insieme ad audio e strumenti. Tocca un numero per sfogliarlo.</p>
 
         <div class="issues">
-          <div class="issue-row" onclick="apriRivista()">
-            <div class="issue-cov real"><img id="riv-cov" alt="Copertina N.01"></div>
-            <div class="issue-meta">
-              <div class="lab">N.01 — Ottobre 2026 · In corso</div>
-              <h3>La forza<br>della mente</h3>
-              <div class="st">70 pagine · ~90 min · sfoglia il numero</div>
-              <div class="barwrap"><i style="width:12%"></i></div>
-              <span class="resume-chip">📖 Apri e sfoglia</span>
-            </div>
-            <div class="issue-cta">›</div>
-          </div>
-
-          <div class="issue-row" onclick="apriRivista()">
-            <div class="issue-cov arr"><div class="mc">mentalclass</div><div class="ch">Anteprima</div><div class="pg">SOON</div></div>
-            <div class="issue-meta">
-              <div class="lab">N.02 — Gennaio 2027 · In arrivo</div>
-              <h3>Prossimo<br>numero</h3>
-              <div class="st">Disponibile a gennaio</div>
-            </div>
-            <div class="issue-cta">›</div>
-          </div>
-
-          <div class="issue-row" style="border-bottom:none;" onclick="apriRivista()">
-            <div class="issue-cov arr2"><div class="mc">mentalclass</div><div class="ch">Speciale</div><div class="pg">40 PAG</div></div>
-            <div class="issue-meta">
-              <div class="lab">Numero Zero · Anteprima</div>
-              <h3>Numero<br>Zero</h3>
-              <div class="st">40 pagine · ~50 min · Completato</div>
-              <div class="barwrap"><i style="width:100%"></i></div>
-            </div>
-            <div class="issue-cta">›</div>
-          </div>
+          <div class="riv-vuoto">Il primo numero del Magazine è in arrivo.</div>
         </div>
       </section>
 
@@ -2922,16 +2943,8 @@ var REFERRAL_ATTIVO = false;
           <div class="pane streak-card">
             <div class="n" id="streak-n">0</div>
             <div class="lab">GIORNI DI SCRITTURA</div>
-            <div class="rec">Record personale: <b>18 giorni</b></div>
-            <div class="week-dots">
-              <div class="d on"><div class="lab">Me</div><div class="dot">✓</div></div>
-              <div class="d on"><div class="lab">Gi</div><div class="dot">✓</div></div>
-              <div class="d on"><div class="lab">Ve</div><div class="dot">✓</div></div>
-              <div class="d on"><div class="lab">Sa</div><div class="dot">✓</div></div>
-              <div class="d on"><div class="lab">Do</div><div class="dot">✓</div></div>
-              <div class="d today"><div class="lab">Lu</div><div class="dot">•</div></div>
-              <div class="d"><div class="lab">Ma</div><div class="dot"></div></div>
-            </div>
+            <div class="rec" id="diario-rec" style="display:none;">Record personale: <b id="diario-rec-n">0</b></div>
+            <div class="week-dots" id="diario-week"></div>
           </div>
 
           <div>
@@ -3170,7 +3183,7 @@ var REFERRAL_ATTIVO = false;
     <button data-s="home" class="on" onclick="goScreen('home')"><svg viewBox="0 0 24 24"><path d="M4 11L12 4l8 7M6 10v9h12v-9"/></svg>Home</button>
     <button data-s="audio" onclick="goScreen('audio')"><svg viewBox="0 0 24 24"><path d="M9 18V6l11-2v12M9 18a3 3 0 11-3-3M20 16a3 3 0 11-3-3"/></svg>Audio</button>
     <button data-s="supporto" onclick="goScreen('supporto')"><svg viewBox="0 0 24 24"><path d="M7 11a5 5 0 0110 0v4a5 5 0 01-10 0zM3 13v-2M21 13v-2"/></svg>Supporto</button>
-    <button data-s="sfide" onclick="goScreen('sfide')"><svg viewBox="0 0 24 24"><path d="M6 4h12v5a6 6 0 01-12 0z"/><path d="M6 6H4v2a3 3 0 003 3M18 6h2v2a3 3 0 01-3 3M9 20h6M12 15v5"/></svg>Sfide</button>
+    <button data-s="sfide" class="tab-soon" onclick="goScreen(\'sfide\')"><svg viewBox="0 0 24 24"><path d="M6 4h12v5a6 6 0 01-12 0z"/><path d="M6 6H4v2a3 3 0 003 3M18 6h2v2a3 3 0 01-3 3M9 20h6M12 15v5"/></svg>Sfide<em class="soon-tag">In arrivo</em></button>
     <button data-s="riviste" onclick="goScreen('riviste')"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="17" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Riviste</button>
     <button id="tab-altro" onclick="apriAltro()"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>Altro</button>
   </nav>
@@ -3761,8 +3774,8 @@ var REFERRAL_ATTIVO = false;
     notifSpente:false,
     sounds:true,
     playing:true,
-    streak:12,
-    ringDone:3, ringTotal:4, ringClosed:false,
+    streak:0,
+    ringDone:0, ringTotal:4, ringClosed:false,
     loaded:{ audio:false, riviste:false, diario:false, profilo:false, preferiti:false, feed:false },
     obiettivo:'Focus Mentale',
     dqDone:false,
@@ -3778,7 +3791,7 @@ var REFERRAL_ATTIVO = false;
     savedTab:'frasi',
     playerCtx:{ type:'percorso', title:'Respirare sotto pressione', cat:'Decompressione · Ep.1' },
     quotas:{
-      frasi:{ used:1, max:5 },      /* la prima frase di oggi è già stata vista dalla notifica */
+      frasi:{ used:0, max:5 },
       pensieri:{ used:0, max:1 },
       dizionario:{ used:0, max:1 },
       oroscopo:{ used:0, max:1 }
@@ -3786,7 +3799,7 @@ var REFERRAL_ATTIVO = false;
     deck:'frasi',
     frasiIndex:0,
     deckBg:'brand',
-    prog:28
+    prog:0
   };
 
   var SIGNS = [
@@ -4012,6 +4025,26 @@ var REFERRAL_ATTIVO = false;
   /* =====================================================
      BLOCCO 2 — Home con contenuti reali
   ===================================================== */
+  /* Mescolamento stabile per giorno: stesso giorno = stesso ordine,
+     giorno diverso = frasi diverse. */
+  window.MC_SFIDE_IN_ARRIVO = true;   /* metti false quando le Sfide vanno online */
+  function mcSemeGiorno(d){ d = d || new Date(); return d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate(); }
+  function mcMescola(lista, seme){
+    var a = lista.slice(), s = seme >>> 0;
+    function rnd(){ s = (s + 0x6D2B79F5) >>> 0; var t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+    for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(rnd() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; }
+    return a;
+  }
+  var FRASI_ARCHIVIO = [];
+  /* Le frasi di un certo giorno: prima quelle con quella data, poi le altre mescolate */
+  function mcFrasiDelGiorno(giorno, quante){
+    if(!FRASI_ARCHIVIO.length) return [];
+    var ds = dataLocale(giorno);
+    var datate = FRASI_ARCHIVIO.filter(function(f){ return f.data && String(f.data).slice(0,10) === ds; });
+    var libere = mcMescola(FRASI_ARCHIVIO.filter(function(f){ return !f.data; }), mcSemeGiorno(giorno));
+    return datate.concat(libere).slice(0, Math.max(quante, datate.length));
+  }
+
   async function caricaHome(){
     if(!COLLEGATO) return;                  /* demo: resta com'è */
     try{
@@ -4022,6 +4055,16 @@ var REFERRAL_ATTIVO = false;
         FRASI = d.frasi.map(function(f){
           return { q: f.testo, a: (f.extra && f.extra.autore) ? f.extra.autore : 'MentalClass', id: f.id };
         });
+      }
+      /* Se l'archivio completo e' leggibile, le frasi di oggi le scelgo da li':
+         cosi' ogni giorno cambiano davvero e tutte le frasi caricate entrano in giro. */
+      if(d.archivioFrasi && d.archivioFrasi.length){
+        FRASI_ARCHIVIO = d.archivioFrasi.map(function(f){
+          return { q: f.testo, a: (f.extra && f.extra.autore) ? f.extra.autore : 'MentalClass', id: f.id, data: f.data || null };
+        });
+        var quanteOggi = Math.max((d.frasi && d.frasi.length) || 0, (d.massimi && d.massimi.frasi) || 5);
+        var diOggi = mcFrasiDelGiorno(new Date(), quanteOggi);
+        if(diOggi.length) FRASI = diOggi;
       }
       if(d.pensieri && d.pensieri.length){
         PENSIERO = { q: d.pensieri[0].testo, a: 'Pensiero del giorno', id: d.pensieri[0].id };
@@ -4099,7 +4142,15 @@ var REFERRAL_ATTIVO = false;
         return { testo: f.q || f.testo || '', autore: (f.a && f.a !== 'MentalClass') ? f.a : '' };
       }).filter(function(f){ return f.testo; });
       var perGiorno = (state.notifPrefs && state.notifPrefs.frasi) ? state.notifPrefs.frasi : 1;
-      await MCN.riprogramma({ frasi: frasi }, state.notifFrom, state.notifTo, perGiorno);
+      /* per ogni giorno futuro, il suo gruppo di frasi (stesso della home di quel giorno) */
+      var giorni = [];
+      for(var gg = 0; gg < 14; gg++){
+        var dd = new Date(); dd.setDate(dd.getDate() + gg);
+        giorni.push(mcFrasiDelGiorno(dd, perGiorno).map(function(f){
+          return { testo: f.q, autore: (f.a && f.a !== 'MentalClass') ? f.a : '' };
+        }));
+      }
+      await MCN.riprogramma({ frasi: frasi, giorni: giorni }, state.notifFrom, state.notifTo, perGiorno);
       try{ if(MCN.programmaRiepilogo && state.notifRiepilogo!==false) await MCN.programmaRiepilogo(); }catch(e){}
     }catch(e){}
   }
@@ -4124,8 +4175,8 @@ var REFERRAL_ATTIVO = false;
     if(!COLLEGATO) return;
     try{
       var numeri = await MC.magazine.numeri();
-      if(!numeri.length) return;
       var cont = document.querySelector('#s-riviste .issues');
+      if(!numeri.length){ if(cont) cont.innerHTML = '<div class="riv-vuoto">Il primo numero del Magazine è in arrivo.</div>'; return; }
       try{ if(window.MCN && MCN.programmaNovita && state.notifNovita!==false && eAppNativa()){
         var _nov = (numeri||[]).filter(function(n){return mcInArrivo(n);}).map(function(n){return {titolo:n.titolo, data_uscita:n.data_uscita, tipo:'rivista'};});
         if(_nov.length) MCN.programmaNovita(_nov);
@@ -5427,12 +5478,48 @@ var REFERRAL_ATTIVO = false;
   }
 
   /* ---------- DIARIO ---------- */
+  /* Serie del diario calcolata dalle pagine vere: settimana, serie attuale, record */
+  function aggiornaSerieDiario(pagine){
+    var giorni = {};
+    (pagine || []).forEach(function(p){ if(p && p.data) giorni[String(p.data).slice(0,10)] = true; });
+    var oggi = new Date(), kOggi = dataLocale(oggi);
+    var wk = document.getElementById('diario-week');
+    if(wk){
+      var lun = new Date(oggi); lun.setDate(oggi.getDate() - ((oggi.getDay() + 6) % 7));
+      var nomi = ['Lu','Ma','Me','Gi','Ve','Sa','Do'], html = '';
+      for(var i = 0; i < 7; i++){
+        var d = new Date(lun); d.setDate(lun.getDate() + i);
+        var k = dataLocale(d), on = !!giorni[k], ogg = (k === kOggi);
+        html += '<div class="d' + (on ? ' on' : '') + (ogg && !on ? ' today' : '') + '"><div class="lab">' + nomi[i] + '</div><div class="dot">' + (on ? '✓' : (ogg ? '•' : '')) + '</div></div>';
+      }
+      wk.innerHTML = html;
+    }
+    /* serie attuale: giorni consecutivi fino a oggi (o fino a ieri, se oggi non hai ancora scritto) */
+    var att = 0, cur = new Date(oggi);
+    if(!giorni[kOggi]) cur.setDate(cur.getDate() - 1);
+    while(giorni[dataLocale(cur)]){ att++; cur.setDate(cur.getDate() - 1); }
+    var sn = document.getElementById('streak-n'); if(sn) sn.textContent = att;
+    /* record: la serie piu' lunga mai fatta */
+    var chiavi = Object.keys(giorni).sort(), best = 0, run = 0, prev = null;
+    chiavi.forEach(function(k){
+      var d = new Date(k + 'T12:00:00');
+      run = (prev && Math.round((d - prev) / 86400000) === 1) ? run + 1 : 1;
+      if(run > best) best = run; prev = d;
+    });
+    var rec = document.getElementById('diario-rec'), rn = document.getElementById('diario-rec-n');
+    if(rec && rn){
+      if(best > 0){ rn.textContent = best + (best === 1 ? ' giorno' : ' giorni'); rec.style.display = ''; }
+      else rec.style.display = 'none';
+    }
+  }
+
   async function caricaDiario(){
     if(!COLLEGATO || !MC.utenteCorrente()) return;
     var vista = document.getElementById('view-diario');
     if(!vista) return;
     try{
       var pagine = await MC.diario.pagine();
+      aggiornaSerieDiario(pagine);
       var cap = vista.querySelector('.sec-cap');
       var testa = cap ? cap.outerHTML : '';
 
@@ -6774,7 +6861,7 @@ var REFERRAL_ATTIVO = false;
     if(!COLLEGATO) return;
     MC.caricaProfilo().then(function(p){
       var el = document.getElementById('streak-n');
-      if(el && p && p.streak_giorni != null) el.textContent = p.streak_giorni;
+      /* il numero del diario ora si calcola dalle pagine scritte (aggiornaSerieDiario) */
     }).catch(function(){});
   }
 
@@ -7589,6 +7676,7 @@ var REFERRAL_ATTIVO = false;
   }
 
   function goScreen(id, daStorico){
+    if(id === 'sfide' && window.MC_SFIDE_IN_ARRIVO){ toast('Le Sfide arrivano dopo il lancio'); return; }
     /* uscendo dal reader ripulisco sempre schermo intero e indice,
        altrimenti resta un pannello sopra tutto il resto */
     if(NAV.corrente === 'reader' && id !== 'reader') rdPulisci();
@@ -7799,7 +7887,8 @@ var REFERRAL_ATTIVO = false;
         var em = SIGN_EMOJI[state.sign];
         html = '<span class="sign-mini">'+em+' '+state.sign+' · Luglio</span><p class="q quote">'+OROSCOPI[state.sign]+'</p><div class="a">Oroscopo mentale del mese</div>';
         dots.innerHTML=''; prev.disabled=true; next.disabled=true;
-        quota.textContent = '1 al mese per il tuo segno · il prossimo il 1 agosto';
+        var _pm = new Date(); _pm = new Date(_pm.getFullYear(), _pm.getMonth() + 1, 1);
+        quota.textContent = '1 al mese per il tuo segno · il prossimo il ' + _pm.toLocaleDateString('it-IT', { day:'numeric', month:'long' });
       }
       body.innerHTML = html;
       body.classList.remove('out');
@@ -9416,14 +9505,15 @@ var REFERRAL_ATTIVO = false;
     rows.push({ em:'🎙', b:'Feed vocale', s: state.feedPostsToday>0 ? state.feedPostsToday+'/'+fMax+' audio pubblicati oggi' : 'Condividi la tua voce con il gruppo',
       st: state.feedPostsToday>=fMax ? ['ok','✓ Fatto'] : ['todo','Pubblica'], go:"goScreen('feed')" });
     */
-    /* sfida */
-    if(!state.sfidaJoined) rows.push({ em:'🧩', b:'Me contro Me', s:'88/100 posti · chiude tra 2 giorni', st:['mut','Iscriviti'], go:"goScreen('sfide')" });
+    /* sfida: nascosta finche' la sezione e' in arrivo */
+    if(window.MC_SFIDE_IN_ARRIVO){ }
+    else if(!state.sfidaJoined) rows.push({ em:'🧩', b:'Sfide', s:'Guarda le sfide con le iscrizioni aperte', st:['mut','Scopri'], go:"goScreen('sfide')" });
     else if(sfidaDone.length>=7) rows.push({ em:'🎉', b:'Me contro Me completata', s:'Voce finale pubblicata nel gruppo', st:['ok','Fatta'], go:"goScreen('sfide')" });
     else if(sfidaInAttesa()) rows.push({ em:'🧩', b:'Sfida · giorno '+sfidaDone.length+' chiuso', s:'La prossima prova si apre a mezzanotte · mancano '+mancaAMezzanotte(), st:['mut','🌙 Domani'], go:"goScreen('sfide')" });
     else rows.push({ em:'🧩', b:'Sfida · giorno '+(sfidaDone.length+1)+' di 7', s:'La prova di oggi ti aspetta', st:['todo','Da fare'], go:"goScreen('sfide')" });
     /* risposta esperto non letta */
     var expDays = Object.keys(sfidaChat).filter(function(n){ return sfidaChat[n].some(function(m){ return m.who==='exp'; }); });
-    if(expDays.length) rows.push({ em:'👨‍🏫', b:'L\'esperto ti ha risposto', s:'Sul giorno '+expDays[expDays.length-1]+' della sfida', st:['todo','Ascolta'], go:"goScreen('sfide')" });
+    if(expDays.length && !window.MC_SFIDE_IN_ARRIVO) rows.push({ em:'👨‍🏫', b:'L\'esperto ti ha risposto', s:'Sul giorno '+expDays[expDays.length-1]+' della sfida', st:['todo','Ascolta'], go:"goScreen('sfide')" });
     /* supporto */
     var act = ROOMS.filter(function(r){ return r.status==='active'; }).length;
     var unread = ROOMS.filter(function(r){ return r.unread; }).length;

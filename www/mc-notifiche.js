@@ -111,7 +111,8 @@
           var quando = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate() + g, h, m, 0);
           if (quando.getTime() < Date.now() + 60000) continue;   /* orario già passato */
 
-          var f = frasi[idx % frasi.length]; idx++;
+          var delGiorno = (contenuti && contenuti.giorni && contenuti.giorni[g] && contenuti.giorni[g].length) ? contenuti.giorni[g] : null;
+          var f = delGiorno ? delGiorno[k % delGiorno.length] : frasi[idx % frasi.length]; idx++;
           var testo = (f && (f.testo || f.q)) || "";
           var autore = (f && (f.autore || f.a)) || "";
           if (!testo) continue;

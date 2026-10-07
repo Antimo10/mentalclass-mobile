@@ -51,6 +51,28 @@
     return h*60 + (isNaN(m)?0:m);
   }
 
+  /* ---- Orari sempre sul fuso di Roma, qualunque sia il fuso del telefono ---- */
+  function partiRoma(d){
+    var f = new Intl.DateTimeFormat("en-US", { timeZone:"Europe/Rome", year:"numeric", month:"2-digit", day:"2-digit",
+      hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false });
+    var o = {};
+    f.formatToParts(d).forEach(function (x) { o[x.type] = x.value; });
+    return { y:+o.year, mo:+o.month - 1, d:+o.day, h:(+o.hour) % 24, mi:+o.minute, s:+o.second };
+  }
+  /* l'istante esatto in cui a Roma sono le h:mi del giorno indicato */
+  function dataRoma(y, mo, d, h, mi) {
+    var voluto = Date.UTC(y, mo, d, h, mi, 0), t = voluto;
+    for (var k = 0; k < 2; k++) {
+      var p = partiRoma(new Date(t));
+      t -= Date.UTC(p.y, p.mo, p.d, p.h, p.mi, p.s) - voluto;
+    }
+    return new Date(t);
+  }
+  function dataRomaDaStringa(ds, h, mi) {
+    var x = String(ds).slice(0, 10).split("-");
+    return dataRoma(+x[0], +x[1] - 1, +x[2], h, mi);
+  }
+
   var MCN = {
 
     /* Chiede il permesso di inviare notifiche. Da chiamare una volta,
@@ -74,11 +96,11 @@
       if (!p || !eApp()) return;
 
       /* 1. pulisco le notifiche già in coda (evito doppioni) */
+      /* cancello solo le frasi (id 1000-1999): promemoria sfide, riepilogo e novita' restano */
       try {
         var inCoda = await p.getPending();
-        if (inCoda && inCoda.notifications && inCoda.notifications.length) {
-          await p.cancel({ notifications: inCoda.notifications });
-        }
+        var mie = (inCoda && inCoda.notifications || []).filter(function (n) { return n.id >= 1000 && n.id < 2000; });
+        if (mie.length) await p.cancel({ notifications: mie });
       } catch (e) {}
 
       /* 2. preparo la lista dei contenuti da ruotare */
@@ -98,6 +120,7 @@
 
       var nuove = [];
       var oggi = new Date();
+      var R = partiRoma(oggi);
       var idx = 0;
 
       for (var g = 0; g < giorni; g++) {
@@ -108,7 +131,7 @@
             : Math.round(minInizio + (minFine - minInizio) * (k / (perDay - 1)));
           var h = Math.floor(minuto / 60), m = minuto % 60;
 
-          var quando = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate() + g, h, m, 0);
+          var quando = dataRoma(R.y, R.mo, R.d + g, h, m);
           if (quando.getTime() < Date.now() + 60000) continue;   /* orario già passato */
 
           var delGiorno = (contenuti && contenuti.giorni && contenuti.giorni[g] && contenuti.giorni[g].length) ? contenuti.giorni[g] : null;
@@ -153,7 +176,7 @@
       var validi = (items || [])
         .filter(function (x) { return x && x.data_uscita; })
         .map(function (x) {
-          return { x: x, when: new Date(x.data_uscita + 'T09:00:00') };
+          return { x: x, when: dataRomaDaStringa(x.data_uscita, 9, 0) };
         })
         .filter(function (o) { return o.when.getTime() > Date.now() + 60000; })
         .sort(function (a, b) { return a.when - b.when; })
@@ -183,7 +206,7 @@
       var validi = (sfide || [])
         .filter(function (sf) { return sf && sf.data_chiusura; })
         .map(function (sf) {
-          var ch = new Date(sf.data_chiusura + 'T10:00:00');
+          var ch = dataRomaDaStringa(sf.data_chiusura, 10, 0);
           var when = new Date(ch.getTime() - 24 * 60 * 60 * 1000); /* 1 giorno prima */
           return { sf: sf, when: when };
         })
@@ -212,8 +235,9 @@
       var oggi = new Date();
       var count = 0;
       for (var g = 0; g < 30 && count < 4; g++) {
-        var d = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate() + g, 19, 0, 0);
-        if (d.getDay() !== 0) continue;            /* 0 = domenica */
+        var R2 = partiRoma(oggi);
+        if (new Date(Date.UTC(R2.y, R2.mo, R2.d + g)).getUTCDay() !== 0) continue;   /* 0 = domenica */
+        var d = dataRoma(R2.y, R2.mo, R2.d + g, 19, 0);
         if (d.getTime() < Date.now() + 60000) continue;
         nuove.push({
           id: 2000 + count,

@@ -8,7 +8,8 @@
   "backgroundColor": "#052c31",
   "ios": {
     "contentInset": "automatic",
-    "backgroundColor": "#052c31"
+    "backgroundColor": "#052c31",
+    "scrollEnabled": false
   },
   "plugins": {
     "SplashScreen": {

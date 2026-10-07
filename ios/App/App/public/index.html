@@ -2363,6 +2363,20 @@ body.native #deck-feed .fc-tag{ font-size:10px; font-weight:800; letter-spacing:
 /* app ferma: nessun rimbalzo che mostra i bordi */
 html.native, body.native{ position:fixed; inset:0; width:100%; height:100%; overflow:hidden; overscroll-behavior:none; }
 body.native .main, body.native #deck-feed{ overscroll-behavior:none !important; overscroll-behavior-y:none !important; }
+
+/* Termini e Condizioni: elementi del documento */
+.legal-body .lg-key{ background:rgba(194,232,62,.08); border:1px solid rgba(194,232,62,.3); border-radius:12px; padding:12px 14px; margin:10px 0 16px; font-size:12.5px; line-height:1.6; color:var(--cream); }
+.legal-body ul, .legal-body ol{ margin:6px 0 12px; padding-left:20px; }
+.legal-body li{ font-size:12.5px; line-height:1.6; color:var(--tx-mut); margin-bottom:6px; }
+.legal-body li b{ color:var(--cream); }
+.legal-body a{ color:var(--lime); word-break:break-word; }
+.legal-body .lg-tab{ overflow-x:auto; margin:8px 0 14px; border:1px solid rgba(241,237,226,.1); border-radius:12px; }
+.legal-body table{ width:100%; border-collapse:collapse; font-size:12px; min-width:420px; }
+.legal-body th{ text-align:left; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--tx-dim); padding:10px 12px; border-bottom:1px solid rgba(241,237,226,.1); }
+.legal-body td{ padding:10px 12px; vertical-align:top; color:var(--tx-mut); line-height:1.5; border-bottom:1px solid rgba(241,237,226,.06); }
+.legal-body tr:last-child td{ border-bottom:none; }
+.legal-body td b{ color:var(--cream); }
+.legal-body .lg-dim{ font-size:11px; color:var(--tx-dim); }
 </style>
 </head>
 <body>
@@ -2846,7 +2860,7 @@ var REFERRAL_ATTIVO = false;
             <li><b>Sette scambi, poi si chiude</b><span>La stanza resta aperta finché non finiscono gli scambi: rispondi quando è il tuo momento.</span></li>
           </ol>
           <div id="voci-gruppo"></div>
-          <p class="ci-note">Ogni giorno hai 3 "parla" e 3 "ascolta". Il Compagno Invisibile è uno strumento di allenamento sugli obiettivi: per un supporto clinico o psicologico, la persona giusta è un professionista sanitario.</p>
+          <p class="ci-note">Ogni giorno hai 1 "parla" e 1 "ascolta" con il piano Free, 3 e 3 con l'abbonamento. Il Compagno Invisibile è uno strumento di allenamento sugli obiettivi: per un supporto clinico o psicologico, la persona giusta è un professionista sanitario.</p>
         </div>
       </section>
 
@@ -3037,6 +3051,7 @@ var REFERRAL_ATTIVO = false;
               <div class="set-row" onclick="goScreen('plan')"><div class="l"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V8a5 5 0 0110 0v3"/></svg>Abbonamento e pagamenti</div><span class="val">›</span></div>
               <div class="set-row" onclick="openGift()" style="cursor:pointer;display:none;"><div class="l"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M3 12h18M12 8v13M12 8S9 3 6.5 4.5 8 8 12 8zM12 8s3-5 5.5-3.5S16 8 12 8z"/></svg>Regala MentalClass</div><span class="val">›</span></div>
               <div class="set-row" onclick="openLegal('privacy')" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>Privacy e termini</div><span class="val">›</span></div>
+              <div class="set-row" onclick="openLegal('termini')" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Termini e condizioni</div><span class="val">›</span></div>
               <div class="set-row" onclick="backToLanding()"><div class="l"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Esci</div><span class="val">›</span></div>
             </div>
             <p style="font-size:11px;color:var(--tx-dim);line-height:1.6;margin:18px 4px 0;text-align:center;">MentalClass è uno strumento di allenamento mentale con finalità educativa e formativa. Non è un servizio sanitario e non fornisce diagnosi, terapie o supporto psicologico. Per un bisogno di salute rivolgiti a un professionista sanitario.</p>
@@ -3486,68 +3501,106 @@ var REFERRAL_ATTIVO = false;
     </div>
 
     <div class="legal-body" id="legal-termini" style="display:none;">
-      <div class="ph">Versione 1.0 — in vigore dal [DATA]. Ultimo aggiornamento: agosto 2026.</div>
+      <div class="ph">Versione 1.0 — In vigore dal 25/09/2026 (Ultimo aggiornamento: Settembre 2026)</div>
 
-      <h6>1. Chi siamo e cosa regolano questi termini</h6>
-      <p>MentalClass è un servizio digitale gestito da <b>[RAGIONE SOCIALE]</b>, [SEDE], P.IVA [NUMERO], parte dell'ecosistema Calendario Imprenditoriale. Questi termini regolano l'uso dell'applicazione web, delle future applicazioni mobili e del MentalClass Magazine. Creando un account dichiari di averli letti e accettati.</p>
+      <div class="lg-key"><b>Informazione fondamentale per l'Utente:</b> MentalClass è una piattaforma di allenamento mentale per la performance e la crescita personale con finalità esclusivamente formative ed educative. MentalClass <b>NON</b> è un servizio sanitario, medico, psicologico o di psicoterapia, non fornisce diagnosi né terapie e non sostituisce in alcun modo il parere o il trattamento di un professionista sanitario qualificato.</div>
 
-      <h6>2. Che cosa è MentalClass, e che cosa non è</h6>
-      <p>MentalClass è una piattaforma di <b>allenamento mentale per la performance</b>: audio e percorsi, contenuti giornalieri, diario degli obiettivi, Compagno Invisibile, Sfide Mentali e Magazine trimestrale. I contenuti hanno finalità educativa e formativa.</p>
-      <p><b>MentalClass non è un servizio sanitario.</b> Non fornisce diagnosi, terapie, supporto psicologico o clinico e non sostituisce il parere di un professionista sanitario. Nessun contenuto va inteso come indicazione medica. Se stai attraversando una situazione che va oltre la stanchezza da lavoro, rivolgiti a un professionista sanitario. In caso di emergenza contatta il servizio di emergenza competente.</p>
+      <h6>1. Titolare del servizio e contatti</h6>
+      <p>Il servizio "MentalClass" (fruibile tramite WebApp e future applicazioni mobili per iOS e Android) ed il relativo "MentalClass Magazine" sono gestiti e forniti da Antimo Dell'Omo, nell'ambito dell'ecosistema "Calendario Imprenditoriale" (di seguito denominato il "Titolare").</p>
+      <p>Dati di contatto:</p>
+      <ul>
+        <li>Sito web ufficiale: <a href="https://www.mentalclass.it" target="_blank" rel="noopener">https://www.mentalclass.it</a></li>
+        <li>Assistenza e supporto utenti: <a href="mailto:supporto@mentalclass.it">supporto@mentalclass.it</a></li>
+        <li>Richieste Privacy e GDPR: <a href="mailto:privacy@mentalclass.it">privacy@mentalclass.it</a></li>
+        <li>Sponsor e partnership commerciali: <a href="mailto:commerciale@mentalclass.it">commerciale@mentalclass.it</a></li>
+      </ul>
 
-      <h6>3. Account</h6>
-      <p>Per usare il servizio devi creare un account con un indirizzo email valido e avere almeno [ETÀ] anni. Sei responsabile della riservatezza delle tue credenziali e delle attività svolte tramite il tuo account. L'account è personale e non cedibile.</p>
+      <h6>2. Accettazione dei termini ed ambito di applicazione</h6>
+      <p>I presenti Termini e Condizioni Generali di Servizio (di seguito "Termini") disciplinano l'accesso e l'utilizzo della WebApp, delle applicazioni mobili e dei contenuti di MentalClass. Creando un account, registrandosi alla piattaforma o utilizzando i relativi servizi, l'Utente dichiara di aver letto, compreso ed accettato integralmente i presenti Termini e l'Informativa sulla Privacy.</p>
+      <p>Se l'Utente non intende accettare ciascuna delle clausole presenti in questi Termini, non deve registrarsi né utilizzare il servizio.</p>
 
-      <h6>4. Piani e prezzi</h6>
-      <p>· <b>Free</b> — gratuito: contenuti giornalieri, anteprime di audio e Magazine, diario e obiettivi, Compagno Invisibile con un utilizzo giornaliero limitato.<br>
-      · <b>Mensile</b> — 14,99 € al mese.<br>
-      · <b>Annuale</b> — 49,99 € all'anno, con 7 giorni di prova gratuita.</p>
-      <p>I prezzi sono comprensivi di IVA ove applicabile. Eventuali prezzi promozionali di lancio, se indicati come bloccati, restano invariati per tutta la durata ininterrotta dell'abbonamento. Ci riserviamo di modificare i prezzi per il futuro, dandone comunicazione almeno [30] giorni prima; la modifica non incide sul periodo già pagato.</p>
+      <h6>3. Requisiti di età ed idoneità</h6>
+      <p>Il servizio è riservato esclusivamente a persone fisiche che abbiano compiuto il 18° anno di età (maggiorenni). Registrandosi, l'Utente dichiara sotto la propria responsabilità di possedere la capacità d'agire necessaria per sottoscrivere un contratto vincolante. Il Titolare si riserva il diritto di sospendere o cancellare immediatamente qualsiasi account qualora emerga che sia stato creato da un minore di età.</p>
 
-      <h6>5. Prova gratuita</h6>
-      <p>La prova gratuita dura 7 giorni e dà accesso alle funzioni del piano annuale. Se non disdici prima della scadenza, l'abbonamento prosegue a pagamento al prezzo indicato al momento dell'attivazione. Puoi disdire in qualsiasi momento durante la prova senza alcun addebito.</p>
+      <h6>4. Natura del servizio ed esclusione di finalità sanitarie</h6>
+      <p>MentalClass fornisce strumenti pratici e percorsi di allenamento mentale finalizzati al miglioramento dell'autodisciplina, della gestione del carico di lavoro, della concentrazione, dell'intelligenza emotiva e della crescita personale.</p>
+      <ul>
+        <li><b>Assenza di finalità cliniche o terapeutiche:</b> Nessun contenuto, traccia audio, articolo del Magazine, esercizio del diario o confronto tra pari all'interno dell'App costituisce parere medico, diagnostico o terapeutico.</li>
+        <li><b>Responsabilità dell'Utente:</b> Qualora l'Utente stia attraversando un periodo di profondo disagio psicologico, depressione, stati d'ansia patologici o condizioni che esulano dalla stanchezza o dallo stress lavorativo/personale ordinario, è invitato a non utilizzare la piattaforma come sostituto di un trattamento ed a rivolgersi tempestivamente ad un professionista sanitario o a strutture medico-specialistiche abilitate.</li>
+      </ul>
 
-      <h6>6. Rinnovo automatico e disdetta</h6>
-      <p>Gli abbonamenti si rinnovano automaticamente alla scadenza, mensilmente o annualmente secondo il piano scelto, salvo disdetta. Puoi disdire in qualsiasi momento dalle impostazioni dell'account: continuerai ad avere accesso fino al termine del periodo già pagato e non ti verranno addebitati ulteriori importi.</p>
+      <h6>5. Registrazione, account e sicurezza delle credenziali</h6>
+      <p>Per accedere alle funzionalità di MentalClass è necessario creare un account fornendo un indirizzo e-mail valido ed una password.</p>
+      <ul>
+        <li><b>Trattamento password:</b> La password inserita dall'Utente viene cifrata all'origine e gestita tramite l'infrastruttura sicura di Supabase; essa non è mai visibile in chiaro al Titolare.</li>
+        <li><b>Custodia delle credenziali:</b> L'account è strettamente personale e non cedibile a terzi. L'Utente è l'unico responsabile della riservatezza delle proprie credenziali e di tutte le attività eseguite tramite il proprio account.</li>
+        <li><b>Comunicazione di abusi:</b> L'Utente si impegna ad avvisare immediatamente il Titolare all'indirizzo <a href="mailto:supporto@mentalclass.it">supporto@mentalclass.it</a> in caso di smarrimento o di uso non autorizzato del proprio profilo.</li>
+      </ul>
 
-      <h6>7. Diritto di recesso</h6>
-      <p>Se sei un consumatore, hai diritto di recedere entro 14 giorni dalla conclusione del contratto, senza dover fornire motivazioni, ai sensi del Codice del Consumo (D.Lgs. 206/2005).</p>
-      <p>Trattandosi di contenuto digitale fornito immediatamente, al momento dell'acquisto ti chiediamo di acconsentire espressamente all'esecuzione immediata del servizio e di dare atto che, con l'inizio dell'esecuzione, <b>perdi il diritto di recesso</b> ai sensi dell'art. 59, lett. o) del Codice del Consumo. Se non presti tale consenso, l'accesso ai contenuti decorre dal quindicesimo giorno.</p>
-      <p>Per esercitare il recesso scrivi a <a href="mailto:supporto@mentalclass.it">supporto@mentalclass.it</a>. [FLUSSO DI CONSENSO DA IMPLEMENTARE AL CHECKOUT — VERIFICARE CON IL CONSULENTE]</p>
+      <h6>6. Piani di abbonamento, prezzi e prova gratuita</h6>
+      <p>MentalClass offre sia una versione ad accesso gratuito sia formule di abbonamento a pagamento che sbloccano l'accesso completo alla libreria di contenuti.</p>
+      <div class="lg-tab"><table>
+        <thead><tr><th>Piano</th><th>Corrispettivo</th><th>Funzionalità incluse</th></tr></thead>
+        <tbody>
+          <tr><td><b>Free</b></td><td>€ 0,00 (Gratuito)</td><td>Accesso a Frasi, Pensieri, Dizionario Mentale, Oroscopo, anteprime di Audio e Magazine, Diario e Obiettivi, uso limitato del Compagno Invisibile (1 "parla" e 1 "ascolta" al giorno).</td></tr>
+          <tr><td><b>Mensile</b></td><td>€ 14,99 / mese</td><td>Accesso completo ed illimitato a Magazine, Audio, Percorsi, Webinar registrati e Compagno Invisibile (3 "parla" e 3 "ascolta" al giorno). Disdetta in qualsiasi momento.</td></tr>
+          <tr><td><b>Annuale</b></td><td>€ 49,99 / anno<br><span class="lg-dim">(pari a € 4,17/mese)</span></td><td>Accesso illimitato a tutte le funzionalità e contenuti con 7 giorni di prova gratuita. Prezzo promozionale di lancio bloccato finché l'abbonamento resta attivo.</td></tr>
+        </tbody>
+      </table></div>
 
-      <h6>8. Regole di comportamento</h6>
-      <p>Usando le funzioni che coinvolgono altre persone — in particolare il Compagno Invisibile e le Sfide Mentali — ti impegni a non inviare contenuti offensivi, discriminatori, molesti, sessualmente espliciti o illeciti; a non registrare terze persone senza il loro consenso; a non diffondere fuori dalla piattaforma le registrazioni ricevute; a non utilizzare il servizio per promuovere prodotti o servizi propri o altrui.</p>
-      <p>Il Compagno Invisibile è uno strumento di confronto tra pari sugli obiettivi, non un servizio di supporto emotivo o di ascolto professionale.</p>
+      <h6>6.1. Periodo di prova gratuita (7 giorni)</h6>
+      <p>L'attivazione del Piano Annuale include 7 (sette) giorni di prova gratuita. Durante tale periodo l'Utente può esplorare tutte le funzionalità riservate agli abbonati senza alcun addebito. L'Utente può annullare la prova gratuita in qualsiasi momento prima dello scadere del settimo giorno direttamente dalle impostazioni del proprio account o tramite il gateway di pagamento, senza che venga addebitato alcun importo.</p>
 
-      <h6>9. Contenuti che carichi</h6>
-      <p>I contenuti che crei (testi del diario, fotografie, registrazioni vocali) restano tuoi. Ci concedi una licenza limitata, gratuita e non esclusiva a conservarli ed elaborarli esclusivamente per erogarti il servizio. Non li utilizziamo per finalità promozionali senza un tuo consenso separato e specifico.</p>
+      <h6>6.2. Rinnovo automatico e disdetta</h6>
+      <p>Alla scadenza del periodo di prova (ovvero al termine del ciclo mensile/annuale), l'abbonamento si rinnova automaticamente per un pari periodo, con addebito del relativo importo sul metodo di pagamento selezionato. L'Utente può disattivare il rinnovo automatico in qualsiasi momento prima della data di rinnovo. La disdetta avrà effetto al termine del periodo già saldato e l'Utente continuerà a fruire dei contenuti fino alla naturale scadenza del ciclo in corso.</p>
 
-      <h6>10. Proprietà intellettuale</h6>
-      <p>Tutti i contenuti di MentalClass — audio, testi, articoli e numeri del Magazine, grafica, marchio e software — sono protetti dal diritto d'autore e appartengono al titolare o ai rispettivi autori. L'abbonamento ti concede un diritto d'uso personale e non trasferibile. È vietata la riproduzione, la registrazione, la condivisione con terzi, la pubblicazione o la rivendita dei contenuti.</p>
+      <h6>7. Gestione dei pagamenti e fornitore terzo (Stripe)</h6>
+      <p>Tutti i pagamenti e la gestione degli abbonamenti avvengono per il tramite del gateway di pagamento sicuro Stripe Inc. in qualità di Responsabile o Titolare autonomo del trattamento.</p>
+      <p><b>MentalClass e il Titolare non entrano in alcun modo in contatto, né memorizzano o trattano i dati finanziari o le carte di credito/debito dell'Utente.</b> Tali informazioni sono gestite in via esclusiva da Stripe secondo i propri standard di sicurezza certificati PCI-DSS.</p>
 
-      <h6>11. Programma inviti</h6>
-      <p>Il programma inviti riconosce dei premi quando una persona invitata si registra tramite il tuo link e attiva un abbonamento annuale. I premi maturano solo a pagamento avvenuto e non sono convertibili in denaro. Non è consentito creare account fittizi o utilizzare sistemi automatizzati: in tal caso i premi vengono annullati. Ci riserviamo di modificare o sospendere il programma dandone comunicazione. [DETTAGLIARE LA SCALA DEI PREMI DEFINITIVA]</p>
+      <h6>8. Diritto di recesso (per i consumatori)</h6>
+      <p>Ai sensi dell'Art. 52 e ss. del Codice del Consumo (D.Lgs. 206/2005), l'Utente che qualifichi come consumatore ha il diritto di recedere dal contratto di abbonamento entro 14 (quattordici) giorni dalla data di sottoscrizione, senza dover fornire alcuna motivazione.</p>
+      <p><b>Eccezione ed esecuzione immediata:</b> Poiché il servizio ha ad oggetto la fornitura di contenuto digitale mediante supporto non materiale reso immediatamente accessibile, l'Utente accetta espressamente che, chiedendo l'accesso immediato ai contenuti al momento dell'acquisto o durante l'attivazione, perde il diritto di recesso ai sensi dell'Art. 59, comma 1, lett. o) del Codice del Consumo non appena la fruizione dei contenuti digitali ha inizio. Resta comunque fermo il diritto di annullare l'abbonamento per evitare addebiti futuri.</p>
 
-      <h6>12. Magazine</h6>
-      <p>Il Magazine è una pubblicazione digitale trimestrale inclusa nell'abbonamento, consultabile all'interno dell'applicazione. Non è prevista una versione cartacea. Il numero e la periodicità delle uscite possono variare per esigenze editoriali.</p>
+      <h6>9. Regola di utilizzo delle funzionalità ed interazioni utente</h6>
+      <p>L'accesso ad alcune funzionalità richiede il rispetto di regole stringenti di condotta:</p>
+      <ul>
+        <li><b>Diario e Obiettivi:</b> I contenuti inseriti dall'Utente (testi, note vocali e fotografie) restano strettamente personali e privati.</li>
+        <li><b>Compagno Invisibile:</b> Consente lo scambio di check-in vocali 1-a-1 tra utenti sugli obiettivi di allenamento. Le registrazioni audio sono temporanee: alla chiusura della conversazione, tutti i file vocali vengono cancellati in modo immediato, definitivo e irreversibile dai server. È vietato diffondere o registrare all'esterno della piattaforma le voci ed i messaggi ricevuti.</li>
+        <li><b>Sfide Mentali:</b> Le registrazioni vocali inviate all'interno dei gruppi delle Sfide restano accessibili ai soli partecipanti della specifica sfida per la sua sola durata.</li>
+      </ul>
 
-      <h6>13. Disponibilità del servizio</h6>
-      <p>Ci impegniamo a mantenere il servizio disponibile con continuità, senza però poter garantire l'assenza assoluta di interruzioni. Possiamo sospendere temporaneamente l'accesso per manutenzione, dandone preavviso quando possibile. Possiamo modificare o dismettere singole funzionalità: se la modifica riduce in modo sostanziale il valore dell'abbonamento in corso, avrai diritto al rimborso della parte non goduta.</p>
+      <h6>9.1. Divieti di condotta</h6>
+      <p>È severamente proibito utilizzare la piattaforma per:</p>
+      <ol>
+        <li>Inviare, registrare o condividere contenuti diffamatori, offensivi, molesti, osceni, pornografici o comunque illeciti.</li>
+        <li>Registrare o condividere la voce o i dati di terze persone senza il loro preventivo ed esplicito consenso.</li>
+        <li>Utilizzare la piattaforma o la funzione Compagno Invisibile per svolgere spam, promozione commerciale di propri o altrui servizi o tentativi di adescamento.</li>
+        <li>Tentare di bypassare le misure di sicurezza tecniche, effettuare reverse engineering dell'App o estrarre in modo automatizzato i contenuti protetti da diritto d'autore.</li>
+      </ol>
 
-      <h6>14. Sospensione e chiusura dell'account</h6>
-      <p>Possiamo sospendere o chiudere un account in caso di violazione di questi termini, di utilizzo fraudolento o di comportamenti lesivi verso altri utenti. Nei casi più gravi la sospensione può essere immediata. Puoi chiudere il tuo account in qualsiasi momento dalle impostazioni.</p>
+      <h6>10. Proprietà intellettuale e diritti sui contenuti</h6>
+      <p>Tutti i contenuti presenti all'interno dell'applicazione MentalClass e del relativo Magazine — inclusi a titolo esemplificativo ma non esaustivo: marchi, loghi, testi, articoli, tracce audio, percorsi di allenamento, elementi grafici, codice sorgente e design — sono di proprietà esclusiva di Antimo Dell'Omo o dei suoi licenzianti ed autori e sono protetti dalle leggi italiane ed internazionali sul diritto d'autore e sulla proprietà intellettuale.</p>
+      <p>La sottoscrizione di un abbonamento concede all'Utente una licenza d'uso personale, non esclusiva, non trasferibile e revocabile, finalizzata unicamente alla fruizione privata dei contenuti. È vietata qualsiasi riproduzione, redistribuzione, registrazione, estrazione o diffusione pubblica dei contenuti non espressamente autorizzata per iscritto dal Titolare.</p>
 
-      <h6>15. Responsabilità</h6>
-      <p>MentalClass fornisce strumenti formativi: le decisioni che prendi e i risultati che ottieni restano nella tua responsabilità. Nei limiti consentiti dalla legge, la nostra responsabilità è limitata all'importo da te corrisposto negli ultimi dodici mesi. Nessuna disposizione di questi termini limita i diritti che la legge riconosce ai consumatori.</p>
+      <h6>11. Politica di inattività e cancellazione dell'account (24 mesi)</h6>
+      <p>In conformità al principio di minimizzazione della conservazione dei dati (Art. 5.1.e GDPR), la piattaforma adotta una procedura automatizzata server-side per la cancellazione degli account inattivi:</p>
+      <ul>
+        <li>Qualora un account non effettui alcun accesso per un periodo continuativo di 24 (ventiquattro) mesi, il profilo ed i relativi dati personali verranno eliminati in modo definitivo ed irreversibile dal database centrale.</li>
+        <li>L'Utente riceverà un'e-mail di preavviso al compimento del 23° mese di inattività, contenente le istruzioni per riattivare il profilo ed evitare la cancellazione dei propri progressi.</li>
+      </ul>
 
-      <h6>16. Legge applicabile e controversie</h6>
-      <p>Ai presenti termini si applica la legge italiana. Per i consumatori è competente il foro del luogo di residenza o domicilio. È inoltre disponibile la piattaforma europea di risoluzione delle controversie online: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>.</p>
+      <h6>12. Modifiche ai termini ed aggiornamenti</h6>
+      <p>Il Titolare si riserva il diritto di modificare i presenti Termini in qualsiasi momento per adeguarli a novelle legislative, modifiche tecniche o evoluzioni delle funzionalità del servizio. Le modifiche sostanziali saranno comunicate agli utenti via e-mail o tramite avviso in-app con un preavviso di almeno 15 (quindici) giorni prima della loro entrata in vigore. Proseguendo nell'utilizzo della piattaforma oltre tale termine, l'Utente accetta espressamente le nuove condizioni.</p>
 
-      <h6>17. Modifiche ai termini</h6>
-      <p>Possiamo aggiornare questi termini. Le modifiche sostanziali ti saranno comunicate almeno [15] giorni prima; proseguendo nell'uso del servizio le accetti. Se non le accetti puoi disdire l'abbonamento.</p>
+      <h6>13. Limitazione di responsabilità e disponibilità del servizio</h6>
+      <p>Il Titolare si impegna a garantire il funzionamento continuativo della WebApp e delle app mobili, ma non garantisce che il servizio sia esente da interruzioni temporanee dovute a manutenzione, aggiornamenti dei server o cause di forza maggiore.</p>
+      <p>MentalClass fornisce strumenti formativi ed educativi: le decisioni operative, personali e professionali prese dall'Utente, nonché i risultati effettivamente conseguiti, rimangono sotto l'esclusiva ed autonoma responsabilità dell'Utente stesso. Nei limiti consentiti dalle norme inderogabili di legge, la responsabilità del Titolare non potrà superare l'importo complessivo effettivamente versato dall'Utente negli ultimi 12 mesi.</p>
 
-      <h6>18. Contatti</h6>
-      <p>Assistenza: <a href="mailto:supporto@mentalclass.it">supporto@mentalclass.it</a> · Privacy: <a href="mailto:privacy@mentalclass.it">privacy@mentalclass.it</a> · Sponsor: <a href="mailto:commerciale@mentalclass.it">commerciale@mentalclass.it</a></p>
+      <h6>14. Legge applicabile e foro competente</h6>
+      <p>I presenti Termini e Condizioni sono regolati e interpretati in conformità alla legge italiana.</p>
+      <p>Per qualsiasi controversia derivante dall'interpretazione o esecuzione dei presenti Termini con utenti che rivestono la qualifica di Consumatori, la competenza territoriale inderogabile spetta al giudice del luogo di residenza o domicilio dell'Utente. Per utenti non consumatori, sarà competente in via esclusiva il Foro di residenza/sede del Titolare.</p>
+      <p>Si informa infine l'Utente consumatore che la Commissione Europea mette a disposizione una piattaforma per la risoluzione alternativa delle controversie online (ODR), accessibile al sito: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">https://ec.europa.eu/consumers/odr</a>.</p>
     </div>
   </div>
 </div>

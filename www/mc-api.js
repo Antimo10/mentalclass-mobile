@@ -1383,18 +1383,39 @@ const MC = (function(){
     async mie(){
       richiediLogin();
       const [prog, pref, pag, iscr] = await Promise.all([
-        sb.from('progressi_audio').select('completato').eq('user_id', utente.id),
+        sb.from('progressi_audio').select('audio_id, completato, posizione_sec').eq('user_id', utente.id),
         sb.from('preferiti').select('tipo').eq('user_id', utente.id),
         sb.from('diario_pagine').select('id').eq('user_id', utente.id),
         sb.from('sfida_iscritti').select('giorni_completati').eq('user_id', utente.id)
       ]);
-      const completati = (prog.data || []).filter(p => p.completato).length;
+      const righe = prog.data || [];
+      const completati = righe.filter(p => p.completato).length;
+      /* "ascoltato" = finito, oppure ascoltato per almeno 30 secondi */
+      const ascoltati = righe.filter(p => p.completato || (p.posizione_sec || 0) >= 30).length;
+
+      /* minuti veri: per gli audio finiti conta la durata intera,
+         per quelli a metà conta fin dove è arrivata la persona */
+      let secondi = 0;
+      const ids = righe.filter(p => p.completato).map(p => p.audio_id).filter(Boolean);
+      let durate = {};
+      if(ids.length){
+        const d = await sb.from('audio').select('id, durata_sec').in('id', ids);
+        (d.data || []).forEach(a => { durate[a.id] = a.durata_sec || 0; });
+      }
+      righe.forEach(p => {
+        const pos = p.posizione_sec || 0;
+        secondi += p.completato ? Math.max(durate[p.audio_id] || 0, pos) : pos;
+      });
+
       const giorniSfide = (iscr.data || []).reduce((s,i) => s + ((i.giorni_completati || []).length), 0);
       return {
         audioCompletati: completati,
-        audioIniziati:  (prog.data || []).length,
+        audioAscoltati:  ascoltati,
+        audioIniziati:  righe.length,
+        minutiAscolto:  Math.round(secondi / 60),
         preferiti:      (pref.data || []).length,
         paginediario:   (pag.data || []).length,
+        sfide:          (iscr.data || []).length,
         giorniSfide,
         streak: profilo ? (profilo.streak_giorni || 0) : 0
       };

@@ -2524,11 +2524,11 @@ var REFERRAL_ATTIVO = false;
         <button data-s="diario" onclick="goScreen('diario')"><svg viewBox="0 0 24 24"><path d="M6 4h9l3 3v13H6z"/><path d="M15 4v3h3"/></svg>Diario</button>
         <button data-s="profilo" onclick="goScreen('profilo')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profilo</button>
       </nav>
-      <div class="side-up">
-        <div class="k">Il tuo piano · Free</div>
-        <h4>Sblocca tutto</h4>
-        <p>Magazine e audio completi. Annuale a €4,17/mese, 7 giorni di prova.</p>
-        <button class="btn btn-lime" onclick="goScreen('plan')">Passa ad Annuale</button>
+      <div class="side-up" id="side-up">
+        <div class="k" data-pc="k">Il tuo piano · Free</div>
+        <h4 data-pc="t">Sblocca tutto</h4>
+        <p data-pc="p">Magazine e audio completi. Annuale a €4,17/mese, 7 giorni di prova.</p>
+        <button class="btn btn-lime" data-pc="b" onclick="goScreen('plan')">Passa ad Annuale</button>
       </div>
       <div class="side-gift" onclick="goScreen('referral')">
         <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M3 12h18M12 8v13"/></svg></div>
@@ -3022,11 +3022,11 @@ var REFERRAL_ATTIVO = false;
                 <div class="stat"><div class="n" id="st-saved">0</div><div class="l">Salvati</div></div>
               </div>
             </div>
-            <div class="up-card">
-              <div class="k">Il tuo piano · Free</div>
-              <h3>Sblocca tutto</h3>
-              <p>Magazine e audio completi, senza limiti. Annuale a €4,17/mese con 7 giorni di prova.</p>
-              <button class="btn btn-lime" style="width:100%;" onclick="goScreen('plan')">Passa ad Annuale</button>
+            <div class="up-card" id="up-card">
+              <div class="k" data-pc="k">Il tuo piano · Free</div>
+              <h3 data-pc="t">Sblocca tutto</h3>
+              <p data-pc="p">Magazine e audio completi, senza limiti. Annuale a €4,17/mese con 7 giorni di prova.</p>
+              <button class="btn btn-lime" style="width:100%;" data-pc="b" onclick="goScreen('plan')">Passa ad Annuale</button>
             </div>
           </div>
 
@@ -3051,8 +3051,7 @@ var REFERRAL_ATTIVO = false;
               <div class="set-row" onclick="goScreen('plan')"><div class="l"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V8a5 5 0 0110 0v3"/></svg>Abbonamento e pagamenti</div><span class="val">›</span></div>
               <div class="set-row" onclick="openGift()" style="cursor:pointer;display:none;"><div class="l"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M3 12h18M12 8v13M12 8S9 3 6.5 4.5 8 8 12 8zM12 8s3-5 5.5-3.5S16 8 12 8z"/></svg>Regala MentalClass</div><span class="val">›</span></div>
               <div class="set-row" onclick="openLegal('privacy')" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>Privacy e termini</div><span class="val">›</span></div>
-              <div class="set-row" onclick="openLegal('termini')" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Termini e condizioni</div><span class="val">›</span></div>
-              <div class="set-row" onclick="backToLanding()"><div class="l"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Esci</div><span class="val">›</span></div>
+                            <div class="set-row" onclick="backToLanding()"><div class="l"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Esci</div><span class="val">›</span></div>
             </div>
             <p style="font-size:11px;color:var(--tx-dim);line-height:1.6;margin:18px 4px 0;text-align:center;">MentalClass è uno strumento di allenamento mentale con finalità educativa e formativa. Non è un servizio sanitario e non fornisce diagnosi, terapie o supporto psicologico. Per un bisogno di salute rivolgiti a un professionista sanitario.</p>
           </div>
@@ -3088,8 +3087,8 @@ var REFERRAL_ATTIVO = false;
         <!-- codice sconto generico (promozioni): sempre visibile,
              indipendente dal referral -->
         <div id="cod-promo-box" style="max-width:560px;margin:0 auto 14px;padding:16px 18px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--pane-b);">
-          <div style="font-size:13px;font-weight:800;margin-bottom:4px;">Hai un codice sconto?</div>
-          <div style="font-size:11.5px;color:var(--tx-mut);margin-bottom:11px;">Inseriscilo prima di scegliere il piano: lo sconto si applica al pagamento.</div>
+          <div style="font-size:13px;font-weight:800;margin-bottom:4px;">Hai un codice sconto o un codice omaggio?</div>
+          <div style="font-size:11.5px;color:var(--tx-mut);margin-bottom:11px;">Inseriscilo prima di scegliere il piano: lo sconto si applica al pagamento, i mesi omaggio si attivano subito.</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input id="cod-promo-input" type="text" placeholder="Es. ESTATE26" autocomplete="off"
               style="flex:1;min-width:150px;padding:11px 13px;border-radius:10px;border:1px solid var(--pane-b);background:rgba(0,0,0,.3);color:var(--cream);font-size:13.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;">
@@ -6943,6 +6942,7 @@ var REFERRAL_ATTIVO = false;
         badge.textContent = att ? (p.piano === 'annuale' ? 'Abbonamento annuale' : 'Abbonamento mensile') : 'Piano gratuito';
         badge.className = att ? 'tag t-on' : 'tag t-off';
       }
+      aggiornaCardPiano();
     }catch(e){ console.warn('Profilo:', e.message); }
   }
 
@@ -7065,11 +7065,19 @@ var REFERRAL_ATTIVO = false;
             + (quando ? ' Il primo pagamento del piano ' + nome + ' è previsto il <b>' + quando + '</b>.' : '')
             + '<br><span style="color:var(--tx-mut);">Se disdici prima di quella data non paghi niente, '
             + 'e continui a usare tutto fino alla fine della prova.</span>';
+        } else if(st.omaggio){
+          tx.innerHTML = '<b>Premium in omaggio attivo' + (quando ? ' fino al ' + quando : '') + '.</b>'
+            + '<br>Non si rinnova da solo e non ti addebitiamo nulla.'
+            + '<br><span style="color:var(--tx-mut);">Se ti abboni adesso, il pagamento parte subito e i giorni omaggio rimasti non si sommano.</span>';
         } else {
-          tx.innerHTML = '<b>Piano ' + nome + ' attivo.</b>'
-            + (quando ? '<br>Si rinnova automaticamente il <b>' + quando + '</b>.' : '');
+          tx.innerHTML = '<b>Piano ' + nome + ' attivo' + (quando ? ' fino al ' + quando : '') + '.</b>'
+            + (quando ? '<br>In quella data si rinnova automaticamente, salvo disdetta.' : '');
         }
         box.style.display = 'block';
+        /* omaggio: niente Stripe da gestire, i piani restano acquistabili */
+        var btnGest = box.querySelector('button');
+        if(btnGest) btnGest.style.display = st.omaggio ? 'none' : '';
+        if(st.omaggio){ return; }
 
         /* --- Regola upgrade/downgrade, come le app migliori --- */
         if(st.piano === 'annuale'){
@@ -7098,6 +7106,15 @@ var REFERRAL_ATTIVO = false;
      ------------------------------------------------------------------ */
   var CODICE_PROMO_ATTIVO = null;   /* { codice, percentuale } se un codice promo è valido */
 
+  /* testo leggibile della durata di uno sconto */
+  function durataSconto(v){
+    if(!v || !v.durata || v.durata === 'una_volta') return 'sul primo pagamento';
+    if(v.durata === 'mesi' && v.mesi_sconto) return 'per i primi ' + v.mesi_sconto + (v.mesi_sconto == 1 ? ' mese' : ' mesi');
+    if(v.durata === 'sempre') return 'per tutta la durata dell\'abbonamento';
+    return '';
+  }
+  var CODICE_OMAGGIO = null;   /* { codice, mesi } se è un codice "mesi gratis" */
+
   async function applicaCodicePromo(){
     var inp   = document.getElementById('cod-promo-input');
     var esito = document.getElementById('cod-promo-esito');
@@ -7109,35 +7126,111 @@ var REFERRAL_ATTIVO = false;
       esito.style.color = ok ? 'var(--lime)' : '#E8543E';
       esito.innerHTML = testo;
     }
-    if(!cod){ dillo('Scrivi il codice sconto.', false); return; }
+    if(!cod){ dillo('Scrivi il codice.', false); return; }
 
     dillo('Verifico…', true);
     try{
-      /* verifico su ENTRAMBI i piani: mostro lo sconto ovunque si applichi */
-      var rAnn = await MC.client().rpc('verifica_codice_promo', { p_codice: cod, p_piano: 'annuale' });
-      var rMen = await MC.client().rpc('verifica_codice_promo', { p_codice: cod, p_piano: 'mensile' });
-      var ann = rAnn.data && rAnn.data[0];
-      var men = rMen.data && rMen.data[0];
-      var valido = (ann && ann.valido) || (men && men.valido);
-
-      if(!valido){
-        dillo('✕ ' + ((ann && ann.messaggio) || 'Codice non valido.'), false);
-        CODICE_PROMO_ATTIVO = null;
+      var v = await MC.promozioni.verifica(cod);
+      if(!v || !v.valido){
+        dillo('✕ ' + ((v && v.messaggio) || 'Codice non valido.'), false);
+        CODICE_PROMO_ATTIVO = null; CODICE_OMAGGIO = null;
         rimuoviScontoGrafico();
         return;
       }
 
-      var perc = (ann && ann.valido) ? ann.percentuale : men.percentuale;
-      CODICE_PROMO_ATTIVO = { codice: cod, percentuale: perc,
-        soloAnnuale: !(men && men.valido), soloMensile: !(ann && ann.valido) };
+      /* codice "mesi Premium gratis": niente pagamento, si attiva e basta */
+      if(v.tipo === 'mesi_gratis'){
+        CODICE_PROMO_ATTIVO = null; rimuoviScontoGrafico();
+        CODICE_OMAGGIO = { codice: cod, mesi: v.mesi_gratis };
+        var etichetta = v.mesi_gratis == 1 ? '1 mese' : v.mesi_gratis + ' mesi';
+        dillo('✓ Questo codice ti regala <b>' + etichetta + ' di Premium</b>. Nessuna carta richiesta, non si rinnova da solo.'
+          + '<br><button class="btn btn-lime" id="cod-omaggio-btn" style="margin-top:10px;padding:11px 18px;font-size:12.5px;" onclick="attivaCodiceOmaggio()">Attiva ' + etichetta + ' gratis</button>', true);
+        chime();
+        return;
+      }
 
-      dillo('✓ Sconto del ' + perc + '% applicato: lo vedi già qui sotto sui prezzi.', true);
+      var perc = v.percentuale;
+      CODICE_OMAGGIO = null;
+      CODICE_PROMO_ATTIVO = { codice: cod, percentuale: perc,
+        soloAnnuale: v.solo_piano === 'annuale', soloMensile: v.solo_piano === 'mensile' };
+      var dove = v.solo_piano === 'annuale' ? ' sull\'annuale' : v.solo_piano === 'mensile' ? ' sul mensile' : '';
+      dillo('✓ Sconto del ' + perc + '%' + dove + ' ' + durataSconto(v) + ': lo vedi già qui sotto sui prezzi.', true);
       inp.disabled = true;
       mostraScontoGrafico(CODICE_PROMO_ATTIVO);
       chime();
     }catch(e){
       dillo('Non riesco a verificare il codice ora.', false);
     }
+  }
+
+  /* attiva i mesi Premium gratis sul proprio account */
+  async function attivaCodiceOmaggio(){
+    if(!CODICE_OMAGGIO) return;
+    if(!COLLEGATO || !MC.utenteCorrente()){ toast('Accedi o crea il tuo account per attivare il codice'); openAuth('login'); return; }
+    var btn = document.getElementById('cod-omaggio-btn');
+    var esito = document.getElementById('cod-promo-esito');
+    if(btn){ btn.disabled = true; btn.textContent = 'Attivo…'; }
+    try{
+      var r = await MC.promozioni.riscattaOmaggio(CODICE_OMAGGIO.codice);
+      if(!r || !r.ok){
+        var motivi = {
+          gia_usato:     'Hai già usato questo codice.',
+          gia_abbonato:  'Hai già un abbonamento attivo: questo codice vale per chi non è abbonato.',
+          esaurito:      'Questo codice ha raggiunto il numero massimo di attivazioni.',
+          scaduto:       'Questo codice è scaduto.',
+          non_ancora:    'Questo codice non è ancora attivo.',
+          non_valido:    'Codice non valido.',
+          login:         'Devi prima accedere.'
+        };
+        if(esito){ esito.style.color = '#E8543E'; esito.innerHTML = '✕ ' + (motivi[r && r.motivo] || 'Non sono riuscito ad attivare il codice.'); }
+        return;
+      }
+      var fino = new Date(r.fino).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
+      if(esito){ esito.style.color = 'var(--lime)'; esito.innerHTML = '✓ Premium attivo fino al <b>' + fino + '</b>.'; }
+      CODICE_OMAGGIO = null;
+      try{ confetti(40); }catch(e){}
+      chime();
+      toast('Premium attivo fino al ' + fino);
+      setTimeout(function(){ window.location.reload(); }, 1800);
+    }catch(e){
+      if(esito){ esito.style.color = '#E8543E'; esito.innerHTML = '✕ Non riesco ad attivare il codice ora. Riprova tra poco.'; }
+    }finally{
+      if(btn){ btn.disabled = false; btn.textContent = 'Attiva'; }
+    }
+  }
+
+  /* Card "Il tuo piano" (profilo e barra laterale): dice sempre la verità
+     sul piano e sulla data di scadenza, gratuito o pagato che sia. */
+  function aggiornaCardPiano(){
+    if(!COLLEGATO || !window.MC || !MC.abbonamento) return;
+    var st; try{ st = MC.abbonamento.stato(); }catch(e){ return; }
+    var data = st.scadenza ? new Date(st.scadenza).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' }) : null;
+    var nome = st.piano === 'annuale' ? 'Annuale' : st.piano === 'mensile' ? 'Mensile' : 'Premium';
+    var c = null;
+    if(st.abbonato && st.omaggio){
+      c = { k:'Il tuo piano · Premium in omaggio', t: data ? 'Attivo fino al ' + data : 'Premium attivo',
+            p:'Non si rinnova da solo e non ti addebitiamo nulla. Alla scadenza torni al piano Free, a meno che tu non scelga un abbonamento.',
+            b:'Vedi i piani' };
+    } else if(st.abbonato && st.stato === 'in_prova'){
+      c = { k:'Il tuo piano · Prova gratuita', t: data ? 'Prova fino al ' + data : 'Prova in corso',
+            p:'Il primo pagamento del piano ' + nome + (data ? ' è previsto il ' + data : ' arriva a fine prova') + '. Se disdici prima non paghi nulla.',
+            b:'Gestisci abbonamento' };
+    } else if(st.abbonato){
+      c = { k:'Il tuo piano · Premium ' + nome, t: data ? 'Attivo fino al ' + data : 'Premium attivo',
+            p: data ? 'In quella data si rinnova automaticamente, salvo disdetta.' : 'Rinnovo automatico, salvo disdetta.',
+            b:'Gestisci abbonamento' };
+    }
+    ['up-card','side-up'].forEach(function(id){
+      var box = document.getElementById(id); if(!box) return;
+      if(!box.dataset.orig){
+        box.dataset.orig = JSON.stringify(['k','t','p','b'].map(function(x){ var e = box.querySelector('[data-pc="'+x+'"]'); return e ? e.textContent : ''; }));
+      }
+      var orig = JSON.parse(box.dataset.orig);
+      ['k','t','p','b'].forEach(function(x, n){
+        var e = box.querySelector('[data-pc="'+x+'"]');
+        if(e) e.textContent = c ? c[x] : orig[n];
+      });
+    });
   }
 
   /* Mostra lo sconto DIRETTAMENTE sui prezzi (come richiesto): il
@@ -7464,6 +7557,7 @@ var REFERRAL_ATTIVO = false;
     if(p.segno_zodiacale) state.sign = p.segno_zodiacale;
     if(p.obiettivo)       state.obiettivo = p.obiettivo;
     state.plan   = MC.abbonato() ? 'premium' : 'free';
+    try{ aggiornaCardPiano(); }catch(e){}
     state.streak = p.streak_giorni || 0;
     aggiornaStreakHome();
     var _vecchiaFascia = state.notifFrom + '-' + state.notifTo;

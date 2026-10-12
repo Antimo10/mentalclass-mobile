@@ -2377,6 +2377,44 @@ body.native .main, body.native #deck-feed{ overscroll-behavior:none !important; 
 .legal-body tr:last-child td{ border-bottom:none; }
 .legal-body td b{ color:var(--cream); }
 .legal-body .lg-dim{ font-size:11px; color:var(--tx-dim); }
+
+/* ===================== CARD AUDIO v2 ===================== */
+/* copertina pulita: niente bordo, niente sfumatura scura sopra/sotto */
+.a-card .art{ background-origin:border-box; }
+.a-card .art.has-cover{ border:0 !important; background-color:transparent !important; }
+.a-card .art::after, body.native #s-audio .a-card .art::after{ display:none !important; content:none !important; }
+/* titolo: mai spezzato col trattino, si adatta da solo alla card */
+.a-card .art span{ display:block; hyphens:none !important; -webkit-hyphens:none !important; word-break:normal !important; overflow-wrap:normal !important; white-space:normal; max-width:100%;
+  text-shadow:0 1px 2px rgba(0,0,0,.4), 0 2px 12px rgba(0,0,0,.3); }
+.a-card .art.mc-fit span{ visibility:visible; }
+/* righe: partono tutte dallo stesso bordo */
+body.native #s-audio .a-row, body.native #s-autore .a-row, body.native #s-preferiti .a-row{ scroll-snap-type:none; scroll-padding:0; overscroll-behavior-x:contain; }
+.a-row > .a-card{ margin:0; min-width:0; }
+/* badge Premium sulla copertina */
+.a-card .art .cv-lock{ position:absolute !important; top:10px; left:10px; z-index:3; display:inline-flex; align-items:center; gap:5px; height:24px; padding:0 9px 0 7px; border-radius:100px;
+  background:rgba(5,44,49,.72); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); border:1px solid rgba(194,232,62,.45); color:var(--lime);
+  font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.a-card .art .cv-lock svg{ width:11px; height:11px; stroke:var(--lime); fill:none; stroke-width:2.6; stroke-linecap:round; }
+/* barra di avanzamento (audio lasciato a metà) */
+.a-card .art .cv-prog{ position:absolute !important; left:12px; right:12px; bottom:10px; height:3px; border-radius:3px; background:rgba(241,237,226,.28); z-index:3; overflow:hidden; }
+.a-card .art .cv-prog i{ display:block; height:100%; border-radius:3px; background:var(--lime); box-shadow:0 0 10px rgba(194,232,62,.6); }
+.a-card .art.con-prog{ padding-bottom:22px !important; }
+/* riga sotto: durata a pillola + cuore */
+.a-card .meta{ display:flex; align-items:center; gap:8px; margin-top:10px; min-height:32px; }
+.a-card .meta .chip{ display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 11px 0 9px; border-radius:100px; white-space:nowrap;
+  background:rgba(241,237,226,.06); border:1px solid rgba(241,237,226,.13); font-size:12px; font-weight:700; color:var(--cream); letter-spacing:.01em; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.a-card .meta .chip svg{ width:13px; height:13px; flex:0 0 13px; stroke:var(--lime); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+.a-card .meta .chip.done{ color:var(--lime); background:rgba(194,232,62,.10); border-color:rgba(194,232,62,.35); }
+.a-card .meta .chip.live{ color:var(--lime); border-color:rgba(194,232,62,.35); }
+.a-card .meta .fav-btn{ margin-left:auto; flex:0 0 32px; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  background:rgba(241,237,226,.06); border:1px solid rgba(241,237,226,.15); transition:transform .2s cubic-bezier(.2,.8,.2,1), background .2s, border-color .2s; -webkit-tap-highlight-color:transparent; }
+.a-card .meta .fav-btn svg{ width:15px; height:15px; fill:none; stroke:var(--cream); stroke-width:2.1; transition:fill .2s, stroke .2s; }
+.a-card .meta .fav-btn:active{ transform:scale(.88); }
+.a-card .meta .fav-btn.on{ background:rgba(194,232,62,.16); border-color:rgba(194,232,62,.55); }
+.a-card .meta .fav-btn.on svg{ fill:var(--lime); stroke:var(--lime); }
+.a-card .meta .fav-btn.pop{ animation:mcFavPop .45s cubic-bezier(.2,1.6,.4,1); }
+@keyframes mcFavPop{ 0%{ transform:scale(1); } 40%{ transform:scale(1.28); } 100%{ transform:scale(1); } }
+@media (hover:hover){ .a-card .meta .fav-btn:hover{ border-color:rgba(194,232,62,.5); } }
 </style>
 </head>
 <body>
@@ -4331,6 +4369,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
       var prog = {};
       (progressi || []).forEach(function(p){ prog[p.audio_id] = p; });
+      window.MC_PROG = prog;
 
       /* --- pills: prima le categorie con audio, poi le vuote (create nel
          pannello ma ancora senza contenuti), così le vedi comunque --- */
@@ -4799,7 +4838,9 @@ document.addEventListener('DOMContentLoaded', function(){
     try{
       await MC.preferiti.attiva('audio', id, !attivo);
       el.classList.toggle('on');
-      el.textContent = attivo ? '♡' : '♥';
+      if(el.classList.contains('fav-btn')){ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+      else el.textContent = attivo ? '♡' : '♥';
+      syncCardFavsDB(id, !attivo);
       toast(attivo ? 'Rimosso dai preferiti' : '♥ Salvato nei preferiti');
       /* tengo allineati elenco preferiti, cuore del player e conteggi */
       try{ PREF_DB = await MC.preferiti.lista(); }catch(_){}
@@ -6019,7 +6060,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     if(tipo === 'audio'){
       body.innerHTML = '<div class="a-row">' + elenco.map(function(p, i){
-        var a = AUDIO_DB[p.elemento_id];
+        var a = AUDIO_DB[p.riferimento_id || p.elemento_id];
         if(!a) return '';
         var c = catDi(a.categoria_id);
         var min = durataTesto(a);
@@ -8446,8 +8487,8 @@ document.addEventListener('DOMContentLoaded', function(){
   function favAudio(el, title){
     var arr = state.saved.audio;
     var i = arr.findIndex(function(x){ return x.id===title; });
-    if(i>=0){ arr.splice(i,1); el.textContent='♡'; el.classList.remove('on'); toast('Rimosso dai preferiti'); }
-    else { arr.push({ type:'audio', id:title, q:title, a:'Audio MentalClass', at:Date.now() }); el.textContent='♥'; el.classList.add('on'); chime(); toast('❤️ Audio salvato'); }
+    if(i>=0){ arr.splice(i,1); if(!el.classList.contains('fav-btn')) el.textContent='♡'; el.classList.remove('on'); toast('Rimosso dai preferiti'); }
+    else { arr.push({ type:'audio', id:title, q:title, a:'Audio MentalClass', at:Date.now() }); if(!el.classList.contains('fav-btn')) el.textContent='♥'; else { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); } el.classList.add('on'); chime(); toast('❤️ Audio salvato'); }
     syncPlayerFav(); refreshSavedCounts();
   }
   async function favAudioPlayer(){
@@ -8483,7 +8524,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.querySelectorAll('.a-card .fav').forEach(function(f){
       var m = (f.getAttribute('onclick')||'').match(/preferitoAudio\(this,'(.+?)'\)/);
       if(m && m[1] === id){
-        f.textContent = on ? '♥' : '♡';
+        if(!f.classList.contains('fav-btn')) f.textContent = on ? '♥' : '♡';
         f.classList.toggle('on', on);
       }
     });
@@ -8495,7 +8536,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(COLLEGATO && MC.utenteCorrente() && state.playerCtx && state.playerCtx.id){
       /* stato reale dal database */
       on = (PREF_DB || []).some(function(p){
-        return p.tipo === 'audio' && p.elemento_id === state.playerCtx.id;
+        return p.tipo === 'audio' && (p.riferimento_id || p.elemento_id) === state.playerCtx.id;
       });
     } else {
       on = state.saved.audio.some(function(x){ return x.id===state.playerCtx.title; });
@@ -8511,7 +8552,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(!m) return;
       var title = m[1].replace(/\\'/g, "'");
       var on = state.saved.audio.some(function(x){ return x.id===title; });
-      f.textContent = on ? '♥' : '♡';
+      if(!f.classList.contains('fav-btn')) f.textContent = on ? '♥' : '♡';
       f.classList.toggle('on', on);
     });
   }
@@ -10887,6 +10928,140 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 </script>
 <!-- ===== Analytics: Plausible, senza cookie, nessun banner necessario ===== -->
+
+<script>
+/* =====================================================================
+   CARD AUDIO v2 — rifinitura automatica di ogni card audio/percorso:
+   copertina pulita, titolo che si adatta, durata a pillola, cuore animato,
+   barra di avanzamento e righe sempre allineate.
+   ===================================================================== */
+(function(){
+  var ICO = {
+    clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    cal:'<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>',
+    check:'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></svg>',
+    play:'<svg viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z"/></svg>',
+    tag:'<svg viewBox="0 0 24 24"><path d="M4 12V5a1 1 0 011-1h7l8 8-8 8z"/><circle cx="8.5" cy="8.5" r="1.3"/></svg>',
+    lock:'<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>',
+    heart:'<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg>'
+  };
+  window.MC_FAV_HEART = ICO.heart;
+
+  function idDa(card){
+    var m = (card.getAttribute('onclick') || '').match(/apriAudioVero\('(.+?)'\)/);
+    return m ? m[1] : null;
+  }
+
+  function adattaTitolo(art){
+    var sp = art.querySelector(':scope > span'); if(!sp) return false;
+    var w = sp.clientWidth; if(!w) return false;           /* card non visibile: riprovo dopo */
+    var max = parseFloat(art.dataset.fsMax || getComputedStyle(sp).fontSize) || 16;
+    art.dataset.fsMax = max;
+    var lh = 1.08, fs = max, min = 10.5;
+    sp.style.lineHeight = lh;
+    sp.style.fontSize = fs + 'px';
+    var spazio = art.clientHeight * 0.62;                   /* il titolo non supera ~2/3 della copertina */
+    var giri = 0;
+    while(giri++ < 40 && fs > min && (sp.scrollWidth > w + 1 || sp.offsetHeight > spazio || sp.offsetHeight > fs * lh * 3.2)){
+      fs -= 0.5; sp.style.fontSize = fs + 'px';
+    }
+    return true;
+  }
+
+  function rifinisci(card){
+    if(card.dataset.v2 === '1'){ var a0 = card.querySelector('.art'); if(a0 && !a0.classList.contains('mc-fit') && adattaTitolo(a0)) a0.classList.add('mc-fit'); return; }
+    var art = card.querySelector('.art'), sub = card.querySelector('.sub');
+    if(!art || !sub) return;
+    card.dataset.v2 = '1';
+
+    if(art.style.backgroundImage && art.style.backgroundImage !== 'none') art.classList.add('has-cover');
+
+    /* Premium: dal testo sotto alla copertina */
+    var lk = sub.querySelector('.lk-chip');
+    if(lk){
+      lk.remove();
+      art.insertAdjacentHTML('beforeend', '<div class="cv-lock">' + ICO.lock + 'Premium</div>');
+    }
+
+    /* cuore */
+    var fav = sub.querySelector('.fav'), favHtml = '';
+    if(fav){
+      var on = fav.classList.contains('on') || fav.textContent.indexOf('♥') !== -1;
+      var id = idDa(card);
+      if(!on && id && window.PREF_DB && PREF_DB.some){
+        try{ on = PREF_DB.some(function(p){ return p.tipo === 'audio' && (p.riferimento_id === id || p.elemento_id === id); }); }catch(e){}
+      }
+      favHtml = '<button type="button" class="fav fav-btn' + (on ? ' on' : '') + '" aria-label="Salva nei preferiti" onclick="' +
+        (fav.getAttribute('onclick') || '').replace(/"/g, '&quot;') + '">' + ICO.heart + '</button>';
+      fav.remove();
+    }
+
+    /* testo: "5 min · ripresa" / "3 min · ✓" / "22 giorni" / "Mindset · 5 min" */
+    var testo = (sub.textContent || '').replace(/\s+/g, ' ').trim();
+    var finito = /✓/.test(testo), ripresa = /ripresa/i.test(testo);
+    testo = testo.replace(/·?\s*ripresa/i, '').replace(/·?\s*✓/, '').replace(/\s*·\s*$/, '').trim();
+    var giorni = /giorn/i.test(testo);
+    var chip;
+    if(finito)      chip = '<span class="chip done">' + ICO.check + (testo || 'Ascoltato') + '</span>';
+    else if(ripresa) chip = '<span class="chip live">' + ICO.play + 'Riprendi</span>';
+    else if(testo)  chip = '<span class="chip">' + (giorni ? ICO.cal : (/min|sec/.test(testo) ? ICO.clock : ICO.tag)) + testo + '</span>';
+    else            chip = '';
+
+    /* barra di avanzamento sulla copertina */
+    var id2 = idDa(card);
+    if(ripresa && id2 && window.MC_PROG && MC_PROG[id2]){
+      var p = MC_PROG[id2], tot = 0;
+      try{ tot = (window.MC_DUR && MC_DUR[id2]) || (window.AUDIO_DB && AUDIO_DB[id2] && AUDIO_DB[id2].durata_sec) || 0; }catch(e){}
+      var pct = tot ? Math.max(4, Math.min(96, Math.round((p.posizione_sec || 0) / tot * 100))) : 35;
+      art.insertAdjacentHTML('beforeend', '<div class="cv-prog"><i style="width:' + pct + '%"></i></div>');
+      art.classList.add('con-prog');
+    }
+
+    var meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.innerHTML = chip + favHtml;
+    sub.replaceWith(meta);
+
+    if(adattaTitolo(art)) art.classList.add('mc-fit');
+  }
+
+  var attesa = false;
+  function tutto(){
+    attesa = false;
+    document.querySelectorAll('.a-card').forEach(rifinisci);
+    /* righe sempre allineate al bordo sinistro */
+    document.querySelectorAll('.a-row').forEach(function(r){
+      if(!r.dataset.v2){ r.dataset.v2 = '1'; try{ r.scrollLeft = 0; }catch(e){} }
+    });
+  }
+  window.mcRifinisciCard = function(){ if(!attesa){ attesa = true; requestAnimationFrame(function(){ setTimeout(tutto, 0); }); } };
+
+  /* ogni volta che l'app disegna nuove card, le rifinisco */
+  try{
+    new MutationObserver(function(muts){
+      for(var i = 0; i < muts.length; i++){ if(muts[i].addedNodes && muts[i].addedNodes.length){ window.mcRifinisciCard(); break; } }
+    }).observe(document.body, { childList:true, subtree:true });
+  }catch(e){}
+
+  /* quando si cambia schermata, ricalcolo i titoli delle card prima nascoste */
+  if(typeof window.goScreen === 'function'){
+    var _gs = window.goScreen;
+    window.goScreen = function(){
+      var r = _gs.apply(this, arguments);
+      setTimeout(function(){
+        document.querySelectorAll('.a-card .art:not(.mc-fit)').forEach(function(a){ if(adattaTitolo(a)) a.classList.add('mc-fit'); });
+        document.querySelectorAll('.a-row').forEach(function(r){ try{ r.scrollLeft = 0; }catch(e){} });
+      }, 80);
+      return r;
+    };
+  }
+  window.addEventListener('resize', function(){
+    document.querySelectorAll('.a-card .art.mc-fit').forEach(function(a){ a.classList.remove('mc-fit'); if(adattaTitolo(a)) a.classList.add('mc-fit'); });
+  });
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(function(){ document.querySelectorAll('.a-card .art').forEach(function(a){ a.classList.remove('mc-fit'); if(adattaTitolo(a)) a.classList.add('mc-fit'); }); }); }
+  window.mcRifinisciCard();
+})();
+</script>
 <script defer data-domain="mentalclass.it" src="https://plausible.io/js/script.js"></script>
 </body>
 </html>

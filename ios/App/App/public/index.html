@@ -2429,6 +2429,10 @@ var PIANO_SCELTO = null; /* piano scelto dalla landing, in attesa della registra
    Tutto il codice referral resta al suo posto, solo nascosto.
    --------------------------------------------------------------------- */
 var REFERRAL_ATTIVO = false;
+/* inviti spenti: nascondo anche le card "Invita un amico" */
+document.addEventListener('DOMContentLoaded', function(){
+  if(!REFERRAL_ATTIVO) document.querySelectorAll('[data-referral]').forEach(function(el){ el.style.display = 'none'; });
+});
 </script>
 
 <div id="auth">
@@ -2530,7 +2534,7 @@ var REFERRAL_ATTIVO = false;
         <p data-pc="p">Magazine e audio completi. Annuale a €4,17/mese, 7 giorni di prova.</p>
         <button class="btn btn-lime" data-pc="b" onclick="goScreen('plan')">Passa ad Annuale</button>
       </div>
-      <div class="side-gift" onclick="goScreen('referral')">
+      <div class="side-gift" data-referral onclick="goScreen('referral')">
         <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M3 12h18M12 8v13"/></svg></div>
         <div><div class="t">Invita un amico</div><div class="s">Tempo gratis a ogni invito</div></div>
       </div>
@@ -3016,8 +3020,8 @@ var REFERRAL_ATTIVO = false;
               <div class="prof-name" id="prof-name">Il tuo profilo</div>
               <div class="stat-row" style="grid-template-columns:repeat(5,1fr);">
                 <div class="stat"><div class="n" id="st-streak">0</div><div class="l">Giorni</div></div>
-                <div class="stat"><div class="n">8</div><div class="l">Audio</div></div>
-                <div class="stat"><div class="n">94</div><div class="l">Minuti</div></div>
+                <div class="stat"><div class="n" id="st-audio">0</div><div class="l">Audio</div></div>
+                <div class="stat"><div class="n" id="st-minuti">0</div><div class="l">Minuti</div></div>
                 <div class="stat"><div class="n" id="st-sfide">0</div><div class="l">Sfide</div></div>
                 <div class="stat"><div class="n" id="st-saved">0</div><div class="l">Salvati</div></div>
               </div>
@@ -3036,7 +3040,7 @@ var REFERRAL_ATTIVO = false;
               <div style="flex:1;"><div class="t">I tuoi Salvati</div><div class="s" id="saved-card-sub">Frasi, pensieri, parole e audio da ritrovare</div></div>
               <div style="color:var(--tx-mut);font-size:18px;">›</div>
             </div>
-            <div class="pane gift-card" onclick="goScreen('referral')">
+            <div class="pane gift-card" data-referral onclick="goScreen('referral')">
               <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M3 12h18M12 8v13M12 8S9 3 6.5 4.5 8 8 12 8zM12 8s3-5 5.5-3.5S16 8 12 8z"/></svg></div>
               <div style="flex:1;"><div class="t">Invita un amico</div><div class="s">Lui −20% sull'annuale · tu tempo gratis</div></div>
               <div style="color:var(--tx-mut);font-size:18px;">›</div>
@@ -6941,8 +6945,11 @@ var REFERRAL_ATTIVO = false;
         var el = document.querySelector(sel);
         if(el) el.textContent = valore;
       }
-      metti('#st-audio', st.audio_completati != null ? st.audio_completati : 0);
-      metti('#st-pagine', st.pagine_diario != null ? st.pagine_diario : 0);
+      metti('#st-audio',  st.audioAscoltati || 0);
+      metti('#st-minuti', st.minutiAscolto || 0);
+      metti('#st-sfide',  st.sfide || 0);
+      metti('#st-saved',  st.preferiti || 0);
+      metti('#st-pagine', st.paginediario || 0);
       metti('#st-streak', p.streak_giorni || 0);
 
       /* stato abbonamento */
@@ -8900,7 +8907,8 @@ var REFERRAL_ATTIVO = false;
     var el = document.getElementById('notif-sum');
     if(el) el.textContent = fmtRange()+' · '+tot+' contenuti ›';
     var sc = document.getElementById('st-saved');
-    if(sc) sc.textContent = savedTotal();
+    /* da collegati il numero vero arriva dal database (caricaProfiloSchermata) */
+    if(sc && !(typeof COLLEGATO !== 'undefined' && COLLEGATO && window.MC && MC.utenteCorrente())) sc.textContent = savedTotal();
     var scs = document.getElementById('saved-card-sub');
     if(scs){ var t = savedTotal(); scs.textContent = t>0 ? t+' contenuti salvati da ritrovare' : 'Frasi, pensieri, parole e audio da ritrovare'; }
   }

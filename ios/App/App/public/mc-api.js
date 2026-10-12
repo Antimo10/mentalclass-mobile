@@ -222,6 +222,17 @@ const MC = (function(){
     return profilo;
   }
 
+  /* ---------- Premium in omaggio (codice "mesi gratis")? ----------
+     È omaggio se la scadenza del piano coincide con la data salvata
+     dal codice. Se poi la persona si abbona con Stripe, la scadenza
+     cambia e torna a essere un abbonamento normale. */
+  function omaggioAttivo(){
+    if(!profilo || !profilo.omaggio_fino || !profilo.scadenza_piano) return false;
+    if(profilo.stato_abbonamento !== 'attivo') return false;
+    const fine = new Date(profilo.omaggio_fino), sc = new Date(profilo.scadenza_piano);
+    return Math.abs(fine - sc) < 86400000 && sc > new Date();
+  }
+
   /* ---------- è abbonato? ---------- */
   function abbonato(){
     if(!profilo) return false;
@@ -343,18 +354,28 @@ const MC = (function(){
       return (data && data[0]) || null;
     },
 
+    /* Archivio completo dei contenuti pubblicati di un tipo:
+       serve a variare ogni giorno home, widget e notifiche. */
+    async archivio(tipo){
+      const { data, error } = await sb.from('contenuti_giornalieri')
+        .select('id,testo,extra,data').eq('tipo', tipo).eq('pubblicato', true).limit(2000);
+      if(error) return [];
+      return data || [];
+    },
+
     /* Tutto il necessario per la home, in una sola chiamata */
     async perLaHome(){
       const p = profilo || {};
-      const [frasi, pensieri, dizionario, oroscopo, consumi] = await Promise.all([
+      const [frasi, pensieri, dizionario, oroscopo, consumi, archivioFrasi] = await Promise.all([
         contenuti.delGiorno('frase'),
         contenuti.delGiorno('pensiero'),
         contenuti.delGiorno('dizionario'),
         contenuti.oroscopoDelSegno(p.segno_zodiacale || null).catch(() => null),
-        utente ? contenuti.consumiDiOggi() : Promise.resolve({})
+        utente ? contenuti.consumiDiOggi() : Promise.resolve({}),
+        contenuti.archivio('frase').catch(() => [])
       ]);
       return {
-        frasi, pensieri, dizionario, oroscopo, consumi,
+        frasi, pensieri, dizionario, oroscopo, consumi, archivioFrasi,
         massimi: {
           frasi:      p.notif_frasi ?? 5,
           pensieri:   p.notif_pensieri ?? 1,
@@ -800,7 +821,6 @@ const MC = (function(){
     async lista(){
       const { data, error } = await sb.from('sfide')
         .select('*, sfida_iscritti(count)')
-        .neq('stato', 'chiusa')
         .order('creato_il', { ascending:false });
       if(error) throw new Error(error.message);
       return (data || []).map(s => ({
@@ -1199,7 +1219,10 @@ const MC = (function(){
         abbonato: abbonato(),
         piano: profilo ? profilo.piano : 'free',
         stato: profilo ? profilo.stato_abbonamento : 'inattivo',
-        scadenza: profilo ? profilo.scadenza_piano : null
+        scadenza: profilo ? profilo.scadenza_piano : null,
+        /* omaggio = Premium attivato con un codice "mesi gratis":
+           non passa da Stripe e non si rinnova da solo */
+        omaggio: omaggioAttivo()
       };
     }
   };
@@ -1314,11 +1337,39 @@ const MC = (function(){
 
   /* ---------- PROMOZIONI ---------- */
   const promozioni = {
+    /* controlla un codice (sconto o mesi gratis). Usa la funzione nuova
+       sul database; se non c'è ancora, ripiega su quella vecchia. */
+    async verifica(codice){
+      const cod = String(codice || '').trim().toUpperCase();
+      const r = await sb.rpc('verifica_codice', { p_codice: cod });
+      if(!r.error && r.data) return r.data;
+      /* vecchio sistema: solo sconti in percentuale */
+      const a = await sb.rpc('verifica_codice_promo', { p_codice: cod, p_piano: 'annuale' });
+      const m = await sb.rpc('verifica_codice_promo', { p_codice: cod, p_piano: 'mensile' });
+      const ann = a.data && a.data[0], men = m.data && m.data[0];
+      const ok = (ann && ann.valido) || (men && men.valido);
+      if(!ok) return { valido:false, messaggio: (ann && ann.messaggio) || 'Codice non valido.' };
+      return { valido:true, tipo:'sconto', percentuale: (ann && ann.valido) ? ann.percentuale : men.percentuale,
+               durata:null, mesi_sconto:null,
+               solo_piano: (ann && ann.valido) && (men && men.valido) ? null : ((ann && ann.valido) ? 'annuale' : 'mensile') };
+    },
+
+    /* attiva un codice "mesi gratis" sul proprio account */
+    async riscattaOmaggio(codice){
+      richiediLogin();
+      const { data, error } = await sb.rpc('riscatta_codice_omaggio', { p_codice: String(codice || '').trim().toUpperCase() });
+      if(error) throw new Error(error.message);
+      if(data && data.ok) await caricaProfilo();
+      return data;
+    },
+
     /* la più recente tra quelle attive e non scadute, o null */
     async attiva(){
       const { data, error } = await sb.from('promozioni')
         .select('testo, codice')
         .eq('attiva', true)
+        .eq('mostra_banner', true)
+        .not('testo', 'is', null)
         .or('scade_il.is.null,scade_il.gt.' + new Date().toISOString())
         .order('creato_il', { ascending:false })
         .limit(1)

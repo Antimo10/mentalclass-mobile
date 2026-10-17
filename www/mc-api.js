@@ -906,6 +906,14 @@ const MC = (function(){
   /* =====================================================================
      COMPAGNO INVISIBILE
      ===================================================================== */
+  /* messaggi chiari quando la moderazione blocca un'azione */
+  function erroreModerazione(msg){
+    msg = String(msg || '');
+    if(msg.indexOf('SOSPESO') !== -1) return new Error('Il tuo accesso al Compagno Invisibile è sospeso. Per chiarimenti scrivi a supporto@mentalclass.it.');
+    if(msg.indexOf('BLOCCATO') !== -1) return new Error('Nessun compagno disponibile in questo momento. Riprova tra poco.');
+    return new Error(msg);
+  }
+
   const compagno = {
     async mieStanze(){
       richiediLogin();
@@ -922,9 +930,15 @@ const MC = (function(){
        doppi quando due persone aprono una stanza nello stesso istante. */
     async elencaVociInAttesa(obiettivo){
       await assicuraSessione();
-      const { data, error } = await sb.rpc('elenca_voci_in_attesa', {
-        p_obiettivo: obiettivo || (profilo ? profilo.obiettivo : null)
-      });
+      const ob = obiettivo || (profilo ? profilo.obiettivo : null);
+      /* versione che esclude le persone bloccate; se non c'è ancora, la vecchia */
+      const f = await sb.rpc('elenca_voci_filtrate', { p_obiettivo: ob });
+      if(!f.error){
+        let righe = f.data || [];
+        if(righe.length === 1 && Array.isArray(righe[0])) righe = righe[0];
+        return righe;
+      }
+      const { data, error } = await sb.rpc('elenca_voci_in_attesa', { p_obiettivo: ob });
       if(error) throw new Error(error.message);
       return data || [];
     },
@@ -936,7 +950,7 @@ const MC = (function(){
         if(String(error.message).includes('GIA_PRESA')){
           throw new Error('QUALCUNO_TI_HA_PRECEDUTO');
         }
-        throw new Error(error.message);
+        throw erroreModerazione(error.message);
       }
       return data;
     },
@@ -946,7 +960,7 @@ const MC = (function(){
       const { data, error } = await sb.rpc('trova_o_crea_stanza', {
         p_obiettivo: obiettivo || (profilo ? profilo.obiettivo : null)
       });
-      if(error) throw new Error(error.message);
+      if(error) throw erroreModerazione(error.message);
       await sb.rpc('consuma', { p_tipo: 'compagno_parla' });
       return data;
     },
@@ -981,7 +995,7 @@ const MC = (function(){
       const { data, error } = await sb.rpc('compagno_invia', {
         p_stanza: stanzaId, p_audio_path: nome, p_durata: Math.round(durataSec || 0)
       });
-      if(error) throw new Error(error.message);
+      if(error) throw erroreModerazione(error.message);
       if(data && data.ok === false){
         const messaggi = {
           aspetta_risposta: 'ASPETTA_RISPOSTA',
@@ -1041,6 +1055,27 @@ const MC = (function(){
         ascolta: Math.max(0, max - (c.compagno_ascolta || 0)),
         max
       };
+    }
+  };
+
+  /* =====================================================================
+     MODERAZIONE: SEGNALA E BLOCCA
+     ===================================================================== */
+  const moderazione = {
+    async segnala(contesto, motivo, nota, stanzaId, messaggioId, blocca){
+      await assicuraSessione();
+      const { data, error } = await sb.rpc('segnala', {
+        p_contesto: contesto, p_motivo: motivo, p_nota: nota || null,
+        p_stanza: stanzaId || null, p_messaggio: messaggioId || null, p_blocca: !!blocca
+      });
+      if(error) throw new Error(error.message);
+      return data;
+    },
+    async blocca(stanzaId){
+      await assicuraSessione();
+      const { data, error } = await sb.rpc('blocca_in_stanza', { p_stanza: stanzaId });
+      if(error) throw new Error(error.message);
+      return data;
     }
   };
 
@@ -1222,7 +1257,9 @@ const MC = (function(){
         scadenza: profilo ? profilo.scadenza_piano : null,
         /* omaggio = Premium attivato con un codice "mesi gratis":
            non passa da Stripe e non si rinnova da solo */
-        omaggio: omaggioAttivo()
+        omaggio: omaggioAttivo(),
+        /* da dove arriva l'abbonamento: 'app_store' | 'play_store' | 'stripe' (o vuoto = sito) */
+        fonte: profilo ? (profilo.fonte_abbonamento || null) : null
       };
     }
   };
@@ -1479,7 +1516,7 @@ const MC = (function(){
     alCambioSessione,
     assicuraSessioneEsterna: assicuraSessione,
     account, contenuti, audio, preferiti, magazine, feed,
-    sfide, compagno, diario, obiettivi, webinar, abbonamento, referral, statistiche, aspetto, promozioni,
+    sfide, compagno, moderazione, diario, obiettivi, webinar, abbonamento, referral, statistiche, aspetto, promozioni,
     autori
   };
 })();

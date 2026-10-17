@@ -2415,6 +2415,44 @@ body.native #s-audio .a-row, body.native #s-autore .a-row, body.native #s-prefer
 .a-card .meta .fav-btn.pop{ animation:mcFavPop .45s cubic-bezier(.2,1.6,.4,1); }
 @keyframes mcFavPop{ 0%{ transform:scale(1); } 40%{ transform:scale(1.28); } 100%{ transform:scale(1); } }
 @media (hover:hover){ .a-card .meta .fav-btn:hover{ border-color:rgba(194,232,62,.5); } }
+
+/* ===== App da store senza acquisti (MC_ACQUISTI_APP = 'nessuno') ===== */
+#plan-app{ display:none; }
+body.no-acquisti #plan-app{ display:block; }
+body.no-acquisti #s-plan > *:not(#plan-app):not(#plan-attivo){ display:none !important; }
+body.no-acquisti #plan-attivo{ display:none !important; }
+body.no-acquisti .up-card:not(.pc-premium), body.no-acquisti .side-up:not(.pc-premium){ display:none !important; }
+body.no-acquisti .up-card [data-pc="b"], body.no-acquisti .side-up [data-pc="b"]{ display:none !important; }
+body.no-acquisti #promo-banner-home, body.no-acquisti #lampo-bar, body.no-acquisti .lampo-plan{ display:none !important; }
+body.no-acquisti #pl-paywall .pw-offer, body.no-acquisti #pl-paywall .pw-note, body.no-acquisti #pw-cta-btn, body.no-acquisti #pl-paywall .pw-alt{ display:none !important; }
+body.no-acquisti .ep-row.locked + .btn, body.no-acquisti [onclick*="openGift"]{ display:none !important; }
+
+/* elimina account */
+.set-row.set-danger .l, .set-row.set-danger .val{ color:#e0655f; }
+.set-row.set-danger svg{ stroke:#e0655f; }
+#del-go:disabled{ opacity:.4; cursor:not-allowed; }
+
+/* segnala / blocca */
+.seg-link{ color:#e0655f; cursor:pointer; font-weight:700; font-size:11px; margin-left:6px; white-space:nowrap; }
+.seg-motivi{ display:flex; flex-direction:column; gap:8px; }
+.seg-motivi label{ display:flex; align-items:center; gap:10px; padding:11px 13px; border-radius:12px; border:1px solid var(--pane-b); background:rgba(255,255,255,.03); font-size:13px; color:var(--cream); cursor:pointer; }
+.seg-motivi label:has(input:checked){ border-color:rgba(194,232,62,.55); background:rgba(194,232,62,.08); }
+
+/* Sfide nascoste finché non partono (window.MC_SFIDE_NASCOSTE) */
+html.sfide-off [data-s="sfide"], html.sfide-off .feed-link[onclick*="sfide"], html.sfide-off [onclick*="toggleNotifExtra('sfide'"]{ display:none !important; }
+html.sfide-off .stat:has(#st-sfide){ display:none !important; }
+html.sfide-off .stat-row{ grid-template-columns:repeat(4,1fr) !important; }
+
+/* copia di prova: fascetta in alto, così non la confondi con il sito vero */
+html.mc-prova body::before{ content:"COPIA DI PROVA"; position:fixed; top:0; left:50%; transform:translateX(-50%); z-index:99999; background:#F5B72E; color:#052c31; font:800 10px/1 Inter,sans-serif; letter-spacing:.12em; padding:5px 12px; border-radius:0 0 8px 8px; pointer-events:none; }
+
+/* App: acquisti in-app con Apple/Google (niente codici sconto nello store) */
+#plan-iap-legal{ display:none; max-width:640px; margin:6px auto 14px; text-align:center; }
+#plan-iap-legal p{ font-size:11px; color:var(--tx-dim); line-height:1.55; margin:0 0 8px; }
+#plan-iap-legal a{ color:var(--lime); }
+body.acquisti-app #plan-iap-legal{ display:block; }
+body.acquisti-app #cod-promo-box, body.acquisti-app #cod-amico-box, body.acquisti-app .lampo-plan,
+body.acquisti-app #lampo-bar, body.acquisti-app #promo-banner-home, body.acquisti-app [onclick*="openGift"]{ display:none !important; }
 </style>
 </head>
 <body>
@@ -2446,6 +2484,7 @@ body.native #s-audio .a-row, body.native #s-autore .a-row, body.native #s-prefer
 <script src="mc-analytics.js"></script>
 <script src="mc-notifiche.js"></script>
 <script src="mc-widget.js"></script>
+<script src="mc-acquisti.js"></script>
 <script>
 /* =====================================================================
    CONFIGURAZIONE BACKEND
@@ -2456,6 +2495,22 @@ body.native #s-audio .a-row, body.native #s-autore .a-row, body.native #s-prefer
    ===================================================================== */
 var SUPABASE_URL      = "https://urtbcyzdtdlsudsgnayl.supabase.co";
 var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVydGJjeXpkdGRsc3Vkc2duYXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMTM2NjYsImV4cCI6MjA5OTg4OTY2Nn0.uzwSpwLPuBe42-njep9XSsq1TyDL4ysbIHtKkdIJHZo";
+
+/* ---- COPIA DI PROVA ----------------------------------------------------
+   Su prova.mentalclass.it (e sulle anteprime Vercel del ramo "prova") si
+   usa il database di PROVA, mai quello vero. Incolla qui sotto i due
+   valori del progetto Supabase "mentalclass-prova" (Project Settings → API).
+   Finché sono vuoti, la copia di prova resta in modalità dimostrativa:
+   così non tocca MAI per errore i dati veri.
+   ------------------------------------------------------------------------ */
+var PROVA_SUPABASE_URL      = "";
+var PROVA_SUPABASE_ANON_KEY = "";
+var MC_E_PROVA = /^prova\.|-git-prova-/.test(location.hostname);
+if(MC_E_PROVA){
+  SUPABASE_URL = PROVA_SUPABASE_URL;
+  SUPABASE_ANON_KEY = PROVA_SUPABASE_ANON_KEY;
+  document.documentElement.classList.add('mc-prova');
+}
 var COLLEGATO = false;   /* diventa true se la configurazione è presente */
 var PIANO_SCELTO = null; /* piano scelto dalla landing, in attesa della registrazione */
 
@@ -2488,7 +2543,7 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
 
     <div id="auth-signup" style="display:none;">
-      <div class="auth-tag">7 giorni di prova. Poi decidi tu.</div>
+      <div class="auth-tag" id="auth-tag-signup">7 giorni di prova. Poi decidi tu.</div>
       <div class="field"><label>Nome</label><input id="su-name" placeholder="Giulia"></div>
       <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="giulia@email.it" autocomplete="email"></div>
       <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="Almeno 8 caratteri" autocomplete="new-password"></div>
@@ -3093,6 +3148,7 @@ document.addEventListener('DOMContentLoaded', function(){
               <div class="set-row" onclick="goScreen('plan')"><div class="l"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V8a5 5 0 0110 0v3"/></svg>Abbonamento e pagamenti</div><span class="val">›</span></div>
               <div class="set-row" onclick="openGift()" style="cursor:pointer;display:none;"><div class="l"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M3 12h18M12 8v13M12 8S9 3 6.5 4.5 8 8 12 8zM12 8s3-5 5.5-3.5S16 8 12 8z"/></svg>Regala MentalClass</div><span class="val">›</span></div>
               <div class="set-row" onclick="openLegal('privacy')" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>Privacy e termini</div><span class="val">›</span></div>
+                            <div class="set-row set-danger" onclick="apriEliminaAccount()" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Elimina account</div><span class="val">›</span></div>
                             <div class="set-row" onclick="backToLanding()"><div class="l"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Esci</div><span class="val">›</span></div>
             </div>
             <p style="font-size:11px;color:var(--tx-dim);line-height:1.6;margin:18px 4px 0;text-align:center;">MentalClass è uno strumento di allenamento mentale con finalità educativa e formativa. Non è un servizio sanitario e non fornisce diagnosi, terapie o supporto psicologico. Per un bisogno di salute rivolgiti a un professionista sanitario.</p>
@@ -3116,11 +3172,18 @@ document.addEventListener('DOMContentLoaded', function(){
 
       <!-- PLAN -->
       <section class="app-screen" id="s-plan" style="display:none;">
+        <div id="plan-app">
+          <div class="screen-title"><h1 class="disp">Il tuo account</h1></div>
+          <div class="pane" style="max-width:560px;margin:18px auto 14px;padding:20px;">
+            <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--lime);font-weight:800;">Piano</div>
+            <div id="plan-app-tx" style="margin:8px 0 0;font-size:14px;color:var(--cream);line-height:1.6;">Piano Free attivo.</div>
+          </div>
+          <p id="plan-app-nota" style="max-width:560px;margin:0 auto;font-size:12.5px;color:var(--tx-mut);line-height:1.6;">In questa app non è possibile acquistare abbonamenti. Se hai già un abbonamento MentalClass, accedi con lo stesso account: i contenuti Premium si sbloccano da soli.</p>
+        </div>
         <div class="plan-head">
           <span class="logo"></span>
           <h1 class="disp">Tutta MentalClass<br>senza limiti</h1>
-          <div class="tag">Audio, Compagno, sfide e Magazine: un unico abbonamento.</div>
-          <div class="social-proof">★★★★★ &nbsp;<b>8 lettori su 10</b> scelgono l'annuale</div>
+          <div class="tag">Audio, Compagno Invisibile e Magazine: un unico abbonamento.</div>
         </div>
         <div class="lampo-plan" id="lampo-plan">⚡ OFFERTA WEBINAR ATTIVA · Annuale a €29,99 invece di €49,99 · scade tra <span class="cd" id="lampo-plan-cd">15:00</span></div>
         <div class="lampo-plan" id="promo-banner-plan" style="display:none;"></div>
@@ -3164,7 +3227,7 @@ document.addEventListener('DOMContentLoaded', function(){
             <div class="ps" id="plan-annual-ps">Equivalgono a €4,17/mese</div>
             <p class="ft"><b>✓</b> Magazine completo, ogni numero</p>
             <p class="ft"><b>✓</b> Tutti gli audio, i percorsi e i webinar registrati</p>
-            <p class="ft"><b>✓</b> Sfide Mentali e Compagno Invisibile senza limiti</p>
+            <p class="ft"><b>✓</b> Compagno Invisibile: 3 "parla" e 3 "ascolta" al giorno</p>
             <p class="ft"><b>✓</b> Compagno: 3 "parla" e 3 "ascolta" al giorno</p>
             <p class="ft"><b>✓</b> 7 giorni di prova gratuita</p>
             <button class="btn btn-lime" id="plan-btn-annuale" onclick="abbonati('annuale')">Inizia la prova gratuita</button>
@@ -3185,7 +3248,11 @@ document.addEventListener('DOMContentLoaded', function(){
           <div id="plan-attivo-tx" style="margin:8px 0 14px;font-size:14px;color:var(--cream);line-height:1.6;"></div>
           <button class="btn btn-ghost" style="width:100%;" onclick="gestisciAbbonamento()">Gestisci: carta, fatture, disdetta</button>
         </div>
-        <p class="price-note">Un solo abbonamento apre tutto MentalClass: audio e percorsi, il Compagno Invisibile, le sfide e il Magazine. Uno spazio per allenare la mente, ogni giorno.</p>
+        <div id="plan-iap-legal">
+          <p>Gli abbonamenti si rinnovano automaticamente alla fine di ogni periodo, salvo disdetta almeno 24 ore prima della scadenza. Il pagamento viene addebitato sul tuo account <span class="iap-store">Apple</span> alla conferma dell'acquisto. Puoi gestire o disdire l'abbonamento in qualsiasi momento dalle impostazioni del tuo account <span class="iap-store">Apple</span>. Con la prova gratuita dell'Annuale, l'addebito parte alla fine dei 7 giorni se non disdici prima.</p>
+          <p><a href="#" onclick="ripristinaAcquisti();return false;">Ripristina acquisti</a> · <a href="#" onclick="openLegal('termini');return false;">Termini di utilizzo</a> · <a href="#" onclick="openLegal('privacy');return false;">Privacy</a></p>
+        </div>
+        <p class="price-note">Un solo abbonamento apre tutto MentalClass: audio e percorsi, il Compagno Invisibile e il Magazine. Uno spazio per allenare la mente, ogni giorno.</p>
       </section>
 
       <!-- REFERRAL -->
@@ -3441,6 +3508,39 @@ document.addEventListener('DOMContentLoaded', function(){
 </div>
 
 <!-- PRIVACY E TERMINI (bozza completa: da far verificare al legale) -->
+<!-- ELIMINA ACCOUNT -->
+<div class="modal-bg" id="del-bg" onclick="if(event.target===this)chiudiEliminaAccount()">
+  <div class="modal" style="max-width:440px;">
+    <div class="m-head"><h3 class="disp" style="margin:0;">Elimina account</h3><div class="cancel" onclick="chiudiEliminaAccount()">Chiudi ×</div></div>
+    <p style="font-size:13.5px;color:var(--tx-mut);line-height:1.6;margin:0 0 12px;">L'eliminazione è <b style="color:var(--cream);">definitiva</b>: cancelliamo il tuo profilo, il diario, gli obiettivi, i preferiti, i progressi e le conversazioni del Compagno. Non si può annullare.</p>
+    <p id="del-abb" style="display:none;font-size:12.5px;color:var(--gold);line-height:1.55;margin:0 0 12px;"></p>
+    <label style="font-size:12px;color:var(--tx-dim);">Per confermare scrivi <b style="color:var(--cream);">ELIMINA</b></label>
+    <input id="del-conf" type="text" autocomplete="off" oninput="document.getElementById('del-go').disabled = this.value.trim().toUpperCase() !== 'ELIMINA'"
+      style="width:100%;margin:6px 0 16px;padding:12px 13px;border-radius:10px;border:1px solid var(--pane-b);background:rgba(0,0,0,.3);color:var(--cream);font-size:14px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;">
+    <button class="btn" id="del-go" disabled onclick="confermaEliminaAccount()" style="width:100%;background:#c9483f;color:#fff;border:0;">Elimina definitivamente</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="chiudiEliminaAccount()">Annulla</button>
+  </div>
+</div>
+
+<!-- SEGNALA / BLOCCA -->
+<div class="modal-bg" id="seg-bg" onclick="if(event.target===this)chiudiSegnala()">
+  <div class="modal" style="max-width:440px;">
+    <div class="m-head"><h3 class="disp" style="margin:0;" id="seg-tit">Segnala</h3><div class="cancel" onclick="chiudiSegnala()">Chiudi ×</div></div>
+    <p style="font-size:12.5px;color:var(--tx-mut);line-height:1.55;margin:0 0 12px;">La segnalazione è anonima: l'altra persona non saprà che sei stato tu. La moderazione la controlla entro 24 ore.</p>
+    <div class="seg-motivi" id="seg-motivi">
+      <label><input type="radio" name="seg-m" value="Offensivo o molesto"> Offensivo o molesto</label>
+      <label><input type="radio" name="seg-m" value="Contenuti sessuali o inappropriati"> Contenuti sessuali o inappropriati</label>
+      <label><input type="radio" name="seg-m" value="Spam o pubblicità"> Spam o pubblicità</label>
+      <label><input type="radio" name="seg-m" value="Non c'entra con gli obiettivi"> Non c'entra con gli obiettivi</label>
+      <label><input type="radio" name="seg-m" value="Altro"> Altro</label>
+    </div>
+    <textarea id="seg-nota" maxlength="500" placeholder="Aggiungi un dettaglio (facoltativo)" style="width:100%;min-height:70px;margin:10px 0 12px;padding:11px 13px;border-radius:10px;border:1px solid var(--pane-b);background:rgba(0,0,0,.3);color:var(--cream);font:inherit;font-size:13px;resize:vertical;"></textarea>
+    <label id="seg-blocca-row" style="display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--cream);line-height:1.45;margin:0 0 14px;cursor:pointer;"><input type="checkbox" id="seg-blocca" checked style="margin-top:2px;"> Blocca anche questa persona: chiudiamo la conversazione e non vi incontrerete più.</label>
+    <button class="btn btn-lime" id="seg-go" style="width:100%;" onclick="inviaSegnala()">Invia segnalazione</button>
+    <button class="btn btn-ghost" id="seg-solo-blocca" style="width:100%;margin-top:10px;" onclick="soloBlocca()">Blocca senza segnalare</button>
+  </div>
+</div>
+
 <div class="modal-bg" id="legal-bg" onclick="if(event.target===this)closeLegal()">
   <div class="modal" style="max-width:640px;">
     <div class="m-head"><h3 class="disp" style="margin:0;">Privacy e Termini</h3><div class="cancel" onclick="closeLegal()">Chiudi ×</div></div>
@@ -3490,7 +3590,10 @@ document.addEventListener('DOMContentLoaded', function(){
       · <b>Stripe</b> — gestione dei pagamenti e degli abbonamenti.<br>
       · <b>Vercel</b> — pubblicazione e distribuzione dell'applicazione web.<br>
       · <b>Sender</b> — invio delle email di servizio e della newsletter.<br>
-      · <b>Aruba</b> — registrazione del dominio e caselle di posta.</p>
+      · <b>Aruba</b> — registrazione del dominio e caselle di posta.<br>
+      · <b>Google (Google Analytics 4)</b> — statistiche sulle visite alle pagine pubbliche del sito, solo se dai il consenso dal banner cookie.<br>
+      · <b>Plausible Analytics</b> — statistiche anonime d'uso, senza cookie e senza dati personali.<br>
+      · <b>Apple e Google (App Store e Google Play)</b> e <b>RevenueCat</b> — solo se acquisti l'abbonamento dall'app per telefono: gestione del pagamento e verifica dell'abbonamento attivo.</p>
       <p>I dati possono inoltre essere comunicati a consulenti fiscali e legali, e alle autorità quando previsto dalla legge.</p>
 
       <h6>8. Trasferimenti fuori dall'Unione Europea</h6>
@@ -3792,7 +3895,7 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
     <div id="comp-room" style="display:none;">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-        <div style="font-size:12.5px;color:var(--tx-mut);">In stanza con <b style="color:var(--cream);" id="comp-peer">Anonimo</b></div>
+        <div style="font-size:12.5px;color:var(--tx-mut);">In stanza con <b style="color:var(--cream);" id="comp-peer">Anonimo</b> <span class="seg-link" onclick="apriSegnala('compagno')">Segnala o blocca</span></div>
         <label style="font-size:11px;color:var(--tx-dim);display:flex;align-items:center;gap:6px;cursor:pointer;">Mostra il mio nome <div class="toggle off" id="comp-anon" onclick="this.classList.toggle('off');compAnonToast(this)"></div></label>
       </div>
       <div class="scambi-riga">
@@ -3804,7 +3907,7 @@ document.addEventListener('DOMContentLoaded', function(){
         <div class="rec-btn"><div class="mic" id="comp-mic" onclick="compSend()" style="width:52px;height:52px;"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></div></div>
         <button class="btn btn-ghost" style="padding:11px 20px;font-size:12.5px;" onclick="compTermina()">Termina</button>
       </div>
-      <p style="font-size:10.5px;color:var(--tx-dim);text-align:center;margin:12px 0 0;">Massimo 7 scambi da 60 secondi · niente testo · niente follow · <span style="color:#e0655f;cursor:pointer;" onclick="toast('⚑ Segnalazione inviata alla moderazione')">segnala</span></p>
+      <p style="font-size:10.5px;color:var(--tx-dim);text-align:center;margin:12px 0 0;">Massimo 7 scambi da 60 secondi · niente testo · niente follow · <span style="color:#e0655f;cursor:pointer;" onclick="apriSegnala('compagno')">segnala</span></p>
     </div>
     <div id="comp-end" style="display:none;text-align:center;padding:10px 0;">
       <div style="font-size:30px;">🤝</div>
@@ -4031,6 +4134,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   async function backToLanding(){
     if(COLLEGATO && MC.utenteCorrente()){
+      try{ if(window.MCI) await MCI.esci(); }catch(e){}
       try{ await MC.account.esci(); }catch(e){}
     }
     if(window.MCA) MCA.reset();
@@ -4138,6 +4242,9 @@ document.addEventListener('DOMContentLoaded', function(){
   /* Mescolamento stabile per giorno: stesso giorno = stesso ordine,
      giorno diverso = frasi diverse. */
   window.MC_SFIDE_IN_ARRIVO = true;   /* metti false quando le Sfide vanno online */
+  /* Sfide del tutto nascoste (anche dalla barra): metti false per farle ricomparire con l'etichetta "In arrivo" */
+  window.MC_SFIDE_NASCOSTE = true;
+  if(window.MC_SFIDE_NASCOSTE) document.documentElement.classList.add('sfide-off');
   /* Durata reale: quella letta dal file la prima volta che l'audio viene aperto
      prevale su quella salvata nel pannello */
   var MC_DUR = {};
@@ -4712,7 +4819,12 @@ document.addEventListener('DOMContentLoaded', function(){
     var pw = document.getElementById('pl-paywall');
     if(pw) pw.classList.add('show');
     var cta = document.getElementById('pw-cta-btn');
-    if(cta) cta.textContent = eAppNativa() ? 'Scopri come abbonarti' : 'Prova gratis 7 giorni';
+    if(cta) cta.textContent = acquistiConLink() ? 'Abbonati su mentalclass.it' : 'Prova gratis 7 giorni';
+    if(acquistiNascosti()){
+      var t = document.getElementById('pw-t'), s2 = document.getElementById('pw-s');
+      if(t) t.textContent = 'Contenuto per abbonati';
+      if(s2) s2.textContent = 'L\'audio completo è riservato agli abbonati MentalClass. Se sei abbonato, accedi con il tuo account e si sblocca da solo.';
+    }
     if(window.MCA) MCA.evento('paywall audio mostrato', {
       audio: (state.audioCorrente && state.audioCorrente.titolo) || ''
     });
@@ -7021,6 +7133,19 @@ document.addEventListener('DOMContentLoaded', function(){
     if(nome === 'sfide') caricaSfide();
     if(nome === 'supporto') caricaCompagno();
     if(nome === 'home') sincronizzaHome();
+    if(nome === 'plan' && acquistiNascosti()){
+      try{
+        var stA = MC.abbonamento.stato(), txA = document.getElementById('plan-app-tx'), nt = document.getElementById('plan-app-nota');
+        var dA = stA.scadenza ? new Date(stA.scadenza).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' }) : null;
+        if(txA) txA.innerHTML = !stA.abbonato ? 'Piano Free attivo.'
+          : stA.omaggio ? '<b>Premium in omaggio</b>' + (dA ? ' attivo fino al <b>' + dA + '</b>' : '') + '. Non si rinnova da solo.'
+          : stA.stato === 'in_prova' ? '<b>Prova gratuita</b>' + (dA ? ' fino al <b>' + dA + '</b>' : '') + '.'
+          : '<b>Premium attivo</b>' + (dA ? ' fino al <b>' + dA + '</b>' : '') + '.';
+        if(nt) nt.style.display = stA.abbonato ? 'none' : '';
+      }catch(e){}
+      return;
+    }
+    if(nome === 'plan' && acquistiIAP()){ caricaPiani(); setTimeout(prezziInApp, 300); return; }
     if(nome === 'plan'){ caricaPiani(); mostraPromo('plan'); if(REFERRAL_ATTIVO) aggiornaPrezzoConSconto(); if(window.MCA) MCA.evento('piani visti'); }
     if(nome === 'referral'){
       if(!REFERRAL_ATTIVO){ goScreen('home'); return; }   /* disattivato: non accessibile */
@@ -7133,7 +7258,12 @@ document.addEventListener('DOMContentLoaded', function(){
         box.style.display = 'block';
         /* omaggio: niente Stripe da gestire, i piani restano acquistabili */
         var btnGest = box.querySelector('button');
-        if(btnGest) btnGest.style.display = st.omaggio ? 'none' : '';
+        if(btnGest){
+          var daStore = st.fonte === 'app_store' || st.fonte === 'play_store';
+          var nascondi = st.omaggio || (eAppNativa() && !daStore);
+          btnGest.style.display = nascondi ? 'none' : '';
+          btnGest.textContent = daStore ? 'Gestisci o disdici l\'abbonamento' : 'Gestisci: carta, fatture, disdetta';
+        }
         if(st.omaggio){ return; }
 
         /* --- Regola upgrade/downgrade, come le app migliori --- */
@@ -7279,6 +7409,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     ['up-card','side-up'].forEach(function(id){
       var box = document.getElementById(id); if(!box) return;
+      box.classList.toggle('pc-premium', !!c);
       if(!box.dataset.orig){
         box.dataset.orig = JSON.stringify(['k','t','p','b'].map(function(x){ var e = box.querySelector('[data-pc="'+x+'"]'); return e ? e.textContent : ''; }));
       }
@@ -7394,6 +7525,196 @@ document.addEventListener('DOMContentLoaded', function(){
     return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
   }
 
+  /* =====================================================================
+     PAGAMENTI DENTRO L'APP (App Store / Google Play) — UN SOLO INTERRUTTORE
+     'nessuno' → nell'app non si compra nulla e non si mostrano prezzi,
+                 codici o pulsanti "Abbonati" (come Netflix, Kindle, Spotify
+                 fuori dagli USA). Chi è abbonato dal sito entra già Premium.
+                 È la modalità con cui inviare l'app in revisione.
+     'link'    → il pulsante "Abbonati" apre mentalclass.it nel browser.
+                 Da accendere SOLO dopo che Apple (External Link Account /
+                 External Purchase Link) e Google (programma pagamenti
+                 esterni) hanno approvato: altrimenti l'app viene rifiutata.
+     Sul sito e nella webapp non cambia nulla.
+     ===================================================================== */
+  var MC_ACQUISTI_APP = 'iap';   /* 'iap' = acquisti in-app con Apple e Google (scelta attuale) */
+  var MC_SITO_ABBONAMENTO = 'https://www.mentalclass.it/app.html?vai=piani';
+  /* acquisti in-app pronti? (chiavi RevenueCat inserite in mc-acquisti.js) */
+  function iapPronti(){ return !!(window.MCI && MCI.disponibile()); }
+  function acquistiIAP(){ return eAppNativa() && MC_ACQUISTI_APP === 'iap' && iapPronti(); }
+  /* senza chiavi, per sicurezza l'app non mostra pulsanti di acquisto */
+  function acquistiNascosti(){ return eAppNativa() && (MC_ACQUISTI_APP === 'nessuno' || (MC_ACQUISTI_APP === 'iap' && !iapPronti())); }
+  function acquistiConLink(){ return eAppNativa() && MC_ACQUISTI_APP === 'link'; }
+  function apriAbbonamentoSulSito(){
+    try{ var w = window.open(MC_SITO_ABBONAMENTO, '_blank'); if(!w) window.location.href = MC_SITO_ABBONAMENTO; }
+    catch(e){ window.location.href = MC_SITO_ABBONAMENTO; }
+  }
+
+  /* =====================================================
+     ELIMINA ACCOUNT (obbligatorio per App Store e Google Play)
+     ===================================================== */
+  function apriEliminaAccount(){
+    if(!COLLEGATO || !MC.utenteCorrente()){ toast('Accedi per gestire il tuo account'); return; }
+    var inp = document.getElementById('del-conf'); if(inp) inp.value = '';
+    var go = document.getElementById('del-go'); if(go){ go.disabled = true; go.textContent = 'Elimina definitivamente'; }
+    var ab = document.getElementById('del-abb');
+    try{
+      var st = MC.abbonamento.stato();
+      if(ab){
+        if(st.abbonato && !st.omaggio){
+          ab.textContent = (st.fonte === 'app_store') ? 'Hai un abbonamento attivo con Apple: eliminare l\'account non lo annulla. Prima disdicilo da Impostazioni → il tuo nome → Abbonamenti.'
+            : (st.fonte === 'play_store') ? 'Hai un abbonamento attivo con Google Play: eliminare l\'account non lo annulla. Prima disdicilo da Google Play → Abbonamenti.'
+            : 'Hai un abbonamento attivo: eliminare l\'account non annulla da solo i pagamenti. Prima disdici l\'abbonamento, poi elimina l\'account.';
+          ab.style.display = 'block';
+        } else ab.style.display = 'none';
+      }
+    }catch(e){ if(ab) ab.style.display = 'none'; }
+    document.getElementById('del-bg').classList.add('show');
+  }
+  function chiudiEliminaAccount(){ document.getElementById('del-bg').classList.remove('show'); }
+  async function confermaEliminaAccount(){
+    var go = document.getElementById('del-go');
+    if(go){ go.disabled = true; go.textContent = 'Elimino…'; }
+    try{
+      await MC.account.eliminaAccount();
+      try{ localStorage.clear(); sessionStorage.clear(); }catch(e){}
+      chiudiEliminaAccount();
+      toast('Account eliminato. Grazie per aver allenato la mente con noi.');
+      setTimeout(function(){ window.location.href = 'index.html'; }, 1600);
+    }catch(e){
+      toast('Non sono riuscito a eliminare l\'account: ' + e.message + '. Scrivi a privacy@mentalclass.it');
+      if(go){ go.disabled = false; go.textContent = 'Elimina definitivamente'; }
+    }
+  }
+
+  /* arrivo dal sito con ?vai=piani (link dall'app): apro la schermata piani */
+  try{
+    if(new URLSearchParams(location.search).get('vai') === 'piani'){
+      window.addEventListener('load', function(){ setTimeout(function(){ try{ if(MC.utenteCorrente()) goScreen('plan'); }catch(e){} }, 1800); });
+    }
+  }catch(e){}
+
+  /* =====================================================
+     SEGNALA E BLOCCA (Compagno Invisibile e Sfide)
+     ===================================================== */
+  var SEGNALA_CTX = null;
+  function apriSegnala(contesto, stanzaId, messaggioId){
+    if(!COLLEGATO || !MC.utenteCorrente()){ toast('Accedi per segnalare'); return; }
+    var stanza = stanzaId || (contesto === 'compagno' && typeof STANZA !== 'undefined' && STANZA ? STANZA.id : null);
+    SEGNALA_CTX = { contesto: contesto, stanza: stanza, messaggio: messaggioId || null };
+    document.querySelectorAll('input[name="seg-m"]').forEach(function(r){ r.checked = false; });
+    var n = document.getElementById('seg-nota'); if(n) n.value = '';
+    var puoBloccare = !!stanza;   /* nelle Sfide si parla con l'esperto: solo segnalazione */
+    document.getElementById('seg-blocca-row').style.display = puoBloccare ? 'flex' : 'none';
+    document.getElementById('seg-solo-blocca').style.display = (puoBloccare && contesto === 'compagno') ? '' : 'none';
+    document.getElementById('seg-blocca').checked = puoBloccare;
+    document.getElementById('seg-tit').textContent = puoBloccare ? 'Segnala o blocca' : 'Segnala';
+    document.getElementById('seg-bg').classList.add('show');
+  }
+  function chiudiSegnala(){ document.getElementById('seg-bg').classList.remove('show'); }
+  function dopoBlocco(){
+    /* conversazione attiva con la persona bloccata: la chiudo */
+    if(SEGNALA_CTX && SEGNALA_CTX.contesto === 'compagno' && typeof STANZA !== 'undefined' && STANZA && STANZA.id === SEGNALA_CTX.stanza){
+      try{ compEnd(); }catch(e){}
+    }
+    if(SEGNALA_CTX && SEGNALA_CTX.contesto === 'voce_in_attesa'){
+      var el = document.querySelector('.voce-attesa[data-stanza="' + SEGNALA_CTX.stanza + '"]');
+      if(el) el.remove();
+    }
+  }
+  async function inviaSegnala(){
+    var sel = document.querySelector('input[name="seg-m"]:checked');
+    if(!sel){ toast('Scegli il motivo della segnalazione'); return; }
+    var blocca = document.getElementById('seg-blocca-row').style.display !== 'none' && document.getElementById('seg-blocca').checked;
+    var btn = document.getElementById('seg-go'); btn.disabled = true; btn.textContent = 'Invio…';
+    try{
+      await MC.moderazione.segnala(SEGNALA_CTX.contesto, sel.value, (document.getElementById('seg-nota').value || '').trim(),
+        SEGNALA_CTX.stanza, SEGNALA_CTX.messaggio, blocca);
+      chiudiSegnala();
+      toast(blocca ? 'Segnalazione inviata e persona bloccata.' : 'Segnalazione inviata. Grazie: la controlliamo entro 24 ore.');
+      if(blocca) dopoBlocco();
+    }catch(e){
+      toast('Non sono riuscito a inviare la segnalazione. Scrivi a supporto@mentalclass.it');
+    }finally{ btn.disabled = false; btn.textContent = 'Invia segnalazione'; }
+  }
+  async function soloBlocca(){
+    if(!SEGNALA_CTX || !SEGNALA_CTX.stanza) return;
+    try{
+      await MC.moderazione.blocca(SEGNALA_CTX.stanza);
+      chiudiSegnala(); toast('Persona bloccata: non vi incontrerete più.'); dopoBlocco();
+    }catch(e){ toast('Non sono riuscito a bloccare. Riprova.'); }
+  }
+
+  /* Filtro dei testi che altre persone possono leggere (descrizione nel
+     Compagno): insulti, volgarità, contenuti sessuali, contatti e link. */
+  function testoInappropriato(t){
+    var x = ' ' + String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') + ' ';
+    var parole = /(\b(cazz|minchi|fanculo|vaffanculo|stronz|troi|puttan|coglion|merd|bastard|froci|negr|ritardat|porc[oa] ?(dio|madonna)|dio ?(cane|porco)|scop(a|are|iamo)|sesso|porno|nud[oaie]|tette|pompin|segh[ei])\w*)/;
+    var contatti = /(https?:\/\/|www\.|\.com\b|\.it\b|@[a-z0-9_]{3,}|instagram|telegram|whatsapp|\b\d{3}[ .-]?\d{3}[ .-]?\d{3,4}\b)/;
+    return parole.test(x) || contatti.test(x);
+  }
+
+  /* =====================================================
+     ACQUISTO IN-APP (Apple / Google) — solo nell'app
+     ===================================================== */
+  async function acquistaInApp(codice){
+    if(!COLLEGATO || !MC.utenteCorrente()){ toast('Accedi per abbonarti'); return; }
+    try{ var st0 = MC.abbonamento.stato(); if(st0.abbonato && !st0.omaggio){ toast('Hai già un abbonamento attivo.'); return; } }catch(e){}
+    var btn = document.getElementById('plan-btn-' + codice);
+    var testo = btn ? btn.textContent : '';
+    if(btn){ btn.disabled = true; btn.textContent = 'Attendo la conferma…'; }
+    try{
+      await MCI.avvia(MC.utenteCorrente().id);
+      var ok = await MCI.compra(codice);
+      if(!ok){ if(btn){ btn.disabled = false; btn.textContent = testo; } return; }
+      /* Premium subito sul telefono; il server lo conferma in pochi secondi */
+      state.plan = 'premium';
+      try{ confetti(40); }catch(e){}
+      chime();
+      toast('Benvenuto in MentalClass Premium.');
+      for(var i = 0; i < 8; i++){
+        await new Promise(function(r){ setTimeout(r, 2000); });
+        try{ await MC.caricaProfilo(); if(MC.abbonato()) break; }catch(e){}
+      }
+      try{ aggiornaCardPiano(); caricaPiani(); }catch(e){}
+      goScreen('home');
+    }catch(e){
+      toast(e.message || 'Acquisto non riuscito. Riprova.');
+      if(btn){ btn.disabled = false; btn.textContent = testo; }
+    }
+  }
+  async function ripristinaAcquisti(){
+    if(!COLLEGATO || !MC.utenteCorrente()){ toast('Accedi con il tuo account prima di ripristinare.'); return; }
+    try{
+      await MCI.avvia(MC.utenteCorrente().id);
+      var ok = await MCI.ripristina();
+      if(!ok){ toast('Nessun abbonamento da ripristinare su questo account dello store.'); return; }
+      toast('Acquisti ripristinati.');
+      for(var i = 0; i < 5; i++){
+        await new Promise(function(r){ setTimeout(r, 2000); });
+        try{ await MC.caricaProfilo(); if(MC.abbonato()) break; }catch(e){}
+      }
+      try{ aggiornaCardPiano(); caricaPiani(); }catch(e){}
+    }catch(e){ toast(e.message || 'Ripristino non riuscito.'); }
+  }
+  /* prezzi veri dello store nella schermata piani */
+  async function prezziInApp(){
+    if(!acquistiIAP()) return;
+    try{
+      if(MC.utenteCorrente()) await MCI.avvia(MC.utenteCorrente().id);
+      var pk = await MCI.piani();
+      [['mensile','#s-plan .p-card:first-child .pp','/mese'],['annuale','#plan-annual-pp','/anno']].forEach(function(x){
+        var el = document.querySelector(x[1]); var b = document.getElementById('plan-btn-' + x[0]);
+        var p = pk && pk[x[0]];
+        if(p && p.product && el){ el.innerHTML = p.product.priceString + '<small>' + x[2] + '</small>'; }
+        if(!p && b){ b.disabled = true; b.textContent = 'Non disponibile'; }
+      });
+      var ps = document.getElementById('plan-annual-ps');
+      var a = pk && pk.annuale && pk.annuale.product;
+      if(ps && a && a.pricePerMonthString) ps.textContent = 'Equivalgono a ' + a.pricePerMonthString + '/mese';
+    }catch(e){}
+  }
+
   function mostraAvvisoAbbonatiSulSito(){
     var m = document.getElementById('app-abb-bg');
     if(m) m.classList.add('show');
@@ -7403,6 +7724,9 @@ document.addEventListener('DOMContentLoaded', function(){
     /* Anche in app usiamo lo stesso flusso della webapp: consenso al recesso
        e poi checkout Stripe vero. In nativo il link Stripe si apre nel
        browser esterno (vedi mc-api.js). */
+    if(acquistiNascosti()){ toast('In questa app non è possibile acquistare abbonamenti.'); return; }
+    if(acquistiConLink()){ apriAbbonamentoSulSito(); return; }
+    if(acquistiIAP()){ return acquistaInApp(codice); }
     if(!COLLEGATO){ toast('Il pagamento si attiva con il backend collegato'); return; }
     if(!MC.utenteCorrente()){ toast('Accedi per abbonarti'); return; }
     var btn = document.getElementById('plan-btn-' + codice);
@@ -7486,6 +7810,14 @@ document.addEventListener('DOMContentLoaded', function(){
 
   async function gestisciAbbonamento(){
     if(!COLLEGATO){ toast('Disponibile con il backend collegato'); return; }
+    var fonte = null; try{ fonte = MC.abbonamento.stato().fonte; }catch(e){}
+    if(fonte === 'app_store' || fonte === 'play_store'){
+      if(typeof eAppNativa === 'function' && eAppNativa() && window.MCI){ MCI.gestisci(); return; }
+      toast(fonte === 'app_store'
+        ? 'Hai attivato l\'abbonamento dall\'app: lo gestisci da iPhone → Impostazioni → il tuo nome → Abbonamenti.'
+        : 'Hai attivato l\'abbonamento dall\'app: lo gestisci da Google Play → Pagamenti e abbonamenti → Abbonamenti.', 7000);
+      return;
+    }
     try{ await MC.abbonamento.gestisci(); }
     catch(e){ toast(e.message); }
   }
@@ -7595,6 +7927,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function applicaProfilo(){
     var p = MC.profiloCorrente();
     if(!p) return;
+    try{ if(acquistiIAP() && MC.utenteCorrente()) MCI.avvia(MC.utenteCorrente().id); }catch(e){}
     /* login/registrazione riusciti: da ora l'app è liberamente navigabile,
        la X del modulo non deve più rimandare alla landing */
     AUTH_OBBLIGATORIA = false;
@@ -7921,6 +8254,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   function goScreen(id, daStorico){
+    if(id === 'sfide' && window.MC_SFIDE_NASCOSTE){ return; }
     if(id === 'sfide' && window.MC_SFIDE_IN_ARRIVO){ toast('Le Sfide arrivano dopo il lancio'); return; }
     /* uscendo dal reader ripulisco sempre schermo intero e indice,
        altrimenti resta un pannello sopra tutto il resto */
@@ -9416,6 +9750,7 @@ document.addEventListener('DOMContentLoaded', function(){
         try{ url = m.audio_path ? await MC.sfide.linkAudio(m.audio_path) : null; }catch(e){}
         nuova[g].push({
           who: m.autore === 'esperto' ? 'exp' : 'me',
+          id: m.id,
           len: m.durata_sec ? fmt(m.durata_sec) : '',
           url: url
         });
@@ -9557,7 +9892,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(isDone && sfidaChat[n]){
         chat = '<div class="sday-chat">'+sfidaChat[n].map(function(m){
           var urlAttr = m.url ? m.url.replace(/'/g, "\\'") : '';
-          return '<div class="scmsg'+(m.who==='exp'?' exp':'')+'"><span class="who">'+(m.who==='exp'?'Esperto':'Tu')+'</span><div class="vplayer"><div class="pp" onclick="playVoce(this, \''+urlAttr+'\')">▶</div><div class="vw">'+vwaves(14)+'</div><div class="dur">'+m.len+'</div></div></div>';
+          return '<div class="scmsg'+(m.who==='exp'?' exp':'')+'"><span class="who">'+(m.who==='exp'?'Esperto':'Tu')+(m.who==='exp' && m.id ? ' · <span class="seg-link" onclick="apriSegnala(\'sfida\', null, \''+m.id+'\')">Segnala</span>' : '')+'</span><div class="vplayer"><div class="pp" onclick="playVoce(this, \''+urlAttr+'\')">▶</div><div class="vw">'+vwaves(14)+'</div><div class="dur">'+m.len+'</div></div></div>';
         }).join('')
         + (sfidaChat[n].some(function(m){ return m.who==='exp'; })
             ? '<div class="sday-rec" style="margin-top:10px;"><div class="micbtn" style="width:34px;height:34px;" onclick="sfidaReply('+n+')"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></div><span>Rispondi all\'esperto</span></div>'
@@ -9856,7 +10191,7 @@ document.addEventListener('DOMContentLoaded', function(){
         return '<div class="voce-attesa" data-stanza="' + v.stanza_id + '">' +
           '<div class="va-top">' +
             (v.descrizione ? '<div class="va-desc">💬 ' + escapeHtml(v.descrizione) + '</div>' : '<div class="va-desc mut">Nessuna descrizione</div>') +
-            '<div class="va-when">' + quandoIt(v.creato_il) + '</div>' +
+            '<div class="va-when">' + quandoIt(v.creato_il) + ' · <span class="seg-link" onclick="apriSegnala(\'voce_in_attesa\', \'' + v.stanza_id + '\')">Segnala</span></div>' +
           '</div>' +
           '<div class="vplayer" onclick="ascoltaVoceAttesa(\'' + v.stanza_id + '\', \'' + v.audio_path + '\', this)">' +
             '<div class="pp">▶</div><div class="vw">' + vwaves(20) + '</div>' +
@@ -10031,6 +10366,8 @@ document.addEventListener('DOMContentLoaded', function(){
         /* Salvo la descrizione ("di cosa vuoi parlare") sulla stanza,
            se l'ho scritta. Solo per chi APRE la conversazione. */
         var descTxt = (document.getElementById('parla-desc-txt') || {}).value || '';
+        /* filtro sui testi visibili ad altri: parole offensive, contatti, link */
+        if(descTxt.trim() && testoInappropriato(descTxt)){ descTxt = ''; toast('La descrizione conteneva parole o contatti non ammessi e non è stata pubblicata.', 4500); }
         if(descTxt.trim()){
           try{ await MC.compagno.impostaDescrizione(stanza.id, descTxt.trim()); stanza.descrizione = descTxt.trim(); }
           catch(e){ /* se fallisce, non blocco l'invio */ }
@@ -10805,6 +11142,14 @@ document.addEventListener('DOMContentLoaded', function(){
   /* init */
   applyPersonalization();
   if(eAppNativa()) document.body.classList.add('native');
+  if(acquistiIAP()){
+    document.body.classList.add('acquisti-app');
+    try{ if(window.Capacitor.getPlatform() === 'android') document.querySelectorAll('.iap-store').forEach(function(e){ e.textContent = 'Google Play'; }); }catch(e){}
+  }
+  if(acquistiNascosti()){
+    document.body.classList.add('no-acquisti');
+    var _at = document.getElementById('auth-tag-signup'); if(_at) _at.textContent = 'Crea il tuo account gratuito.';
+  }
   (function(){ var src = document.getElementById('mc-splash-logo'); src = src && src.src;
     if(src) document.querySelectorAll('.mc-logo-img').forEach(function(im){ im.src = src; }); })();
   /* nasconde lo schermo di caricamento MentalClass */

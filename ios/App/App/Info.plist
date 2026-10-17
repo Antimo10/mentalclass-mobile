@@ -4,6 +4,12 @@
 <dict>
   <key>CAPACITOR_DEBUG</key>
 	<string>$(CAPACITOR_DEBUG)</string>
+<key>NSCameraUsageDescription</key>
+	<string>MentalClass usa la fotocamera solo se scegli di scattare una foto da allegare a una pagina del tuo diario degli obiettivi.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MentalClass accede alle tue foto solo quando scegli un'immagine da allegare a una pagina del tuo diario degli obiettivi.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>MentalClass usa il microfono per registrare i tuoi vocali nel Compagno Invisibile e nelle sfide.</string>
 	<key>CFBundleDevelopmentRegion</key>

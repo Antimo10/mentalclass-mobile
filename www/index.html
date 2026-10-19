@@ -30,7 +30,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Playfair+Display:ital,wght@0,600;1,500;1,600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="preload" href="fonts/unbounded-700.woff2" as="font" type="font/woff2" crossorigin>
-<style>@font-face{font-family:'MCDisplay';src:url(fonts/unbounded-700.woff2) format('woff2');font-weight:100 900;font-style:normal;font-display:swap;size-adjust:80%;}</style>
+<style>@font-face{font-family:'MCDisplay';src:url(fonts/unbounded-700.woff2) format('woff2');font-weight:100 900;font-style:normal;font-display:swap;size-adjust:80%;}
+@font-face{font-family:'MCSerif';src:url(fonts/dmserif-400.woff2) format('woff2');font-weight:100 900;font-display:swap;}
+@font-face{font-family:'MCSans';src:url(fonts/intertight-500.woff2) format('woff2');font-weight:500;font-display:swap;}
+@font-face{font-family:'MCSans';src:url(fonts/intertight-600.woff2) format('woff2');font-weight:600;font-display:swap;}
+@font-face{font-family:'MCSans';src:url(fonts/intertight-700.woff2) format('woff2');font-weight:700 900;font-display:swap;}</style>
 
 <style>
   :root{
@@ -2470,6 +2474,31 @@ body.acquisti-app #lampo-bar, body.acquisti-app #promo-banner-home, body.acquist
 @media (max-width:600px){
   .audio-hero h2{ font-size:clamp(19px,6.8vw,28px) !important; }
   .deck .word, .fc-word, .disp{ font-size:clamp(20px,7vw,28px) !important; }
+}
+</style>
+
+<style id="mc-titoli-v4">
+/* TITOLI v4 — stile editoriale: serif per i titoli di pagina, sans pulito per card e sottotitoli.
+   Unbounded resta solo dove serve l'impatto del marchio (titolo della landing). */
+.audio-hero h2, .ci-title, .de-title, .deck .word, .disp:not(.hx-title), .mag-cover .h, .mr-txt h4, .onb-q, .perc-hero h2, .pl-title, .reader-sheet .dropcap:first-letter, .reader-sheet h2, .ref-hero h2, .wl-title, .screen-title h1, .sec-head h2{ font-family:'MCSerif',Georgia,'Times New Roman',serif !important; font-weight:400 !important; text-transform:none !important; letter-spacing:-.005em !important; line-height:1.05 !important; }
+.a-card .art span, .a-card.in-arrivo::after, .comp-card h4, .deck-end h4, .demo-audio-cards .dac, .demo-mini-cards .dmc, .dq-card h3, .feat h3, .gift-plan .pn, .issue-cov .ch, .issue-meta h3, .issue-row[data-arrivo] .issue-cov::after, .mc-pro .mc-m, .modal h3, .mr-gate h4, .p-card .pn, .paywall .t, .ph-greet, .ph-mag-meta .t, .ph-title, .rd-lock-in h4, .reader-paywall h4, .ref-band h3, .ref-ladder .lad-h, .rp-n, .sf-tile .info h5, .sfida-attesa .sa-t, .sfida-card h4, .sfx-potit, .sfx-stats b, .sfx-th, .sfx-tt, .side-up h4, .up-card h3, .webi-card h4, /* logo MentalClass dentro il player */
+.pl-art .pl-wm, body.native .mc-native-top .mc-crown.mc-pro, body.native .mc-native-top .mc-logo{ font-family:'MCSans','Inter',-apple-system,sans-serif !important; font-weight:600 !important; text-transform:none !important; letter-spacing:-.012em !important; line-height:1.18 !important; }
+.autore-av, .ci-quota .cq-num b, .composer .av, .conv-item .av, .cq-num, .ep-row .num, .exp-user .av, .fbpost .av, .gift-plan .pp, .lampo-bar .cd, .lampo-plan .cd, .prof-av, .proof .n, .pw-price, .rec-timer, .ref-code .cd, .ref-progress .rp-count, .ref-rung .inv, .ref-step .num, .sday .n, .sfx-cn, .stat .n, .stepper .n, .streak-card .n, .vpost .av, .wl-exp{ font-family:'MCSans','Inter',-apple-system,sans-serif !important; font-weight:700 !important; letter-spacing:-.01em !important; }
+.deck .q, .m-quote, .band .q, .saved-item .tx .q, .share-prev, .demo-quote, .ph-quote{ font-family:'MCSans','Inter',-apple-system,sans-serif !important; font-weight:600 !important; letter-spacing:-.012em !important; }
+.screen-title h1{ font-size:clamp(38px,4vw,54px) !important; }
+.sec-head h2{ font-size:clamp(34px,4.6vw,58px) !important; }
+.audio-hero h2, .perc-hero h2{ font-size:clamp(30px,3.4vw,44px) !important; }
+.deck .word{ font-size:clamp(32px,3.4vw,44px) !important; }
+.fc-word{ font-family:'MCSerif',Georgia,serif !important; text-transform:none !important; font-weight:400 !important; }
+.a-card .art span{ font-size:17px !important; }
+.row-title{ font-size:23px !important; }
+@media (max-width:600px){
+  .screen-title h1{ font-size:clamp(32px,9vw,40px) !important; }
+  .sec-head h2{ font-size:clamp(30px,8.6vw,40px) !important; }
+  .audio-hero h2, .perc-hero h2, .deck .word, .fc-word{ font-size:clamp(28px,8vw,34px) !important; }
+  .disp:not(.hx-title):not(h1){ font-size:clamp(24px,7vw,30px) !important; }
+  .a-card .art span{ font-size:15.5px !important; }
+  .row-title{ font-size:20px !important; }
 }
 </style>
 </head>
@@ -9243,7 +9272,7 @@ document.addEventListener('DOMContentLoaded', function(){
     try{
       if(document.fonts && document.fonts.load){
         await Promise.all([
-          document.fonts.load('800 60px MCDisplay'), document.fonts.load('64px "Archivo Black"'),
+          document.fonts.load('600 60px MCSans'), document.fonts.load('60px MCSerif'),
           document.fonts.load('500 24px Inter'), document.fonts.load('800 24px Inter'),
           document.fonts.load('italic 500 30px "Playfair Display"')
         ]);
@@ -9336,9 +9365,9 @@ document.addEventListener('DOMContentLoaded', function(){
     /* misura del blocco, per centrarlo in verticale */
     var blocco, altezza;
     if(meta.tipo === 'parola'){
-      var parola = String(meta.word || '').toUpperCase();
-      st('semi-condensed'); var wfs = 108;
-      for(; wfs > 56; wfs -= 4){ c.font = '800 ' + wfs + 'px MCDisplay, "Archivo Black", Impact, sans-serif'; if(c.measureText(parola).width <= maxW) break; }
+      var parola = String(meta.word || '');
+      st('normal'); var wfs = 120;
+      for(; wfs > 56; wfs -= 4){ c.font = wfs + 'px MCSerif, Georgia, serif'; if(c.measureText(parola).width <= maxW) break; }
       st('normal');
       var fonH = meta.fon ? 62 : 0;
       var defB = adatta(meta.def || '', '500 #px Inter, Arial, sans-serif', 32, 24, maxW, areaH - PILL_H - GAP - wfs - fonH - 70, 1.45);
@@ -9347,9 +9376,9 @@ document.addEventListener('DOMContentLoaded', function(){
     }else{
       var serif = meta.tipo === 'pensiero' || meta.tipo === 'oroscopo';
       var segnoH = meta.tipo === 'oroscopo' ? 114 : 0;
-      var font = serif ? 'italic 500 #px "Playfair Display", Georgia, serif' : '800 #px MCDisplay, "Archivo Black", Impact, sans-serif';
+      var font = serif ? 'italic 500 #px "Playfair Display", Georgia, serif' : '600 #px MCSans, Inter, Arial, sans-serif';
       if(!serif) st('semi-condensed');
-      var tb = adatta(testo, font, serif ? 54 : 66, 30, maxW, areaH - PILL_H - GAP - segnoH - (autore ? 110 : 60), serif ? 1.3 : 1.1);
+      var tb = adatta(testo, font, serif ? 54 : 62, 30, maxW, areaH - PILL_H - GAP - segnoH - (autore ? 110 : 60), serif ? 1.3 : 1.1);
       st('normal');
       blocco = { serif:serif, font:font, tb:tb, segnoH:segnoH };
       altezza = PILL_H + GAP + segnoH + tb.r.length * tb.lh + (autore ? 110 : 60);
@@ -9371,7 +9400,7 @@ document.addEventListener('DOMContentLoaded', function(){
     c.textBaseline = 'top';
     if(meta.tipo === 'parola'){
       st('semi-condensed');
-      c.font = '800 ' + blocco.wfs + 'px MCDisplay, "Archivo Black", Impact, sans-serif'; c.fillStyle = CREMA;
+      c.font = blocco.wfs + 'px MCSerif, Georgia, serif'; c.fillStyle = CREMA;
       c.fillText(blocco.parola, P - 4, y); st('normal');
       y += Math.round(blocco.wfs * 0.92);
       if(meta.fon){
@@ -9386,8 +9415,8 @@ document.addEventListener('DOMContentLoaded', function(){
       blocco.def.r.forEach(function(rg){ c.fillText(rg, P, y); y += blocco.def.lh; });
     }else{
       if(meta.tipo === 'oroscopo' && meta.segno){
-        st('semi-condensed'); c.font = '800 94px MCDisplay, "Archivo Black", Impact, sans-serif'; c.fillStyle = CREMA;
-        c.fillText(String(meta.segno).toUpperCase(), P - 4, y); st('normal');
+        st('semi-condensed'); c.font = '104px MCSerif, Georgia, serif'; c.fillStyle = CREMA;
+        c.fillText(String(meta.segno), P - 4, y); st('normal');
         y += blocco.segnoH;
       }
       /* virgolette giganti in trasparenza */

@@ -363,19 +363,39 @@ const MC = (function(){
       return data || [];
     },
 
+    /* Oroscopo del MESE per un segno: si pubblica (o si programma) per il
+       1° del mese e resta lo stesso fino alla fine del mese.
+       Regola: vale quello del segno con la data più recente che non sia
+       nel futuro; se nessuno ha la data, quello senza data. */
+    async oroscopoDelMese(segno){
+      if(!segno) return null;
+      const lista = await contenuti.archivio('oroscopo');
+      const oggi = new Date();
+      const oggiStr = oggi.getFullYear() + '-' + String(oggi.getMonth()+1).padStart(2,'0') + '-' + String(oggi.getDate()).padStart(2,'0');
+      const delSegno = lista.filter(o => o && o.extra && String(o.extra.segno || '').toLowerCase() === String(segno).toLowerCase());
+      const datati = delSegno.filter(o => o.data && String(o.data).slice(0,10) <= oggiStr)
+        .sort((a, b) => String(b.data).localeCompare(String(a.data)));
+      if(datati.length) return datati[0];
+      return delSegno.find(o => !o.data) || null;
+    },
+
     /* Tutto il necessario per la home, in una sola chiamata */
     async perLaHome(){
       const p = profilo || {};
-      const [frasi, pensieri, dizionario, oroscopo, consumi, archivioFrasi] = await Promise.all([
-        contenuti.delGiorno('frase'),
-        contenuti.delGiorno('pensiero'),
-        contenuti.delGiorno('dizionario'),
+      const [frasi, pensieri, dizionario, oroscopoRpc, consumi, archivioFrasi, archivioPensieri, archivioDizionario, oroscopoMese] = await Promise.all([
+        contenuti.delGiorno('frase').catch(() => []),
+        contenuti.delGiorno('pensiero').catch(() => []),
+        contenuti.delGiorno('dizionario').catch(() => []),
         contenuti.oroscopoDelSegno(p.segno_zodiacale || null).catch(() => null),
-        utente ? contenuti.consumiDiOggi() : Promise.resolve({}),
-        contenuti.archivio('frase').catch(() => [])
+        utente ? contenuti.consumiDiOggi().catch(() => ({})) : Promise.resolve({}),
+        contenuti.archivio('frase').catch(() => []),
+        contenuti.archivio('pensiero').catch(() => []),
+        contenuti.archivio('dizionario').catch(() => []),
+        contenuti.oroscopoDelMese(p.segno_zodiacale || null).catch(() => null)
       ]);
+      const oroscopo = oroscopoMese || oroscopoRpc;
       return {
-        frasi, pensieri, dizionario, oroscopo, consumi, archivioFrasi,
+        frasi, pensieri, dizionario, oroscopo, consumi, archivioFrasi, archivioPensieri, archivioDizionario,
         massimi: {
           frasi:      p.notif_frasi ?? 5,
           pensieri:   p.notif_pensieri ?? 1,

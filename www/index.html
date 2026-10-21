@@ -7554,7 +7554,23 @@ document.addEventListener('DOMContentLoaded', function(){
         }
       }else{
         box.style.display = 'none';
+        /* pagamento appena fatto ma attivazione non ancora arrivata dal
+           webhook: blocco i pulsanti per 30 minuti e lo spiego */
+        var pagatoIl = 0;
+        try{ pagatoIl = parseInt(localStorage.getItem('mc_pagato_il') || '0', 10) || 0; }catch(e){}
+        if(pagatoIl && Date.now() - pagatoIl < 30 * 60 * 1000){
+          var txA = document.getElementById('plan-attivo-tx');
+          if(txA){
+            txA.innerHTML = '<b>Pagamento ricevuto: stiamo attivando il tuo abbonamento.</b>'
+              + '<br>Di solito bastano pochi secondi. Se tra qualche minuto non risulta ancora attivo, '
+              + 'scrivi a <a href="mailto:supporto@mentalclass.it" style="color:var(--lime);">supporto@mentalclass.it</a>: non pagare una seconda volta.';
+            box.style.display = 'block';
+            var bg2 = box.querySelector('button'); if(bg2) bg2.style.display = 'none';
+          }
+          [mens, ann].forEach(function(b){ if(b){ b.textContent = 'Attivazione in corso…'; b.disabled = true; b.style.opacity = '.5'; b.style.cursor = 'default'; } });
+        }
       }
+      if(st.abbonato){ try{ localStorage.removeItem('mc_pagato_il'); }catch(e){} }
     }catch(e){ console.warn('Piani:', e.message); }
   }
 
@@ -11563,6 +11579,9 @@ document.addEventListener('DOMContentLoaded', function(){
        farti ricomprare. Riprovo un paio di volte perché il webhook e il
        nostro ritorno possono arrivare a pochi istanti di distanza. */
     if(p.get('pagamento') === 'ok'){
+      /* segno l'ora del pagamento: finché l'attivazione non arriva, i
+         pulsanti di pagamento restano bloccati (niente doppio addebito) */
+      try{ localStorage.setItem('mc_pagato_il', String(Date.now())); }catch(e){}
       confetti(30); chime();
       toast('Pagamento completato · attivo il tuo accesso…');
       var tentativi = 0;

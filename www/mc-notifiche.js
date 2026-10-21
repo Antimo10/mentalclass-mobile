@@ -206,7 +206,9 @@
             schedule: { at: quando, allowWhileIdle: true },
             channelId: CANALE,
             smallIcon: "ic_stat_icon",
-            extra: { tipo: v.tipo || "frase" }
+            /* testo e giorno viaggiano con la notifica: al tocco l'app apre
+               proprio quel contenuto (vedi mcApriDaNotifica in index.html) */
+            extra: { tipo: v.tipo || "frase", testo: v.testo || v.body, giorno: g }
           });
           usate++;
         }
@@ -251,7 +253,7 @@
           schedule: { at: o.when, allowWhileIdle: true },
           channelId: CANALE,
           smallIcon: 'ic_stat_icon',
-          extra: { tipo: 'novita' }
+          extra: { tipo: 'novita', di: o.x.tipo || 'audio', titolo: o.x.titolo || '' }
         };
       });
       if (nuove.length) { try { await p.schedule({ notifications: nuove }); } catch (e) {} }

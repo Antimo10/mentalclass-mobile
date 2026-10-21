@@ -2810,7 +2810,7 @@ document.addEventListener('DOMContentLoaded', function(){
           <div class="pane sc" id="sc-audio" onclick="riprendiAudioHome()"><div class="k">Riprendi audio</div><div class="v" id="sc-audio-t">Decompressione · Ep.3</div><div class="prog"><i id="sc-audio-p" style="width:58%"></i></div><span class="resume-chip" id="sc-audio-c">▶ Riprendi · 58%</span></div>
           <div class="pane sc" id="sc-riv" onclick="goScreen('riviste')"><div class="k">Rivista del mese</div><div class="v" id="sc-riv-t">N.01 — La forza della mente</div><div class="prog"><i id="sc-riv-p" style="width:12%"></i></div><span class="resume-chip" id="sc-riv-c">📖 Riprendi · 12%</span></div>
           <div class="pane sc" id="sc-ob" onclick="goScreen('diario');diarioTab('obiettivi')"><div class="k">Obiettivo attivo</div><div class="v" id="sc-ob-t">Correre 3× a settimana</div><div class="prog"><i id="sc-ob-p" style="width:70%"></i></div></div>
-          <div class="pane sc" onclick="goScreen('audio')"><div class="k">Consigliato per te</div><div class="v" id="reco-title">Persuasione: le 3 leve</div><div class="prog"><i style="width:0%"></i></div></div>
+          <div class="pane sc" id="sc-reco" onclick="apriConsigliato()"><div class="k">Consigliato per te</div><div class="v" id="reco-title">Scegli il tuo primo audio</div><div class="prog"><i style="width:0%"></i></div></div>
         </div>
       </section>
 
@@ -3307,7 +3307,7 @@ document.addEventListener('DOMContentLoaded', function(){
             <div class="pn">Mensile</div>
             <div class="pp" id="plan-monthly-pp">€14,99<small>/mese</small></div>
             <div class="ps">Disdici quando vuoi</div>
-            <p class="ft"><b>✓</b> Accesso completo a Magazine, Audio e webinar</p>
+            <p class="ft"><b>✓</b> Magazine completo, tutti gli audio e i percorsi</p>
             <p class="ft"><b>✓</b> Compagno Invisibile: 3 "parla" e 3 "ascolta" al giorno</p>
             <button class="btn btn-ghost" id="plan-btn-mensile" onclick="abbonati('mensile')">Scegli Mensile</button>
           </div>
@@ -3317,9 +3317,8 @@ document.addEventListener('DOMContentLoaded', function(){
             <div class="pp" id="plan-annual-pp">€49,99<small>/anno</small></div>
             <div class="ps" id="plan-annual-ps">Equivalgono a €4,17/mese</div>
             <p class="ft"><b>✓</b> Magazine completo, ogni numero</p>
-            <p class="ft"><b>✓</b> Tutti gli audio, i percorsi e i webinar registrati</p>
+            <p class="ft"><b>✓</b> Tutti gli audio e i percorsi</p>
             <p class="ft"><b>✓</b> Compagno Invisibile: 3 "parla" e 3 "ascolta" al giorno</p>
-            <p class="ft"><b>✓</b> Compagno: 3 "parla" e 3 "ascolta" al giorno</p>
             <p class="ft"><b>✓</b> 7 giorni di prova gratuita</p>
             <button class="btn btn-lime" id="plan-btn-annuale" onclick="abbonati('annuale')">Inizia la prova gratuita</button>
           </div>
@@ -3330,7 +3329,6 @@ document.addEventListener('DOMContentLoaded', function(){
             <p class="ft"><b>✓</b> Frasi, pensieri, dizionario e oroscopo: gratis per sempre</p>
             <p class="ft"><b>✓</b> Anteprime di riviste e audio · 1° episodio dei percorsi</p>
             <p class="ft"><b>✓</b> Compagno Invisibile: 1 "parla" e 1 "ascolta" al giorno</p>
-            <p class="ft"><b>✓</b> Compagno: 1 "parla" e 1 "ascolta" al giorno</p>
             <button class="btn btn-ghost" id="plan-btn-free" disabled style="opacity:.5;cursor:default;">Piano attuale</button>
           </div>
         </div>
@@ -3908,6 +3906,16 @@ document.addEventListener('DOMContentLoaded', function(){
     }).catch(function(e){ el.classList.toggle('off', nuovo); toast('Non salvato: ' + e.message); });
   }
 </script>
+
+<!-- contenuto aperto da una notifica (se non è più nel feed) -->
+<div class="modal-bg" id="notif-tap-bg" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal" style="max-width:440px;text-align:center;">
+    <div class="m-head"><h3 class="disp" style="margin:0;" id="notif-tap-tit">MentalClass</h3><div class="cancel" onclick="document.getElementById('notif-tap-bg').classList.remove('show')">Chiudi ×</div></div>
+    <p class="quote" id="notif-tap-txt" style="font-size:19px;line-height:1.45;margin:10px 0 20px;"></p>
+    <button class="btn btn-lime" style="width:100%;" onclick="document.getElementById('notif-tap-bg').classList.remove('show');openShare(document.getElementById('notif-tap-txt').textContent)">Condividi</button>
+  </div>
+</div>
+<style>.feed-card.fc-dalla-notifica .fc-in{ animation:fcNotif 2.2s ease; } @keyframes fcNotif{ 0%{ box-shadow:0 0 0 0 rgba(194,232,62,.0);} 20%{ box-shadow:0 0 0 3px rgba(194,232,62,.75);} 100%{ box-shadow:0 0 0 0 rgba(194,232,62,0);} }</style>
 <div class="modal-bg" id="recesso-bg" onclick="if(event.target===this)chiudiRecesso()">
   <div class="modal" style="max-width:480px;">
     <div class="m-head"><h3 class="disp" style="margin:0;">Un ultimo passaggio</h3><div class="cancel" onclick="chiudiRecesso()">Chiudi ×</div></div>
@@ -3941,7 +3949,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 <div class="modal-bg" id="parla-bg" onclick="if(event.target===this)closeParlaRec()">
   <div class="modal" style="max-width:440px;">
-    <div class="m-head"><h3 class="disp" style="margin:0;">Parla con qualcuno</h3><div class="cancel" onclick="closeParlaRec()">Chiudi ×</div></div>
+    <div class="m-head"><h3 class="disp" style="margin:0;">Il tuo check-in di oggi</h3><div class="cancel" onclick="closeParlaRec()">Chiudi ×</div></div>
     <div class="rec-btn" style="margin:8px 0 4px;">
       <div class="mic" id="parla-mic" onclick="parlaRecord()"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></div>
       <div class="tx" id="parla-tx"><b>Tocca il microfono e racconta il tuo obiettivo di oggi</b>Chi insegue lo stesso obiettivo ti ascolterà e potrà risponderti.</div>
@@ -3954,7 +3962,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="re" onclick="openParlaRec()">↺ Rifai</div>
     </div>
     <div class="parla-desc" id="parla-desc">
-      <textarea id="parla-desc-txt" maxlength="120" rows="2" placeholder="Aggiungi una riga per far capire di cosa vuoi parlare (facoltativa)…" oninput="parlaCount()"></textarea>
+      <textarea id="parla-desc-txt" maxlength="120" rows="2" placeholder="In una riga: l'obiettivo di oggi e l'azione che deve succedere (facoltativo)…" oninput="parlaCount()"></textarea>
       <div class="cc"><span id="parla-cc">0</span>/120</div>
     </div>
     <label style="font-size:11.5px;color:var(--tx-dim);display:flex;align-items:center;gap:8px;cursor:pointer;margin:14px 0 4px;">Mostra il mio nome <div class="toggle off" id="parla-anon" onclick="this.classList.toggle('off')"></div><span style="color:var(--tx-mut);">(altrimenti resti Anonimo)</span></label>
@@ -4534,17 +4542,17 @@ document.addEventListener('DOMContentLoaded', function(){
         var voci = [];
         mcFrasiDelGiorno(dd, perGiorno).slice(0, perGiorno).forEach(function(f){
           var aut = (f.a && f.a !== 'MentalClass') ? f.a : '';
-          voci.push({ tipo:'frase', title:'MentalClass', body: f.q + (aut ? ' — ' + aut : '') });
+          voci.push({ tipo:'frase', title:'MentalClass', body: f.q + (aut ? ' — ' + aut : ''), testo: f.q });
         });
         if(conPensiero){
           var pz = mcPensieroDelGiorno(dd);
-          if(pz && pz.testo) voci.push({ tipo:'pensiero', title:'Il pensiero di oggi', body: pz.testo });
+          if(pz && pz.testo) voci.push({ tipo:'pensiero', title:'Il pensiero di oggi', body: pz.testo, testo: pz.testo });
         }
         if(conParola){
           var pw = mcParolaDelGiorno(dd);
           if(pw && pw.testo){
             var parola = (pw.extra && pw.extra.parola) ? pw.extra.parola : (pw.titolo || 'Parola del giorno');
-            voci.push({ tipo:'dizionario', title:'La parola di oggi: ' + parola, body: pw.testo });
+            voci.push({ tipo:'dizionario', title:'La parola di oggi: ' + parola, body: pw.testo, testo: pw.testo, parola: parola });
           }
         }
         if(conOroscopo && dd.getDate() === 1 && state.sign){
@@ -4561,6 +4569,74 @@ document.addEventListener('DOMContentLoaded', function(){
       try{ if(MCN.programmaRiepilogo && state.notifRiepilogo!==false) await MCN.programmaRiepilogo(); }catch(e){}
     }catch(e){}
   }
+
+
+  /* =====================================================
+     TOCCO SULLA NOTIFICA → si apre proprio quel contenuto
+     Funziona anche ad app chiusa: il plugin conserva il tocco finché
+     l'app non è pronta; qui aspettiamo che la Home abbia i contenuti
+     veri, poi scorriamo fino alla carta giusta.
+  ===================================================== */
+  var MC_NOTIF_TAP = null;
+  function mcNorm(t){ return String(t || '').replace(/[“”"«»]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); }
+  function mcApriDaNotifica(n){
+    var ex = (n && n.extra) || {};
+    if(!ex.tipo || ex.tipo === 'prova') return;
+    MC_NOTIF_TAP = { ex: ex, titolo: n.title || 'MentalClass', corpo: n.body || '', da: Date.now() };
+    mcProvaAprireNotifica();
+  }
+  function mcProvaAprireNotifica(){
+    var t = MC_NOTIF_TAP; if(!t) return;
+    var ex = t.ex;
+    var au = document.getElementById('auth');
+    var dentro = !(au && au.classList.contains('show')) && (!COLLEGATO || (MC.utenteCorrente && MC.utenteCorrente()));
+    var scaduto = Date.now() - t.da > 15000;
+    if(!dentro && !scaduto){ setTimeout(mcProvaAprireNotifica, 500); return; }
+
+    if(ex.tipo === 'novita'){ MC_NOTIF_TAP = null; goScreen(ex.di === 'rivista' ? 'riviste' : 'audio'); return; }
+    if(ex.tipo === 'sfida'){ MC_NOTIF_TAP = null; goScreen('sfide'); return; }
+    if(ex.tipo === 'riepilogo'){ MC_NOTIF_TAP = null; goScreen('home'); if(typeof openRiepilogo === 'function') openRiepilogo(); return; }
+
+    /* frase, pensiero, parola, oroscopo: cerco la carta nel feed della Home */
+    if(document.body.getAttribute('data-screen') !== 'home') goScreen('home');
+    var feed = document.getElementById('deck-feed');
+    var cerca = mcNorm(ex.testo || t.corpo);
+    var trovata = null;
+    if(feed && cerca){
+      feed.querySelectorAll('.feed-card').forEach(function(c){
+        if(trovata) return;
+        var tx = mcNorm((c.querySelector('.fc-q') || c.querySelector('.fc-def') || {}).textContent);
+        if(tx && (tx === cerca || tx.indexOf(cerca) === 0 || cerca.indexOf(tx) === 0)) trovata = c;
+      });
+      if(!trovata && ex.tipo === 'oroscopo') trovata = feed.querySelector('.feed-card[data-tipo="oroscopo"]');
+    }
+    if(trovata){
+      MC_NOTIF_TAP = null;
+      try{ feed.scrollTo({ top: trovata.offsetTop - feed.offsetTop, behavior: 'auto' }); }catch(e){ feed.scrollTop = trovata.offsetTop - feed.offsetTop; }
+      setTimeout(function(){ if(typeof aggiornaIndiceFeed === 'function') aggiornaIndiceFeed(); }, 80);
+      trovata.classList.add('fc-dalla-notifica');
+      setTimeout(function(){ trovata.classList.remove('fc-dalla-notifica'); }, 2200);
+      return;
+    }
+    /* i contenuti veri non sono ancora arrivati: riprovo per qualche secondo */
+    if(!scaduto){ setTimeout(mcProvaAprireNotifica, 600); return; }
+    /* ultima possibilità (es. contenuto cambiato nel frattempo): lo mostro comunque */
+    MC_NOTIF_TAP = null;
+    var bg = document.getElementById('notif-tap-bg');
+    if(bg){
+      document.getElementById('notif-tap-tit').textContent = t.titolo;
+      document.getElementById('notif-tap-txt').textContent = t.corpo;
+      bg.classList.add('show');
+    }
+  }
+  (function(){
+    try{
+      var LN = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
+      if(LN && LN.addListener){
+        LN.addListener('localNotificationActionPerformed', function(ev){ mcApriDaNotifica(ev && ev.notification); });
+      }
+    }catch(e){}
+  })();
 
   /* segna come "visto" un contenuto (conta per le quote del giorno) */
   async function segnaConsumo(tipo){
@@ -4594,7 +4670,7 @@ document.addEventListener('DOMContentLoaded', function(){
           ? new Date(n.data_uscita).toLocaleDateString('it-IT',{month:'long',year:'numeric'}) : '';
         return '<div class="issue-row"' + (i === numeri.length-1 ? ' style="border-bottom:none;"' : '') +
           (mcInArrivo(n) ? ' data-arrivo="1"' : '') + ' onclick="' + (mcInArrivo(n) ? 'toast(\'Disponibile dal ' + mcDataIt(n.data_uscita) + '\')' : 'apriRivista(\'' + n.id + '\')') + '">' +
-          '<div class="issue-cov"' + (n.copertina_url ? ' style="background-image:url(' + n.copertina_url + ');background-size:cover;background-position:center;"' : '') + '>' + (n.copertina_url ? '' : '<span style="font-family:MCDisplay;font-size:20px;">' + escapeHtml(n.numero || '') + '</span>') + '</div>' +
+          '<div class="issue-cov"' + ((n.copertina_url || urlPubblicoWeb(n.copertina_path)) ? ' style="background-image:url(' + (n.copertina_url || urlPubblicoWeb(n.copertina_path)) + ');background-size:cover;background-position:center;"' : '') + '>' + ((n.copertina_url || urlPubblicoWeb(n.copertina_path)) ? '' : '<span style="font-family:MCDisplay;font-size:20px;">' + escapeHtml(n.numero || '') + '</span>') + '</div>' +
           '<div class="issue-meta">' +
             '<div class="lab">' + escapeHtml((n.numero || '') + (data ? ' — ' + data : '')) + '</div>' +
             '<h3>' + escapeHtml(n.titolo) + '</h3>' +
@@ -4741,8 +4817,7 @@ document.addEventListener('DOMContentLoaded', function(){
          categorie che esistono davvero. Niente più filtri per
          categorie inventate. */
       var pills = '<div class="pill on" data-cat="tutto" onclick="audioCat(this,\'tutto\')">Tutto</div>' +
-                  '<div class="pill" data-cat="percorsi" onclick="audioCat(this,\'percorsi\')">Percorsi</div>' +
-                  '<div class="pill" data-cat="webinar" onclick="audioCat(this,\'webinar\')">Webinar</div>';
+                  (PERCORSI_DB && PERCORSI_DB.length ? '<div class="pill" data-cat="percorsi" onclick="audioCat(this,\'percorsi\')">Percorsi</div>' : '');
       conAudio.forEach(function(c){
         var suoi = audios.filter(function(a){ return a.categoria_id === c.id && !a.percorso_id; });
         if(!suoi.length) return;
@@ -6413,6 +6488,34 @@ document.addEventListener('DOMContentLoaded', function(){
         }
       }
 
+      /* --- consigliato: un audio VERO, scelto in base all'obiettivo --- */
+      try{
+        var tutti = Object.keys(AUDIO_DB).map(function(k){ return AUDIO_DB[k]; });
+        var giaIniziati = {}; progressi.forEach(function(p){ giaIniziati[p.audio_id] = 1; });
+        var PREF_CAT = {
+          'Focus Mentale':['mente','lavoro','leadership'],
+          'Autostima e Fiducia':['mente','autostima','parole'],
+          'Serenità e Calma':['recupero','mindfulness','suoni'],
+          'Motivazione e Azione':['motivazione','mente']
+        }[state.obiettivo] || [];
+        function inCat(a){
+          var c = catDi(a.categoria_id); if(!c) return false;
+          var n = (c.nome || '').toLowerCase();
+          return PREF_CAT.some(function(k){ return n.indexOf(k) !== -1; });
+        }
+        var candidati = tutti.filter(function(a){ return !giaIniziati[a.id] && a.id !== state.riprendiAudio; });
+        var scelti = candidati.filter(inCat);
+        var lista = scelti.length ? scelti : candidati;
+        var boxC = document.getElementById('sc-reco');
+        if(lista.length && boxC){
+          var g0 = new Date(); var seme = g0.getFullYear()*400 + g0.getMonth()*31 + g0.getDate();
+          var r = lista[seme % lista.length];
+          state.recoAudio = r.id;
+          document.getElementById('reco-title').textContent = r.titolo;
+          boxC.style.display = '';
+        }else if(boxC){ boxC.style.display = 'none'; }
+      }catch(e){}
+
       /* --- rivista --- */
       var boxR = document.getElementById('sc-riv');
       if(boxR){
@@ -6482,9 +6585,11 @@ document.addEventListener('DOMContentLoaded', function(){
       if(cr){
         if(quanti >= 4){
           cr.querySelector('.t').textContent = 'Anello chiuso. Giornata allenata.';
-          cr.querySelector('.s').textContent = '🔥 '+state.streak+' giorni di fila';
+          var pf = (MC.profiloCorrente && MC.profiloCorrente()) || {};
+          var gg = pf.streak_giorni || 0;
+          cr.querySelector('.s').textContent = gg > 1 ? '🔥 ' + gg + ' giorni di fila' : 'Domani si riparte da qui';
         } else {
-          cr.querySelector('.t').textContent = 'Ti manca ' + (4 - quanti) + (4-quanti===1 ? ' passo' : ' passi') + ' per chiudere l\'anello';
+          cr.querySelector('.t').textContent = (4-quanti===1 ? 'Ti manca un passo' : 'Ti mancano ' + (4 - quanti) + ' passi') + ' per chiudere l\'anello';
           cr.querySelector('.s').textContent = fattoMag ? 'Continua da dove hai lasciato' : 'Apri il Magazine e chiudi la giornata';
         }
       }
@@ -8295,6 +8400,10 @@ document.addEventListener('DOMContentLoaded', function(){
       g.appendChild(d);
     });
   }
+  function apriConsigliato(){
+    if(state.recoAudio && typeof apriAudioVero === 'function') apriAudioVero(state.recoAudio);
+    else goScreen('audio');
+  }
   function pickTime(el){
     document.querySelectorAll('.time-opt').forEach(function(x){ x.classList.remove('sel'); });
     el.classList.add('sel');
@@ -8383,7 +8492,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('greet').textContent = state.name ? (sal+', '+state.name) : sal;
     var g = state.obiettivo;
     document.getElementById('greet-sub').textContent = 'Oggi alleniamo: '+g.toLowerCase()+'.';
-    document.getElementById('reco-title').textContent = RECO[g] || 'Persuasione: le 3 leve';
+    /* il titolo consigliato arriva dagli audio veri (sincronizzaHome) */
     document.getElementById('feed-group').textContent = g;
     var fg2 = document.getElementById('feed-group-2'); if(fg2) fg2.textContent = g;
     var ob = document.getElementById('prof-ob');
@@ -10461,13 +10570,6 @@ document.addEventListener('DOMContentLoaded', function(){
     else if(wait) rows.push({ em:'🤝', b:'Voce in attesa di un compagno', s:'Ti avvisiamo appena qualcuno risponde', st:['mut','In attesa'], go:"goScreen('supporto')" });
     else if(act) rows.push({ em:'🤝', b:act+' conversazion'+(act>1?'i':'e')+' apert'+(act>1?'e':'a'), s:'Riprendile quando vuoi', st:['ok','Aperte'], go:"goScreen('supporto')" });
     else rows.push({ em:'🤝', b:'Compagno Invisibile', s:'Oggi puoi: '+compQuota.parla+' parla · '+compQuota.ascolta+' ascolta', st:['mut','Libero'], go:"goScreen('supporto')" });
-    /* webinar */
-    var liveBtn = document.getElementById('webi-live-btn');
-    var isLive = liveBtn && liveBtn.style.display!=='none';
-    var iscr = document.getElementById('webi-btn') && document.getElementById('webi-btn').textContent.indexOf('✓')===0;
-    if(isLive) rows.push({ em:'🔴', b:'Il webinar è LIVE ora', s:'Decidere sotto pressione · entra in ascolto', st:['live','LIVE'], go:"openWebiLive()" });
-    else if(iscr) rows.push({ em:'🎧', b:'Webinar · sei iscritta', s:'Giovedì 21:00 · ti avvisiamo 30 min prima', st:['ok','✓'], go:"goScreen('audio')" });
-    else rows.push({ em:'🎧', b:'Webinar dal vivo', s:'Giovedì 21:00 · gratuito · solo voce', st:['mut','Iscriviti'], go:"goScreen('audio')" });
     /* offerta lampo */
     if(state.lampoEnd) rows.push({ em:'⚡', b:'Offerta lampo attiva', s:'Annuale a €29,99 · <span id="hs-lampo-cd">…</span> rimasti', st:['todo','−40%'], go:"goScreen('plan')" });
     wrap.innerHTML = rows.map(function(r){

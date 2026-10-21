@@ -1040,7 +1040,18 @@ const MC = (function(){
 
     async rispondiAVoce(stanzaId){
       await assicuraSessione();
+      /* conto quanti "ascolta" risultano oggi PRIMA di rispondere: se la
+         funzione sul database non lo registra da sola, lo registro io
+         (così il limite giornaliero vale anche dopo aver riaperto l'app) */
+      let primaAscolta = null;
+      try{ primaAscolta = ((await contenuti.consumiDiOggi()) || {}).compagno_ascolta || 0; }catch(e){}
       const { data, error } = await sb.rpc('rispondi_a_voce', { p_stanza: stanzaId });
+      if(!error && primaAscolta !== null){
+        try{
+          const dopo = ((await contenuti.consumiDiOggi()) || {}).compagno_ascolta || 0;
+          if(dopo <= primaAscolta) await sb.rpc('consuma', { p_tipo: 'compagno_ascolta' });
+        }catch(e){}
+      }
       if(error){
         if(String(error.message).includes('GIA_PRESA')){
           throw new Error('QUALCUNO_TI_HA_PRECEDUTO');
@@ -1090,6 +1101,11 @@ const MC = (function(){
       const { data, error } = await sb.rpc('compagno_invia', {
         p_stanza: stanzaId, p_audio_path: nome, p_durata: Math.round(durataSec || 0)
       });
+      /* se il database rifiuta il vocale, il file appena caricato non deve
+         restare nello storage (l'informativa promette la cancellazione) */
+      if(error || (data && data.ok === false)){
+        try{ await sb.storage.from('compagno').remove([nome]); }catch(e){}
+      }
       if(error) throw erroreModerazione(error.message);
       if(data && data.ok === false){
         const messaggi = {

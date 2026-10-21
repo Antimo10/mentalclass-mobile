@@ -219,6 +219,8 @@ const MC = (function(){
     const { data, error } = await sb.from('profili').select('*').eq('user_id', utente.id).maybeSingle();
     if(error) throw new Error(error.message);
     profilo = data;
+    /* consensi dati in registrazione e non ancora salvati: li registro ora */
+    consensi.sincronizza().catch(function(){});
     return profilo;
   }
 
@@ -242,14 +244,86 @@ const MC = (function(){
     return new Date(profilo.scadenza_piano) > new Date();
   }
 
+
+  /* =====================================================================
+     CONSENSI FACOLTATIVI (informativa "Gestione marketing, analisi e
+     sponsorizzazioni"). Ogni scelta aggiunge una riga alla tabella
+     "consensi": non si sovrascrive mai, così resta la prova di quando il
+     consenso è stato dato o revocato. Vale l'ultima riga per tipo.
+     ===================================================================== */
+  const consensi = {
+    VERSIONE: 'informativa-marketing-4211-v1',
+    TIPI: { marketing: 'marketing_comunicazioni', analisi: 'marketing_analisi' },
+
+    async stato(){
+      richiediLogin();
+      const { data, error } = await sb.from('consensi')
+        .select('tipo, concesso, creato_il')
+        .eq('user_id', utente.id)
+        .in('tipo', [this.TIPI.marketing, this.TIPI.analisi])
+        .order('creato_il', { ascending: false });
+      if(error) throw new Error(error.message);
+      const out = { marketing: false, analisi: false, aggiornato: null };
+      const visti = {};
+      (data || []).forEach(r => {
+        if(visti[r.tipo]) return; visti[r.tipo] = true;
+        if(r.tipo === this.TIPI.marketing) out.marketing = !!r.concesso;
+        if(r.tipo === this.TIPI.analisi) out.analisi = !!r.concesso;
+        if(!out.aggiornato || r.creato_il > out.aggiornato) out.aggiornato = r.creato_il;
+      });
+      try{ localStorage.setItem('mc_consenso_analisi', out.analisi ? '1' : '0'); }catch(e){}
+      return out;
+    },
+
+    /* scelta = { marketing: true/false, analisi: true/false } (anche uno solo) */
+    async salva(scelta, fonte){
+      richiediLogin();
+      const righe = [];
+      ['marketing', 'analisi'].forEach(k => {
+        if(typeof scelta[k] === 'boolean') righe.push({
+          user_id: utente.id, tipo: this.TIPI[k], concesso: scelta[k],
+          versione: this.VERSIONE, fonte: fonte || 'app'
+        });
+      });
+      if(!righe.length) return true;
+      const { error } = await sb.from('consensi').insert(righe);
+      if(error) throw new Error(error.message);
+      if(typeof scelta.analisi === 'boolean'){
+        try{ localStorage.setItem('mc_consenso_analisi', scelta.analisi ? '1' : '0'); }catch(e){}
+      }
+      return true;
+    },
+
+    /* consensi scelti in registrazione e non ancora salvati (conferma email) */
+    async sincronizza(){
+      if(!utente) return;
+      const md = utente.user_metadata || {};
+      if(!md.consensi_pendenti || md.consensi_registrati) return;
+      if(this._inCorso) return; this._inCorso = true;
+      try{
+        await this.salva({ marketing: !!md.consensi_pendenti.marketing, analisi: !!md.consensi_pendenti.analisi }, 'registrazione');
+        const { data } = await sb.auth.updateUser({ data: { consensi_registrati: true } });
+        if(data && data.user) utente = data.user;
+        if(window.mcAnalisiAggiorna) window.mcAnalisiAggiorna();
+      } finally { this._inCorso = false; }
+    }
+  };
+
   /* =====================================================================
      ACCOUNT
      ===================================================================== */
   const account = {
-    async registrati(email, password, nome){
+    async registrati(email, password, nome, sceltaConsensi){
+      /* i consensi facoltativi (marketing/analisi) viaggiano con la registrazione:
+         se serve confermare l'email non c'è ancora una sessione, quindi vengono
+         registrati sul database al primo accesso (consensi.sincronizza). */
+      const pend = sceltaConsensi ? {
+        marketing: !!sceltaConsensi.marketing, analisi: !!sceltaConsensi.analisi,
+        versione: consensi.VERSIONE, il: new Date().toISOString()
+      } : null;
       const { data, error } = await sb.auth.signUp({
         email, password,
-        options: { data: { nome: nome || '' } }
+        options: { data: pend ? { nome: nome || '', consensi_pendenti: pend } : { nome: nome || '' } }
       });
       if(error) throw new Error(traduci(error.message));
       utente = data.user;
@@ -266,6 +340,7 @@ const MC = (function(){
           }).eq('user_id', utente.id).is('obiettivo', null);
         }catch(e){ /* se fallisce, l'onboarding lo salverà comunque */ }
         await referral.registraSePresente();
+        try{ await consensi.sincronizza(); }catch(e){}
       }
       return { user: data.user, sessioneAttiva: haSessione };
     },
@@ -1535,7 +1610,7 @@ const MC = (function(){
     init, client, utenteCorrente, profiloCorrente, caricaProfilo, abbonato,
     alCambioSessione,
     assicuraSessioneEsterna: assicuraSessione,
-    account, contenuti, audio, preferiti, magazine, feed,
+    account, consensi, contenuti, audio, preferiti, magazine, feed,
     sfide, compagno, moderazione, diario, obiettivi, webinar, abbonamento, referral, statistiche, aspetto, promozioni,
     autori
   };

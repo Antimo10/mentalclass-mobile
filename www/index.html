@@ -2510,6 +2510,21 @@ body.acquisti-app #lampo-bar, body.acquisti-app #promo-banner-home, body.acquist
   .mc-oggi b{ font-size:19px !important; }
 }
 </style>
+
+<style id="mc-consensi-css">
+.cons-box{ margin:14px 0 4px; text-align:left; }
+.cons{ display:flex; gap:10px; align-items:flex-start; font-size:12px; line-height:1.5; color:var(--tx-mut,rgba(241,237,226,.75)); margin:0 0 10px; cursor:pointer; }
+.cons input{ flex-shrink:0; width:17px; height:17px; margin:1px 0 0; accent-color:#C2E83E; cursor:pointer; }
+.cons em{ font-style:normal; color:var(--tx-dim,rgba(241,237,226,.5)); }
+.cons-note{ font-size:11px; color:var(--tx-dim,rgba(241,237,226,.5)); line-height:1.5; margin:2px 0 12px; }
+.cons-note a, .pay-priv a{ color:#C2E83E; }
+.pay-priv{ font-size:11.5px; color:var(--tx-dim,rgba(241,237,226,.55)); line-height:1.55; margin:14px 0 0; text-align:center; }
+.cs-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid rgba(241,237,226,.08); }
+.cs-row:last-of-type{ border-bottom:none; }
+.cs-row b{ display:block; font-size:14px; color:var(--cream,#F1EDE2); margin-bottom:3px; }
+.cs-row span{ font-size:12.5px; color:var(--tx-mut,rgba(241,237,226,.7)); line-height:1.5; }
+.cs-links a{ display:block; color:#C2E83E; font-size:13.5px; font-weight:600; padding:7px 0; text-decoration:none; }
+</style>
 </head>
 <body>
 <div id="velo-caricamento">
@@ -2617,8 +2632,13 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="field"><label>Nome</label><input id="su-name" placeholder="Giulia"></div>
       <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="giulia@email.it" autocomplete="email"></div>
       <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="Almeno 8 caratteri" autocomplete="new-password"></div>
+      <div class="cons-box">
+        <label class="cons"><input type="checkbox" id="su-mkt"><span>Voglio ricevere via email i nuovi numeri del Magazine, le novità e le offerte di MentalClass. <em>(facoltativo)</em></span></label>
+        <label class="cons"><input type="checkbox" id="su-ana"><span>Acconsento all'analisi statistica del mio utilizzo dell'app e alla misurazione delle campagne. <em>(facoltativo)</em></span></label>
+        <p class="cons-note">Dettagli nell'<a href="https://www.mentalclass.it/privacy-marketing.html" target="_blank" rel="noopener">informativa marketing e analisi</a>. Puoi cambiare idea quando vuoi da Profilo → Privacy e consensi.</p>
+      </div>
+      <p style="font-size:11px;color:var(--tx-dim);text-align:center;line-height:1.55;margin:0 0 12px;">Prima di creare l'account leggi l'<a href="https://www.mentalclass.it/privacy-account.html" target="_blank" rel="noopener" style="color:var(--lime);">informativa su account e profilo</a>. Creando l'account accetti i <u style="cursor:pointer;" onclick="openLegal('termini')">Termini</u>.</p>
       <button class="btn btn-lime" style="width:100%;" id="su-btn" onclick="startOnboarding()">Crea account</button>
-      <p style="font-size:10.5px;color:var(--tx-dim);text-align:center;line-height:1.5;margin:12px 0 0;">Registrandoti accetti i <u style="cursor:pointer;" onclick="openLegal('termini')">Termini</u> e la <u style="cursor:pointer;" onclick="openLegal('privacy')">Privacy</u> di MentalClass, parte di Calendario Imprenditoriale.</p>
       <div class="auth-switch">Hai già un account? <b onclick="authTab('login')">Entra</b></div>
     </div>
   </div>
@@ -3217,7 +3237,8 @@ document.addEventListener('DOMContentLoaded', function(){
               <div class="set-row"><div class="l"><svg viewBox="0 0 24 24"><path d="M9 18V6l11-2v12M9 18a3 3 0 11-3-3M20 16a3 3 0 11-3-3"/></svg>Suoni soft</div><div class="toggle" id="tog-sound" onclick="toggleSound(this)"></div></div>
               <div class="set-row" onclick="goScreen('plan')"><div class="l"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V8a5 5 0 0110 0v3"/></svg>Abbonamento e pagamenti</div><span class="val">›</span></div>
               <div class="set-row" onclick="openGift()" style="cursor:pointer;display:none;"><div class="l"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M3 12h18M12 8v13M12 8S9 3 6.5 4.5 8 8 12 8zM12 8s3-5 5.5-3.5S16 8 12 8z"/></svg>Regala MentalClass</div><span class="val">›</span></div>
-              <div class="set-row" onclick="openLegal('privacy')" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>Privacy e termini</div><span class="val">›</span></div>
+              <div class="set-row" onclick="apriConsensi()" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>Privacy e consensi</div><span class="val">›</span></div>
+              <div class="set-row" onclick="openLegal('termini')" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h8"/></svg>Termini e cookie</div><span class="val">›</span></div>
                             <div class="set-row set-danger" onclick="apriEliminaAccount()" style="cursor:pointer;"><div class="l"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Elimina account</div><span class="val">›</span></div>
                             <div class="set-row" onclick="backToLanding()"><div class="l"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Esci</div><span class="val">›</span></div>
             </div>
@@ -3621,72 +3642,13 @@ document.addEventListener('DOMContentLoaded', function(){
       <button id="lt-termini" onclick="legalTab('termini')">Termini e Condizioni</button>
     </div>
     <div class="legal-body" id="legal-privacy">
-      <div class="ph">Versione 1.0 — in vigore dal 12/10/2026. Ultimo aggiornamento: agosto 2026.</div>
-
-      <h6>1. Titolare del trattamento</h6>
-      <p>Il titolare del trattamento dei dati personali raccolti tramite MentalClass è <b>Antimo Dell'Omo</b>, nell'ambito dell'ecosistema Calendario Imprenditoriale, email <a href="mailto:privacy@mentalclass.it">privacy@mentalclass.it</a>. Per ogni questione relativa ai tuoi dati puoi scrivere a questo indirizzo.</p>
-
-      <h6>2. Quali dati trattiamo</h6>
-      <p><b>Dati di registrazione.</b> Indirizzo email e password. La password non è mai visibile a noi: viene conservata in forma cifrata dal nostro fornitore di autenticazione.</p>
-      <p><b>Dati di profilo.</b> Nome o nickname che scegli, obiettivo di allenamento selezionato (ad esempio focus, disciplina, autostima), segno zodiacale se decidi di ricevere l'oroscopo mensile, preferenze sulle notifiche e sulla fascia oraria.</p>
-      <p><b>Contenuti che crei tu.</b> Pagine del diario (testo, fotografie e note vocali che carichi), obiettivi e relativi avanzamenti, registrazioni vocali inviate nel Compagno Invisibile e nelle Sfide Mentali, eventuali contenuti salvati tra i preferiti.</p>
-      <p><b>Dati di utilizzo.</b> Audio ascoltati e punto di avanzamento, pagine del Magazine consultate, contatori giornalieri delle funzioni a numero limitato, date di accesso.</p>
-      <p><b>Dati di abbonamento e pagamento.</b> Piano attivo, stato dell'abbonamento, data di scadenza, identificativo cliente presso il fornitore di pagamento e storico delle transazioni (importo, valuta, esito, piano). <b>Non trattiamo né conserviamo i dati della tua carta di pagamento</b>: vengono gestiti direttamente dal fornitore di pagamento, che è responsabile della loro sicurezza.</p>
-      <p><b>Dati del programma inviti.</b> Codice di invito personale, inviti andati a buon fine e premi maturati.</p>
-      <p><b>Dati tecnici.</b> Indirizzo IP, tipo di dispositivo e di browser, registri tecnici di accesso generati dai fornitori di infrastruttura per motivi di sicurezza e diagnostica.</p>
-
-      <h6>3. Perché trattiamo i tuoi dati e con quale base giuridica</h6>
-      <p><b>Per erogare il servizio</b> (creare e gestire l'account, mostrarti i contenuti, salvare diario e obiettivi, far funzionare Compagno e Sfide): base giuridica è l'esecuzione del contratto, art. 6.1.b GDPR.</p>
-      <p><b>Per gestire abbonamenti, pagamenti e adempimenti fiscali</b>: esecuzione del contratto e obbligo legale, artt. 6.1.b e 6.1.c GDPR.</p>
-      <p><b>Per garantire sicurezza, prevenire abusi e risolvere malfunzionamenti</b>: legittimo interesse del titolare a proteggere il servizio e gli utenti, art. 6.1.f GDPR.</p>
-      <p><b>Per inviarti comunicazioni promozionali</b> su MentalClass e sul Magazine: consenso, che puoi revocare in qualsiasi momento con un clic sul link presente in ogni email, art. 6.1.a GDPR.</p>
-      <p><b>Per le notifiche di contenuto</b> che hai richiesto (frase del giorno, pensiero, promemoria): consenso, revocabile dalle impostazioni dell'app.</p>
-
-      <h6>4. Le registrazioni vocali</h6>
-      <p>Alcune funzioni si basano sulla tua voce. È importante che tu sappia come le trattiamo.</p>
-      <p><b>Compagno Invisibile.</b> Le registrazioni sono scambiate esclusivamente tra le due persone della conversazione. Quando la conversazione si chiude — perché uno dei due la termina oppure perché si raggiunge il numero massimo di scambi previsti — <b>tutti gli audio e i messaggi vengono cancellati in modo definitivo</b> per entrambi. La cancellazione è irreversibile e non conserviamo copie.</p>
-      <p><b>Sfide Mentali.</b> Le registrazioni restano accessibili ai partecipanti della sfida per la durata della stessa.</p>
-      <p><b>Diario.</b> Le note vocali e le fotografie del diario sono private: nessun altro utente può accedervi.</p>
-      <p>Ti invitiamo a non registrare terze persone senza il loro consenso e a non inserire in questi contenuti informazioni che preferiresti non condividere.</p>
-
-      <h6>5. Dati particolari e assenza di finalità sanitarie</h6>
-      <p>MentalClass è un servizio di allenamento mentale con finalità formative. <b>Non è un servizio sanitario, non fornisce diagnosi, terapie o supporto clinico.</b> Non ti chiediamo informazioni sul tuo stato di salute e non trattiamo intenzionalmente categorie particolari di dati ai sensi dell'art. 9 GDPR. Ti chiediamo di non inserire informazioni sanitarie in diario, obiettivi o registrazioni vocali. Se attraversi un momento che va oltre la stanchezza da lavoro, la persona giusta è un professionista sanitario.</p>
-
-      <h6>6. Età minima</h6>
-      <p>Il servizio è rivolto a persone maggiorenni. Non raccogliamo consapevolmente dati di minori di 18 anni. Se veniamo a conoscenza di un account creato da un minore in violazione di questa regola, provvediamo alla cancellazione.</p>
-
-      <h6>7. A chi comunichiamo i tuoi dati</h6>
-      <p>Non vendiamo i tuoi dati e non li cediamo a terzi per finalità pubblicitarie. Li condividiamo unicamente con i fornitori che ci permettono di erogare il servizio, nominati responsabili del trattamento ai sensi dell'art. 28 GDPR:</p>
-      <p>· <b>Supabase</b> — banca dati, autenticazione e archiviazione dei file audio e delle immagini. Server situati nell'Unione Europea (Francoforte).<br>
-      · <b>Stripe</b> — gestione dei pagamenti e degli abbonamenti.<br>
-      · <b>Vercel</b> — pubblicazione e distribuzione dell'applicazione web.<br>
-      · <b>Sender</b> — invio delle email di servizio e della newsletter.<br>
-      · <b>Aruba</b> — registrazione del dominio e caselle di posta.<br>
-      · <b>Google (Google Analytics 4)</b> — statistiche sulle visite alle pagine pubbliche del sito, solo se dai il consenso dal banner cookie.<br>
-      · <b>Plausible Analytics</b> — statistiche anonime d'uso, senza cookie e senza dati personali.<br>
-      · <b>Apple e Google (App Store e Google Play)</b> e <b>RevenueCat</b> — solo se acquisti l'abbonamento dall'app per telefono: gestione del pagamento e verifica dell'abbonamento attivo.</p>
-      <p>I dati possono inoltre essere comunicati a consulenti fiscali e legali, e alle autorità quando previsto dalla legge.</p>
-
-      <h6>8. Trasferimenti fuori dall'Unione Europea</h6>
-      <p>Alcuni fornitori possono trattare dati al di fuori dello Spazio economico europeo. In tal caso il trasferimento avviene sulla base delle Clausole Contrattuali Standard approvate dalla Commissione Europea o di altra garanzia adeguata prevista dagli artt. 44 e seguenti del GDPR.</p>
-
-      <h6>9. Per quanto tempo conserviamo i dati</h6>
-      <p>· Dati dell'account e contenuti creati: per tutta la durata dell'account. Alla cancellazione dell'account, i dati vengono eliminati entro 30 giorni, salvo quanto indicato sotto.<br>
-      · Registrazioni del Compagno Invisibile: cancellate immediatamente alla chiusura della conversazione.<br>
-      · Documenti contabili e fiscali: conservati per 10 anni, come richiesto dalla legge.<br>
-      · Registri tecnici di sicurezza: per il tempo strettamente necessario a garantire la sicurezza del servizio.</p>
-
-      <h6>10. I tuoi diritti</h6>
-      <p>Puoi in qualsiasi momento chiedere: accesso ai tuoi dati, rettifica, cancellazione, limitazione del trattamento, portabilità dei dati, opposizione al trattamento fondato sul legittimo interesse, revoca dei consensi prestati (artt. 15-22 GDPR). Puoi esercitare questi diritti dalle impostazioni dell'app oppure scrivendo a <a href="mailto:privacy@mentalclass.it">privacy@mentalclass.it</a>. Rispondiamo entro un mese.</p>
-      <p>Se ritieni che il trattamento violi la normativa, puoi proporre reclamo al Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">garanteprivacy.it</a>).</p>
-
-      <h6>11. Processi decisionali automatizzati</h6>
-      <p>Non effettuiamo profilazione né processi decisionali automatizzati che producano effetti giuridici sulla tua persona. I contenuti consigliati si basano unicamente sull'obiettivo che hai scelto tu.</p>
-
-      <h6>12. Modifiche</h6>
-      <p>Possiamo aggiornare questa informativa. Le modifiche sostanziali ti saranno comunicate via email o tramite avviso nell'app almeno 15 giorni prima che diventino efficaci.</p>
+      <p style="margin-top:0;">Il titolare del trattamento è <b>Antimo Dell'Omo</b> (MentalClass). Per qualsiasi richiesta sui tuoi dati: <a href="mailto:privacy@mentalclass.it">privacy@mentalclass.it</a>.</p>
+      <p>Le informative complete, ai sensi dell'art. 13 GDPR:</p>
+      <p><a href="https://www.mentalclass.it/privacy-account.html" target="_blank" rel="noopener"><b>Informativa account e profilo</b></a><br><span style="font-size:12.5px;">Registrazione, profilo, contenuti, diario, Sfide e Compagno Invisibile.</span></p>
+      <p><a href="https://www.mentalclass.it/privacy-pagamenti.html" target="_blank" rel="noopener"><b>Informativa pagamenti</b></a><br><span style="font-size:12.5px;">Abbonamenti, regali e pagamenti tramite Stripe.</span></p>
+      <p><a href="https://www.mentalclass.it/privacy-marketing.html" target="_blank" rel="noopener"><b>Informativa marketing e analisi</b></a><br><span style="font-size:12.5px;">Newsletter, comunicazioni promozionali, analisi e campagne: solo con il tuo consenso.</span></p>
+      <p style="font-size:12.5px;">I consensi facoltativi si cambiano quando vuoi dall'app, in <b>Profilo → Privacy e consensi</b>, oppure con il link di disiscrizione presente in ogni e-mail.</p>
     </div>
-
     <div class="legal-body" id="legal-cookie" style="display:none;">
       <div class="ph">Versione 1.1 — in vigore dal 12/10/2026. Ultimo aggiornamento: ottobre 2026.</div>
 
@@ -3874,6 +3836,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="field"><label>Nome di chi lo riceve</label><input id="gift-nome" placeholder="Es. Giulia"></div>
     <div class="field"><label>Email di chi lo riceve</label><input id="gift-email" type="email" placeholder="nome@email.it"></div>
     <div class="field"><label>Il tuo messaggio (facoltativo)</label><input id="gift-msg" placeholder="Es. Allenati, ci vediamo al traguardo."></div>
+    <p class="pay-priv" style="margin:0 0 12px;">Pagamento sicuro con Stripe. Leggi l'<a href="https://www.mentalclass.it/privacy-pagamenti.html" target="_blank" rel="noopener">informativa sui pagamenti</a>.</p>
     <button class="btn btn-lime" style="width:100%;" onclick="sendGift()">Invia il regalo</button>
     <p class="gift-note">Il regalo parte via email appena il pagamento è confermato. Non si rinnova da solo, e il codice non scade mai.</p>
   </div>
@@ -3902,6 +3865,49 @@ document.addEventListener('DOMContentLoaded', function(){
   </div>
 </div>
 
+
+<!-- PRIVACY E CONSENSI (informativa marketing: consenso libero, distinto, revocabile) -->
+<div class="modal-bg" id="consensi-bg" onclick="if(event.target===this)chiudiConsensi()">
+  <div class="modal" style="max-width:480px;">
+    <div class="m-head"><h3 class="disp" style="margin:0;">Privacy e consensi</h3><div class="cancel" onclick="chiudiConsensi()">Chiudi ×</div></div>
+    <p style="font-size:12.5px;color:var(--tx-mut);line-height:1.6;margin:0 0 6px;">Questi consensi sono facoltativi: puoi usare MentalClass anche senza. Le modifiche valgono da subito.</p>
+    <div class="cs-row"><div><b>Comunicazioni via email</b><span>Nuovi numeri del Magazine, novità e offerte.</span></div><div class="toggle off" id="cs-mkt" onclick="cambiaConsenso('marketing', this)"></div></div>
+    <div class="cs-row"><div><b>Analisi e campagne</b><span>Statistiche sull'uso delle sezioni dell'app e misurazione delle campagne.</span></div><div class="toggle off" id="cs-ana" onclick="cambiaConsenso('analisi', this)"></div></div>
+    <p class="cons-note" id="cs-stato" style="margin-top:8px;"></p>
+    <div class="cs-links" style="margin-top:6px;">
+      <a href="https://www.mentalclass.it/privacy-account.html" target="_blank" rel="noopener">Informativa account e profilo ›</a>
+      <a href="https://www.mentalclass.it/privacy-pagamenti.html" target="_blank" rel="noopener">Informativa pagamenti ›</a>
+      <a href="https://www.mentalclass.it/privacy-marketing.html" target="_blank" rel="noopener">Informativa marketing e analisi ›</a>
+      <a href="#" onclick="chiudiConsensi();openLegal('cookie');return false;">Cookie Policy ›</a>
+    </div>
+    <p class="cons-note" style="margin-top:10px;">Per accesso, rettifica, cancellazione o portabilità dei dati scrivi a <a href="mailto:privacy@mentalclass.it">privacy@mentalclass.it</a>.</p>
+  </div>
+</div>
+<script>
+  /* ---- Privacy e consensi ---- */
+  function apriConsensi(){
+    document.getElementById('consensi-bg').classList.add('show');
+    var st = document.getElementById('cs-stato'); st.textContent = 'Carico le tue scelte…';
+    var ok = window.MC && MC.utenteCorrente && MC.utenteCorrente();
+    if(!ok){ st.textContent = 'Entra nel tuo account per gestire i consensi.'; return; }
+    MC.consensi.stato().then(function(c){
+      document.getElementById('cs-mkt').classList.toggle('off', !c.marketing);
+      document.getElementById('cs-ana').classList.toggle('off', !c.analisi);
+      st.textContent = c.aggiornato ? ('Ultima modifica: ' + new Date(c.aggiornato).toLocaleDateString('it-IT')) : 'Nessun consenso facoltativo prestato.';
+    }).catch(function(e){ st.textContent = 'Non riesco a leggere i consensi: ' + e.message; });
+  }
+  function chiudiConsensi(){ document.getElementById('consensi-bg').classList.remove('show'); }
+  function cambiaConsenso(tipo, el){
+    var nuovo = el.classList.contains('off');
+    el.classList.toggle('off', !nuovo);
+    var scelta = {}; scelta[tipo] = nuovo;
+    MC.consensi.salva(scelta, 'profilo').then(function(){
+      toast(nuovo ? 'Consenso registrato' : 'Consenso revocato');
+      document.getElementById('cs-stato').textContent = 'Ultima modifica: ' + new Date().toLocaleDateString('it-IT');
+      if(tipo === 'analisi' && window.mcAnalisiAggiorna) window.mcAnalisiAggiorna();
+    }).catch(function(e){ el.classList.toggle('off', nuovo); toast('Non salvato: ' + e.message); });
+  }
+</script>
 <div class="modal-bg" id="recesso-bg" onclick="if(event.target===this)chiudiRecesso()">
   <div class="modal" style="max-width:480px;">
     <div class="m-head"><h3 class="disp" style="margin:0;">Un ultimo passaggio</h3><div class="cancel" onclick="chiudiRecesso()">Chiudi ×</div></div>
@@ -3929,6 +3935,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <button class="btn btn-lime" id="rec-vai" disabled
             style="width:100%;margin-top:18px;opacity:.45;cursor:not-allowed;"
             onclick="confermaRecessoEProcedi()">Prosegui al pagamento</button>
+    <p class="pay-priv">Il pagamento è gestito in modo sicuro da Stripe. Leggi l'<a href="https://www.mentalclass.it/privacy-pagamenti.html" target="_blank" rel="noopener">informativa sui pagamenti</a>.</p>
   </div>
 </div>
 
@@ -8229,7 +8236,7 @@ document.addEventListener('DOMContentLoaded', function(){
       var sblocca = bloccaBottone('su-btn', 'Creazione…');
       var esito;
       try{
-        esito = await MC.account.registrati(email, pass, state.name);
+        esito = await MC.account.registrati(email, pass, state.name, { marketing: !!(document.getElementById('su-mkt')||{}).checked, analisi: !!(document.getElementById('su-ana')||{}).checked });
       }catch(e){
         sblocca(); toast(e.message); return;
       }
@@ -11774,6 +11781,21 @@ document.addEventListener('DOMContentLoaded', function(){
   window.mcRifinisciCard();
 })();
 </script>
-<script defer data-domain="mentalclass.it" src="https://plausible.io/js/script.js"></script>
+<script>
+  /* Statistiche d'uso (Plausible): partono SOLO se la persona ha dato il consenso
+     "Analisi e campagne" (informativa marketing e analisi). Per toglierle del tutto
+     dal consenso, se il consulente conferma che non serve, metti false qui sotto. */
+  var ANALISI_SOLO_CON_CONSENSO = true;
+  window.mcAnalisiAggiorna = function(){
+    var ok = !ANALISI_SOLO_CON_CONSENSO;
+    try{ ok = ok || localStorage.getItem('mc_consenso_analisi') === '1'; }catch(e){}
+    if(ok && !document.getElementById('mc-plausible')){
+      var sc = document.createElement('script'); sc.id = 'mc-plausible'; sc.defer = true;
+      sc.setAttribute('data-domain', 'mentalclass.it'); sc.src = 'https://plausible.io/js/script.js';
+      document.head.appendChild(sc);
+    }
+  };
+  window.mcAnalisiAggiorna();
+</script>
 </body>
 </html>

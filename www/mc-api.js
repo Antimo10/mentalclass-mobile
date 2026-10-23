@@ -442,6 +442,16 @@ const MC = (function(){
        1° del mese e resta lo stesso fino alla fine del mese.
        Regola: vale quello del segno con la data più recente che non sia
        nel futuro; se nessuno ha la data, quello senza data. */
+    /* l'oroscopo che varrà in una certa data (es. il 1° del mese prossimo) */
+    async oroscopoPerData(segno, dataStr){
+      if(!segno || !dataStr) return null;
+      const lista = await contenuti.archivio('oroscopo');
+      const delSegno = lista.filter(o => o && o.extra && String(o.extra.segno || '').toLowerCase() === String(segno).toLowerCase());
+      const datati = delSegno.filter(o => o.data && String(o.data).slice(0,10) <= dataStr)
+        .sort((a, b) => String(b.data).localeCompare(String(a.data)));
+      return datati.length ? datati[0] : null;
+    },
+
     async oroscopoDelMese(segno){
       if(!segno) return null;
       const lista = await contenuti.archivio('oroscopo');

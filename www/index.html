@@ -2525,6 +2525,25 @@ body.acquisti-app #lampo-bar, body.acquisti-app #promo-banner-home, body.acquist
 .cs-row span{ font-size:12.5px; color:var(--tx-mut,rgba(241,237,226,.7)); line-height:1.5; }
 .cs-links a{ display:block; color:#C2E83E; font-size:13.5px; font-weight:600; padding:7px 0; text-decoration:none; }
 </style>
+
+<style id="mc-fix-22ott">
+/* toast: i messaggi lunghi vanno a capo invece di essere tagliati */
+.toast{ white-space:normal !important; max-width:min(560px, calc(100vw - 32px)); text-align:center; line-height:1.4; }
+.toast.lungo{ border-radius:18px !important; padding:12px 18px !important; font-size:13px !important; }
+/* testi lunghi nel carosello della Home */
+.deck .q.mc-t-l{ font-size:clamp(17px,1.55vw,20px) !important; line-height:1.42 !important; }
+.deck .q.mc-t-xl{ font-size:clamp(15.5px,1.35vw,18px) !important; line-height:1.45 !important; }
+.deck .q.mc-t-xxl{ font-size:clamp(14.5px,1.2vw,16px) !important; line-height:1.5 !important; }
+.deck .def.mc-t-l{ font-size:14px !important; } .deck .def.mc-t-xl{ font-size:13.5px !important; } .deck .def.mc-t-xxl{ font-size:13px !important; }
+@media (max-width:600px){
+  .deck .q.mc-t-l{ font-size:17px !important; } .deck .q.mc-t-xl{ font-size:15.5px !important; } .deck .q.mc-t-xxl{ font-size:14.5px !important; }
+}
+/* chip PRO: invito ad abbonarsi */
+.mc-pro.mc-pro-free{ animation:mcProPulse 2.6s ease-in-out infinite; }
+@keyframes mcProPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(194,232,62,0); } 50%{ box-shadow:0 0 0 5px rgba(194,232,62,.18); } }
+.p-card.mc-evidenzia{ animation:mcEvid 1.8s ease; }
+@keyframes mcEvid{ 0%{ box-shadow:0 0 0 0 rgba(194,232,62,0); } 25%{ box-shadow:0 0 0 4px rgba(194,232,62,.75); } 100%{ box-shadow:0 0 0 0 rgba(194,232,62,0); } }
+</style>
 </head>
 <body>
 <div id="velo-caricamento">
@@ -2736,7 +2755,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
       <!-- HOME -->
       <section class="app-screen" id="s-home">
-        <div class="mc-native-top"><span class="mc-logo">Mental<b>Class</b></span><span class="mc-streak" id="mc-streak" onclick="goScreen('diario')" style="display:none;">🔥 <b id="mc-streak-n">0</b></span><span class="mc-crown mc-pro" onclick="goScreen('plan')" style="pointer-events:auto;cursor:pointer;"><b class="mc-m">M</b><span>PRO</span></span></div>
+        <div class="mc-native-top"><span class="mc-logo">Mental<b>Class</b></span><span class="mc-streak" id="mc-streak" onclick="goScreen('diario')" style="display:none;">🔥 <b id="mc-streak-n">0</b></span><span class="mc-crown mc-pro" id="mc-pro-chip" onclick="apriPro()" style="pointer-events:auto;cursor:pointer;"><b class="mc-m">M</b><span>PRO</span></span></div>
         <div class="screen-title"><h1 class="disp" id="greet">Buongiorno</h1></div>
         <p class="screen-sub" id="greet-sub">Il tuo allenamento di oggi ti aspetta.</p>
 
@@ -3640,7 +3659,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <button id="lt-termini" onclick="legalTab('termini')">Termini e Condizioni</button>
     </div>
     <div class="legal-body" id="legal-privacy">
-      <p style="margin-top:0;">Il titolare del trattamento è <b>Antimo Dell'Omo</b> (MentalClass). Per qualsiasi richiesta sui tuoi dati: <a href="mailto:privacy@mentalclass.it">privacy@mentalclass.it</a>.</p>
+      <p style="margin-top:0;">Il titolare del trattamento è <b>MentalClass</b>. Per qualsiasi richiesta sui tuoi dati: <a href="mailto:privacy@mentalclass.it">privacy@mentalclass.it</a>.</p>
       <p>Le informative complete, ai sensi dell'art. 13 GDPR:</p>
       <p><a href="https://www.mentalclass.it/privacy-account.html" target="_blank" rel="noopener"><b>Informativa account e profilo</b></a><br><span style="font-size:12.5px;">Registrazione, profilo, contenuti, diario, Sfide e Compagno Invisibile.</span></p>
       <p><a href="https://www.mentalclass.it/privacy-pagamenti.html" target="_blank" rel="noopener"><b>Informativa pagamenti</b></a><br><span style="font-size:12.5px;">Abbonamenti, regali e pagamenti tramite Stripe.</span></p>
@@ -3690,7 +3709,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="lg-key"><b>Informazione fondamentale per l'Utente:</b> MentalClass è una piattaforma di allenamento mentale per la performance e la crescita personale con finalità esclusivamente formative ed educative. MentalClass <b>NON</b> è un servizio sanitario, medico, psicologico o di psicoterapia, non fornisce diagnosi né terapie e non sostituisce in alcun modo il parere o il trattamento di un professionista sanitario qualificato.</div>
 
       <h6>1. Titolare del servizio e contatti</h6>
-      <p>Il servizio "MentalClass" (fruibile tramite WebApp e future applicazioni mobili per iOS e Android) ed il relativo "MentalClass Magazine" sono gestiti e forniti da Antimo Dell'Omo, nell'ambito dell'ecosistema "Calendario Imprenditoriale" (di seguito denominato il "Titolare").</p>
+      <p>Il servizio "MentalClass" (fruibile tramite WebApp e future applicazioni mobili per iOS e Android) ed il relativo "MentalClass Magazine" sono gestiti e forniti da MentalClass, nell'ambito dell'ecosistema "Calendario Imprenditoriale" (di seguito denominato il "Titolare").</p>
       <p>Dati di contatto:</p>
       <ul>
         <li>Sito web ufficiale: <a href="https://www.mentalclass.it" target="_blank" rel="noopener">https://www.mentalclass.it</a></li>
@@ -3764,7 +3783,7 @@ document.addEventListener('DOMContentLoaded', function(){
       </ol>
 
       <h6>10. Proprietà intellettuale e diritti sui contenuti</h6>
-      <p>Tutti i contenuti presenti all'interno dell'applicazione MentalClass e del relativo Magazine — inclusi a titolo esemplificativo ma non esaustivo: marchi, loghi, testi, articoli, tracce audio, percorsi di allenamento, elementi grafici, codice sorgente e design — sono di proprietà esclusiva di Antimo Dell'Omo o dei suoi licenzianti ed autori e sono protetti dalle leggi italiane ed internazionali sul diritto d'autore e sulla proprietà intellettuale.</p>
+      <p>Tutti i contenuti presenti all'interno dell'applicazione MentalClass e del relativo Magazine — inclusi a titolo esemplificativo ma non esaustivo: marchi, loghi, testi, articoli, tracce audio, percorsi di allenamento, elementi grafici, codice sorgente e design — sono di proprietà esclusiva di MentalClass o dei suoi licenzianti ed autori e sono protetti dalle leggi italiane ed internazionali sul diritto d'autore e sulla proprietà intellettuale.</p>
       <p>La sottoscrizione di un abbonamento concede all'Utente una licenza d'uso personale, non esclusiva, non trasferibile e revocabile, finalizzata unicamente alla fruizione privata dei contenuti. È vietata qualsiasi riproduzione, redistribuzione, registrazione, estrazione o diffusione pubblica dei contenuti non espressamente autorizzata per iscritto dal Titolare.</p>
 
       <h6>11. Politica di inattività e cancellazione dell'account (24 mesi)</h6>
@@ -4144,8 +4163,13 @@ document.addEventListener('DOMContentLoaded', function(){
      EXP 5: toast + confetti + suono
   ===================================================== */
   function toast(msg, action){
+    /* toast(testo, millisecondi) oppure toast(testo, {label, fn}) */
+    var durata = (typeof action === 'number') ? action : null;
+    if(durata) action = null;
+    if(!durata) durata = Math.min(7000, Math.max(3400, String(msg || '').length * 55));
     var t = document.createElement('div');
-    t.className = 'toast'; t.textContent = msg;
+    t.className = 'toast' + (String(msg || '').length > 42 ? ' lungo' : ''); t.textContent = msg;
+    t.style.animation = 'toastIn .35s ease, toastOut .35s ease ' + ((durata - 400) / 1000) + 's forwards';
     if(action){
       var u = document.createElement('span');
       u.className = 'undo'; u.textContent = action.label;
@@ -4153,7 +4177,7 @@ document.addEventListener('DOMContentLoaded', function(){
       t.appendChild(u);
     }
     document.getElementById('toasts').appendChild(t);
-    setTimeout(function(){ t.remove(); }, action ? 5200 : 3400);
+    setTimeout(function(){ t.remove(); }, action ? Math.max(durata, 5200) : durata);
   }
   function confetti(n){
     n = n || 42;
@@ -4507,7 +4531,21 @@ document.addEventListener('DOMContentLoaded', function(){
 
   /* Raccoglie le frasi caricate e le passa al modulo notifiche.
      Funziona solo nella versione app (nel browser MCN non fa nulla). */
-  async function programmaNotificheApp(){
+  /* Più parti dell'app chiedono di riprogrammare quasi insieme (Home caricata,
+     profilo letto, impostazioni salvate): le unisco in UNA sola programmazione,
+     fatta dopo l'ultima richiesta. Prima due programmazioni sovrapposte
+     lasciavano notifiche in più e con orari sbagliati. */
+  var _mcNotifTimer = null, _mcNotifCorsa = Promise.resolve();
+  function programmaNotificheApp(){
+    if(_mcNotifTimer) clearTimeout(_mcNotifTimer);
+    return new Promise(function(ok){
+      _mcNotifTimer = setTimeout(function(){
+        _mcNotifTimer = null;
+        _mcNotifCorsa = _mcNotifCorsa.then(_programmaNotificheOra).catch(function(){}).then(ok, ok);
+      }, 900);
+    });
+  }
+  async function _programmaNotificheOra(){
     if(!window.MCN) return;
     /* aspetto di conoscere l'orario scelto dall'utente, altrimenti userei quello predefinito */
     if(!state.notifProfiloLetto && COLLEGATO && MC.utenteCorrente()){
@@ -4542,22 +4580,29 @@ document.addEventListener('DOMContentLoaded', function(){
         var voci = [];
         mcFrasiDelGiorno(dd, perGiorno).slice(0, perGiorno).forEach(function(f){
           var aut = (f.a && f.a !== 'MentalClass') ? f.a : '';
-          voci.push({ tipo:'frase', title:'MentalClass', body: f.q + (aut ? ' — ' + aut : ''), testo: f.q });
+          voci.push({ tipo:'frase', title:'', body: f.q + (aut ? ' — ' + aut : ''), testo: f.q });
         });
         if(conPensiero){
           var pz = mcPensieroDelGiorno(dd);
-          if(pz && pz.testo) voci.push({ tipo:'pensiero', title:'Il pensiero di oggi', body: pz.testo, testo: pz.testo });
+          if(pz && pz.testo) voci.push({ tipo:'pensiero', title:'', body: pz.testo, testo: pz.testo });
         }
         if(conParola){
           var pw = mcParolaDelGiorno(dd);
           if(pw && pw.testo){
             var parola = (pw.extra && pw.extra.parola) ? pw.extra.parola : (pw.titolo || 'Parola del giorno');
-            voci.push({ tipo:'dizionario', title:'La parola di oggi: ' + parola, body: pw.testo, testo: pw.testo, parola: parola });
+            /* sopra la parola, sotto la definizione */
+            voci.push({ tipo:'dizionario', title: parola, body: pw.testo, testo: pw.testo, parola: parola });
           }
         }
         if(conOroscopo && dd.getDate() === 1 && state.sign){
-          voci.push({ tipo:'oroscopo', title:'Il tuo oroscopo di ' + MESI[dd.getMonth()],
-                      body:(SIGN_EMOJI && SIGN_EMOJI[state.sign] ? SIGN_EMOJI[state.sign] + ' ' : '') + state.sign + ': il mese nuovo è arrivato. Aprilo e leggi cosa allenare.' });
+          /* sopra il segno, sotto il testo dell'oroscopo di quel mese (se è già programmato nel pannello) */
+          var dStr = dd.getFullYear() + '-' + String(dd.getMonth()+1).padStart(2,'0') + '-01';
+          var orTesto = null;
+          try{ if(COLLEGATO && MC.contenuti.oroscopoPerData){ var orx = await MC.contenuti.oroscopoPerData(state.sign, dStr); if(orx && String(orx.data || '').slice(0,7) === dStr.slice(0,7)) orTesto = orx.testo; } }catch(e){}
+          voci.push({ tipo:'oroscopo',
+                      title:(SIGN_EMOJI && SIGN_EMOJI[state.sign] ? SIGN_EMOJI[state.sign] + ' ' : '') + state.sign,
+                      body: orTesto || ('Il tuo oroscopo di ' + MESI[dd.getMonth()] + ' è arrivato: aprilo e leggi cosa allenare questo mese.'),
+                      testo: orTesto || '' });
         }
         giorni.push(voci);
       }
@@ -5346,9 +5391,11 @@ document.addEventListener('DOMContentLoaded', function(){
 
   async function apriRivista(numeroId){
     goScreen('reader');
+    /* la libreria PDF parte subito, in parallelo ai dati del numero */
+    try{ caricaPdfLib().catch(function(){}); }catch(e){}
     var sx0 = document.getElementById('rd-pg-sx');
     if(sx0) sx0.innerHTML = '<div class="rd-skel"></div>';
-    RD.corrente = 1; RD.zoom = 1; RD.px = RD.py = 0; RD.caricate = {}; RD.pronta = false;
+    RD.corrente = 1; RD.zoom = 1; RD.px = RD.py = 0; RD.caricate = {}; RD.pronta = false; RD.ratio = 1.414;
     RD.modo = 'immagini';
     if(RD.pdf && RD.pdf.destroy){ try{ RD.pdf.destroy(); }catch(e){} }
     RD.pdf = null;
@@ -5466,7 +5513,9 @@ document.addEventListener('DOMContentLoaded', function(){
       var soloAnteprima = !!scelta.soloAnteprima;
 
       var lib = await caricaPdfLib();
-      var doc = await lib.getDocument({ url:url }).promise;
+      /* scarico solo i pezzi del PDF che servono (non tutto il file) */
+      var doc = await lib.getDocument({ url:url, disableAutoFetch:true, rangeChunkSize:262144 }).promise;
+      try{ var p1 = await doc.getPage(1); var v1 = p1.getViewport({ scale:1 }); RD.ratio = v1.height / v1.width; }catch(e){ RD.ratio = 1.414; }
 
       RD.modo = 'pdf';
       RD.pdf = doc;
@@ -5499,7 +5548,7 @@ document.addEventListener('DOMContentLoaded', function(){
          La pagina va disegnata alla densità reale dello schermo:
          su un telefono moderno un pixel CSS vale 2 o 3 pixel veri.
          Disegnare a densità 1 è ciò che rendeva il testo sfocato. */
-      var densita = Math.min(window.devicePixelRatio || 1, 3);
+      var densita = Math.min(window.devicePixelRatio || 1, 2.5);
 
       /* larghezza che la pagina occuperà davvero a schermo */
       var stage = document.getElementById('rd-stage');
@@ -5514,7 +5563,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
       /* con lo zoom serve ancora più dettaglio */
       var scala = scalaCss * densita * Math.max(RD.zoom, 1);
-      scala = Math.min(Math.max(scala, 2), 4.5);
+      scala = Math.min(Math.max(scala, 1.5), 3.5);
 
       var vp = pagina.getViewport({ scale: scala });
       var canvas = document.createElement('canvas');
@@ -5527,8 +5576,13 @@ document.addEventListener('DOMContentLoaded', function(){
       await pagina.render({ canvasContext: ctx, viewport: vp }).promise;
       /* qualità alta: il testo di una rivista non perdona la compressione */
       /* oltre il 150% di zoom il PNG evita ogni sbavatura sul testo */
-      return RD.zoom > 1.5 ? canvas.toDataURL('image/png')
-                           : canvas.toDataURL('image/jpeg', 0.96);
+      /* toBlob è molto più veloce di toDataURL (niente testo base64 enorme) */
+      return await new Promise(function(ok){
+        canvas.toBlob(function(b){
+          ok(b ? URL.createObjectURL(b) : canvas.toDataURL('image/jpeg', 0.9));
+          canvas.width = canvas.height = 0;   /* libero subito la memoria */
+        }, RD.zoom > 1.5 ? 'image/png' : 'image/jpeg', 0.9);
+      });
     }catch(e){ return null; }
   }
 
@@ -5558,9 +5612,40 @@ document.addEventListener('DOMContentLoaded', function(){
 
   /* carica in anticipo le pagine vicine, così lo sfoglio è fluido */
   function rdPrecarica(){
-    [RD.corrente-2, RD.corrente-1, RD.corrente, RD.corrente+1, RD.corrente+2, RD.corrente+3]
-      .forEach(function(n){ if(n >= 1 && n <= RD.tot) rdCarica(n); });
+    /* una alla volta, prima la successiva: sul telefono disegnare 6 pagine
+       insieme bloccava tutto e rendeva lenta anche la pagina aperta */
+    var ordine = [RD.corrente+1, RD.corrente+2, RD.corrente-1, RD.corrente+3];
+    if(RD.doppia) ordine = [RD.corrente+2, RD.corrente+3, RD.corrente-1, RD.corrente-2];
+    var giro = RD.giroPrecarica = (RD.giroPrecarica || 0) + 1;
+    ordine.filter(function(n){ return n >= 1 && n <= RD.tot; })
+      .reduce(function(cat, n){
+        return cat.then(function(){ if(giro === RD.giroPrecarica) return rdCarica(n); });
+      }, Promise.resolve());
   }
+
+  /* dimensiona le pagine perché stiano INTERE nello schermo:
+     prima erano alte quanto lo schermo e sul telefono uscivano ai lati */
+  function rdAdatta(){
+    var st = document.getElementById('rd-stage');
+    if(!st) return;
+    var cs = getComputedStyle(st);
+    var W = st.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+    var H = st.clientHeight - (parseFloat(cs.paddingTop) || 0) - (parseFloat(cs.paddingBottom) || 0);
+    if(W <= 0 || H <= 0) return;
+    var r = RD.ratio || 1.414, quante = RD.doppia ? 2 : 1;
+    var w = Math.floor(Math.min((W - (quante - 1) * 2) / quante, H / r));
+    var h = Math.floor(w * r);
+    ['rd-pg-sx','rd-pg-dx'].forEach(function(id){
+      var p = document.getElementById(id);
+      if(p){ p.style.width = w + 'px'; p.style.height = h + 'px'; p.style.aspectRatio = 'auto'; p.style.flex = '0 0 auto'; }
+    });
+    var sp = document.getElementById('rd-spread');
+    if(sp){ sp.style.height = 'auto'; sp.style.alignItems = 'center'; }
+  }
+  window.addEventListener('resize', function(){
+    clearTimeout(window.__rdAd);
+    window.__rdAd = setTimeout(function(){ if(RD.pronta){ RD.doppia = rdDoppiaPossibile(); rdAdatta(); } }, 150);
+  });
 
   /* --- disegna la pagina (o le due pagine) --- */
   async function rdDisegna(){
@@ -5568,6 +5653,7 @@ document.addEventListener('DOMContentLoaded', function(){
     RD.doppia = rdDoppiaPossibile();
     var spread = document.getElementById('rd-spread');
     spread.classList.toggle('singola', !RD.doppia);
+    rdAdatta();
 
     var sx = document.getElementById('rd-pg-sx');
     var dx = document.getElementById('rd-pg-dx');
@@ -8420,6 +8506,28 @@ document.addEventListener('DOMContentLoaded', function(){
     if(state.recoAudio && typeof apriAudioVero === 'function') apriAudioVero(state.recoAudio);
     else goScreen('audio');
   }
+  /* "PRO" in alto: porta alla pagina dell'abbonamento. Chi non è abbonato
+     arriva direttamente sui piani, con l'annuale in evidenza. */
+  function apriPro(){
+    goScreen('plan');
+    setTimeout(function(){
+      var abb = (typeof MCabbonato === 'function') ? MCabbonato() : false;
+      var dest = abb ? document.getElementById('plan-attivo') : document.querySelector('#s-plan .price-grid');
+      if(document.body.classList.contains('no-acquisti')) dest = document.getElementById('plan-app');
+      if(dest && dest.offsetParent !== null){ try{ dest.scrollIntoView({ behavior:'smooth', block:'start' }); }catch(e){} }
+      if(!abb){
+        var hi = document.querySelector('#s-plan .p-card.hi');
+        if(hi){ hi.classList.remove('mc-evidenzia'); void hi.offsetWidth; hi.classList.add('mc-evidenzia'); }
+      }
+    }, 450);
+  }
+  function aggiornaChipPro(){
+    var c = document.getElementById('mc-pro-chip'); if(!c) return;
+    var abb = (typeof MCabbonato === 'function') ? MCabbonato() : false;
+    c.classList.toggle('mc-pro-free', !abb);
+    var sp = c.querySelector('span'); if(sp) sp.textContent = abb ? 'PRO' : 'PASSA A PRO';
+  }
+  setInterval(aggiornaChipPro, 4000); setTimeout(aggiornaChipPro, 1500);
   function pickTime(el){
     document.querySelectorAll('.time-opt').forEach(function(x){ x.classList.remove('sel'); });
     el.classList.add('sel');
@@ -8587,6 +8695,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(id==='feed' && !state.loaded.feed){ state.loaded.feed = true; caricaFeed(); }
     else if(id==='feed') caricaFeed();
     if(id==='supporto'){ if(COLLEGATO && MC.utenteCorrente()){ caricaCompagno(); } else { renderConvs(); } updateCompQuota(); }
+    if(id==='riviste'){ setTimeout(function(){ try{ caricaPdfLib().catch(function(){}); }catch(e){} }, 800); }
     if(id==='reader'){ if(!state.readerResumed){ readerIdx = 0; } renderReader(); }
     if(id==='home') renderHomeSync();
     window.scrollTo(0,0);
@@ -8712,6 +8821,30 @@ document.addEventListener('DOMContentLoaded', function(){
 
     if(app) renderDeckFeed(animate);
     else    renderDeckCarosello(animate);
+    /* dopo il disegno (e dopo l'eventuale animazione) adatto i testi lunghi */
+    requestAnimationFrame(mcAdattaTesti); setTimeout(mcAdattaTesti, 420);
+  }
+
+  /* Frasi, pensieri, parole e oroscopo molto lunghi: rimpicciolisco il
+     testo perché stia tutto nella carta, senza tagli né scorrimento. */
+  function mcAdattaTesti(){
+    try{
+      document.querySelectorAll('#deck-body .q, #deck-body .def').forEach(function(el){
+        var n = (el.textContent || '').length;
+        el.classList.remove('mc-t-l','mc-t-xl','mc-t-xxl');
+        if(n > 320) el.classList.add('mc-t-xxl');
+        else if(n > 210) el.classList.add('mc-t-xl');
+        else if(n > 130) el.classList.add('mc-t-l');
+      });
+      document.querySelectorAll('#deck-feed .feed-card').forEach(function(card){
+        var box = card.querySelector('.fc-in'); if(!box) return;
+        var t = box.querySelector('.fc-q') || box.querySelector('.fc-def'); if(!t) return;
+        t.style.fontSize = '';
+        var max = card.clientHeight * 0.78; if(!max) return;
+        var fs = parseFloat(getComputedStyle(t).fontSize) || 24, giri = 0;
+        while(box.offsetHeight > max && fs > 14 && giri < 24){ fs -= 1; t.style.fontSize = fs + 'px'; giri++; }
+      });
+    }catch(e){}
   }
 
   /* WEB: la versione originale, a carta singola con frecce avanti/indietro */
@@ -10868,7 +11001,7 @@ document.addEventListener('DOMContentLoaded', function(){
         /* Se sei ancora in attesa, lo diciamo ma il vocale è comunque
            salvato: chi si unirà lo troverà. */
         if(stanza.stato !== 'attiva'){
-          toast('🎙 Vocale salvato. Sei ancora in attesa di un compagno: appena qualcuno si unisce, lo ascolterà.', 5000);
+          toast('🎙 Vocale inviato. Ti avvisiamo quando un compagno risponde.', 4500);
         }
       }
 
@@ -10883,7 +11016,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(stanza.stato === 'attiva'){
         apriStanzaReale(stanza, true);
       } else {
-        toast('Sei in attesa: appena arriva qualcuno col tuo obiettivo, la conversazione si apre.');
+        /* il messaggio d'attesa l'ho già dato sopra: niente secondo avviso sovrapposto */
       }
     }catch(e){
       if(btn){ btn.disabled = false; btn.textContent = 'Invia'; }
@@ -11657,7 +11790,19 @@ document.addEventListener('DOMContentLoaded', function(){
   try{
     if(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App){
       window.Capacitor.Plugins.App.addListener('appUrlOpen', function(ev){
-        try{ if(ev && ev.url && ev.url.indexOf('home')>-1 && typeof enterApp==='function'){ enterApp('home'); } }catch(e){}
+        try{
+          var u = (ev && ev.url) || '';
+          /* widget: mentalclass://frase?t=<testo>&c=1 → apre quella frase e la propone da condividere */
+          if(u.indexOf('frase') > -1){
+            var q = {}; (u.split('?')[1] || '').split('&').forEach(function(kv){ var p = kv.split('='); if(p[0]) q[p[0]] = decodeURIComponent((p[1] || '').replace(/\+/g,' ')); });
+            if(q.t){
+              mcApriDaNotifica({ title:'MentalClass', body:q.t, extra:{ tipo:'frase', testo:q.t } });
+              if(q.c === '1') setTimeout(function(){ try{ openShare(q.t); }catch(e){} }, 1600);
+              return;
+            }
+          }
+          if(u.indexOf('home') > -1 && typeof enterApp === 'function'){ enterApp('home'); }
+        }catch(e){}
       });
     }
   }catch(e){}

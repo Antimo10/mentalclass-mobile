@@ -183,13 +183,17 @@
         if (!voci.length) continue;
         if (usate + voci.length > BUDGET) break;
         var giornoId = (R.y * 10000) + ((R.mo + 1) * 100) + R.d + g;
-        /* orari: divido la fascia in tante parti quante sono le notifiche
-           e scelgo un minuto a caso dentro ogni parte (così non si accavallano) */
-        var n = voci.length, ampiezza = (minFine - minInizio) / n, orari = [];
+        /* orari spalmati su TUTTA la fascia scelta: la prima vicino all'inizio,
+           l'ultima vicino alla fine, le altre a distanza regolare, con un
+           piccolo scarto casuale (stabile nel giorno) per non sembrare un
+           orologio. Mai fuori dalla fascia. */
+        var n = voci.length, orari = [], durata = minFine - minInizio;
+        var passo = n > 1 ? durata / (n - 1) : durata;
+        var scarto = Math.min(15, passo / 4);
         for (var k = 0; k < n; k++) {
-          var margine = Math.min(20, ampiezza / 4);
-          var da = minInizio + k * ampiezza + margine, a = minInizio + (k + 1) * ampiezza - margine;
-          orari.push(Math.round(da + (a - da) * rnd(giornoId * 31 + k * 7)));
+          var base = n > 1 ? minInizio + k * passo : minInizio + durata * (0.25 + 0.5 * rnd(giornoId * 31));
+          var t = Math.round(base + (rnd(giornoId * 31 + k * 7) * 2 - 1) * scarto);
+          orari.push(Math.max(minInizio, Math.min(minFine, t)));
         }
         /* l'ordine dei contenuti cambia ogni giorno (l'oroscopo esce per primo) */
         var ordine = voci.map(function (v, i) { return { v: v, r: v.tipo === 'oroscopo' ? -1 : rnd(giornoId * 17 + i * 13) }; })
@@ -201,7 +205,7 @@
           var v = ordine[j];
           nuove.push({
             id: 1000 + g * 10 + j,
-            title: v.title || "MentalClass",
+            title: (typeof v.title === "string") ? v.title : "MentalClass",
             body: v.body,
             schedule: { at: quando, allowWhileIdle: true },
             channelId: CANALE,
@@ -213,6 +217,11 @@
           usate++;
         }
       }
+      try {
+        var ancora = await p.getPending();
+        var resti = (ancora && ancora.notifications || []).filter(function (x) { return x.id >= 1000 && x.id < 2000; });
+        if (resti.length) await p.cancel({ notifications: resti });
+      } catch (e) {}
       if (!nuove.length) return;
       try { await p.schedule({ notifications: nuove }); } catch (e) {}
     },

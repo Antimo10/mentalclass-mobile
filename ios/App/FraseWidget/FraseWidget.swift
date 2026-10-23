@@ -1,12 +1,14 @@
 //  =====================================================================
-//  MentalClass · Widget iOS (SwiftUI + WidgetKit)
+//  MentalClass · Widget iOS (SwiftUI + WidgetKit) — versione grafica 2
 //  ---------------------------------------------------------------------
-//  Mostra le frasi MentalClass sulla Home, a rotazione durante il giorno.
-//  Sfondo unico (nessun bordo). Al tocco apre l'app sulla schermata Home.
+//  Mostra le frasi MentalClass sulla Home (piccolo, medio, grande) e sulla
+//  schermata di blocco, a rotazione durante il giorno.
+//  - sfondo con il gradiente del marchio, luce lime e cerchi sottili
+//  - il testo si rimpicciolisce da solo quando la frase è lunga
+//  - al tocco apre l'app proprio su quella frase e propone di condividerla
 //
 //  ATTENZIONE: nella cartella ios/App/FraseWidget/ ci deve essere UN SOLO
-//  file .swift. Se esiste "FraseWidget .swift" (con lo spazio) ELIMINALO,
-//  altrimenti il build fallisce con "invalid redeclaration".
+//  file .swift. Sostituisci il contenuto di FraseWidget.swift con questo.
 //
 //  App Group IDENTICO su app, widget e mc-widget.js:
 //        group.it.mentalclass.mentalclass
@@ -21,10 +23,15 @@ let MC_KEY_AUTORE = "autore_del_giorno"
 let MC_KEY_LISTA = "frasi_widget"   // JSON array [{"q":...,"a":...}]
 
 extension Color {
-    static let mcAbyss = Color(red: 5/255,  green: 44/255,  blue: 49/255)   // #052c31
-    static let mcCream = Color(red: 241/255, green: 237/255, blue: 226/255) // #F1EDE2
-    static let mcLime  = Color(red: 194/255, green: 232/255, blue: 62/255)  // #C2E83E
+    static let mcAbyss = Color(red: 5/255,   green: 44/255,  blue: 49/255)   // #052c31
+    static let mcDeep  = Color(red: 8/255,   green: 68/255,  blue: 76/255)   // #08444C
+    static let mcTeal  = Color(red: 39/255,  green: 92/255,  blue: 100/255)  // #275C64
+    static let mcNight = Color(red: 3/255,   green: 20/255,  blue: 23/255)   // #031417
+    static let mcCream = Color(red: 241/255, green: 237/255, blue: 226/255)  // #F1EDE2
+    static let mcLime  = Color(red: 194/255, green: 232/255, blue: 62/255)   // #C2E83E
 }
+
+// MARK: - Dati
 
 struct FraseEntry: TimelineEntry {
     let date: Date
@@ -55,7 +62,7 @@ struct FraseProvider: TimelineProvider {
     }
 
     func placeholder(in context: Context) -> FraseEntry {
-        FraseEntry(date: Date(), frase: "Alleniamo la mente, un giorno alla volta.", autore: "MentalClass")
+        FraseEntry(date: Date(), frase: "La disciplina è scegliere tra ciò che vuoi ora e ciò che vuoi di più.", autore: "MentalClass")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (FraseEntry) -> Void) {
@@ -80,37 +87,225 @@ struct FraseProvider: TimelineProvider {
     }
 }
 
+// MARK: - Aiuti
+
+/// Grandezza del testo in base alla lunghezza della frase e al formato:
+/// le frasi lunghe si rimpiccioliscono invece di essere tagliate.
+func mcDimensione(_ frase: String, _ family: WidgetFamily) -> CGFloat {
+    let n = frase.count
+    switch family {
+    case .systemSmall:
+        if n < 45 { return 18 }
+        if n < 80 { return 15.5 }
+        if n < 120 { return 13.5 }
+        return 12
+    case .systemLarge:
+        if n < 90 { return 29 }
+        if n < 160 { return 24 }
+        if n < 240 { return 20 }
+        return 17
+    default: // medium
+        if n < 60 { return 21 }
+        if n < 110 { return 18 }
+        if n < 170 { return 15.5 }
+        return 13.5
+    }
+}
+
+/// Data breve in italiano, es. "22 OTT"
+func mcDataBreve(_ d: Date) -> String {
+    let f = DateFormatter()
+    f.locale = Locale(identifier: "it_IT")
+    f.dateFormat = "d MMM"
+    return f.string(from: d).uppercased()
+}
+
+/// Link che apre l'app su questa frase e propone di condividerla
+func mcLinkFrase(_ frase: String) -> URL {
+    var c = URLComponents()
+    c.scheme = "mentalclass"
+    c.host = "frase"
+    c.queryItems = [URLQueryItem(name: "t", value: frase), URLQueryItem(name: "c", value: "1")]
+    return c.url ?? URL(string: "mentalclass://home")!
+}
+
+// MARK: - Sfondo del marchio
+
+struct MCSfondo: View {
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [.mcTeal, .mcDeep, .mcNight]),
+                startPoint: .topTrailing,
+                endPoint: .bottomLeading
+            )
+            RadialGradient(
+                gradient: Gradient(colors: [Color.mcLime.opacity(0.30), Color.mcLime.opacity(0.0)]),
+                center: .topTrailing,
+                startRadius: 0,
+                endRadius: 190
+            )
+            GeometryReader { g in
+                ForEach(0..<4, id: \.self) { i in
+                    Circle()
+                        .stroke(Color.mcCream.opacity(0.07 - Double(i) * 0.014), lineWidth: 1)
+                        .frame(width: CGFloat(110 + i * 70), height: CGFloat(110 + i * 70))
+                        .position(x: g.size.width + 12, y: -12)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Widget sulla Home
+
 struct FraseWidgetView: View {
     var entry: FraseProvider.Entry
     @Environment(\.widgetFamily) var family
 
+    private var piccolo: Bool { family == .systemSmall }
+    private var firma: String {
+        (entry.autore != "MentalClass" && !entry.autore.isEmpty) ? entry.autore : "mentalclass.it"
+    }
+
     var body: some View {
-        VStack(spacing: family == .systemSmall ? 8 : 12) {
-            Spacer(minLength: 0)
+        let size = mcDimensione(entry.frase, family)
 
-            // frase centrata, in orizzontale e in verticale
-            Text(entry.frase)
-                .font(.system(size: family == .systemSmall ? 16 : 21, weight: .bold, design: .serif))
-                .foregroundColor(.mcCream)
-                .multilineTextAlignment(.center)
-                .lineLimit(family == .systemSmall ? 5 : 5)
-                .minimumScaleFactor(0.55)
-                .frame(maxWidth: .infinity, alignment: .center)
+        VStack(alignment: .leading, spacing: 0) {
+            // intestazione: marchio + data
+            HStack(spacing: 6) {
+                ZStack {
+                    Circle().fill(Color.mcLime)
+                    Text("M")
+                        .font(.system(size: 9, weight: .black))
+                        .foregroundColor(.mcAbyss)
+                }
+                .frame(width: 17, height: 17)
 
-            if entry.autore != "MentalClass" && !entry.autore.isEmpty {
-                Text("— \(entry.autore)")
-                    .font(.system(size: family == .systemSmall ? 11 : 13, weight: .semibold))
-                    .foregroundColor(.mcLime)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity, alignment: .center)
+                Text(piccolo ? "MENTALCLASS" : "MENTALCLASS · FRASE DEL GIORNO")
+                    .font(.system(size: 9, weight: .heavy))
+                    .tracking(1.3)
+                    .foregroundColor(Color.mcCream.opacity(0.85))
+                    .lineLimit(1)
+
+                Spacer(minLength: 0)
+
+                if !piccolo {
+                    Text(mcDataBreve(entry.date))
+                        .font(.system(size: 9, weight: .heavy))
+                        .tracking(1.0)
+                        .foregroundColor(.mcLime)
+                }
             }
 
-            Spacer(minLength: 0)
+            Spacer(minLength: piccolo ? 6 : 8)
+
+            // virgolette del marchio
+            Text("\u{201C}")
+                .font(.system(size: piccolo ? 30 : 40, weight: .black, design: .serif))
+                .foregroundColor(.mcLime)
+                .frame(height: piccolo ? 16 : 22, alignment: .top)
+                .clipped()
+
+            // la frase: si adatta da sola alla lunghezza
+            Text(entry.frase)
+                .font(.system(size: size, weight: .semibold))
+                .foregroundColor(.mcCream)
+                .lineSpacing(piccolo ? 1 : 2)
+                .multilineTextAlignment(.leading)
+                .lineLimit(family == .systemLarge ? 11 : (piccolo ? 7 : 5))
+                .minimumScaleFactor(0.55)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, piccolo ? 4 : 6)
+
+            Spacer(minLength: piccolo ? 6 : 8)
+
+            // firma + invito a condividere
+            HStack(spacing: 7) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Color.mcLime)
+                    .frame(width: 16, height: 3)
+                Text(firma)
+                    .font(.system(size: piccolo ? 10 : 11, weight: .bold))
+                    .foregroundColor(.mcLime)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                Spacer(minLength: 0)
+                if !piccolo {
+                    HStack(spacing: 4) {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 9.5, weight: .bold))
+                        Text("Condividi")
+                            .font(.system(size: 10.5, weight: .heavy))
+                    }
+                    .foregroundColor(.mcAbyss)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(Capsule().fill(Color.mcLime))
+                }
+            }
         }
-        .padding(.horizontal, family == .systemSmall ? 14 : 22)
-        .padding(.vertical, family == .systemSmall ? 12 : 16)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-        .widgetURL(URL(string: "mentalclass://home"))
+        .padding(.horizontal, piccolo ? 14 : 18)
+        .padding(.vertical, piccolo ? 13 : 15)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .widgetURL(mcLinkFrase(entry.frase))
+    }
+}
+
+// MARK: - Schermata di blocco (rettangolare)
+
+struct FraseBloccoView: View {
+    var entry: FraseProvider.Entry
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("MENTALCLASS")
+                .font(.system(size: 9, weight: .heavy))
+                .tracking(1.2)
+                .widgetAccentable()
+            Text(entry.frase)
+                .font(.system(size: 13, weight: .semibold))
+                .lineLimit(3)
+                .minimumScaleFactor(0.7)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .widgetURL(mcLinkFrase(entry.frase))
+    }
+}
+
+// MARK: - Scelta della vista in base al formato
+
+struct FraseWidgetEntryView: View {
+    var entry: FraseProvider.Entry
+    @Environment(\.widgetFamily) var family
+
+    @ViewBuilder
+    var contenuto: some View {
+        if family == .accessoryRectangular {
+            FraseBloccoView(entry: entry)
+        } else {
+            FraseWidgetView(entry: entry)
+        }
+    }
+
+    var body: some View {
+        if #available(iOS 17.0, *) {
+            contenuto
+                .containerBackground(for: .widget) {
+                    if family == .accessoryRectangular {
+                        Color.clear
+                    } else {
+                        MCSfondo()
+                    }
+                }
+        } else {
+            ZStack {
+                if family != .accessoryRectangular {
+                    MCSfondo()
+                }
+                contenuto
+            }
+        }
     }
 }
 
@@ -120,19 +315,11 @@ struct FraseWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: FraseProvider()) { entry in
-            if #available(iOS 17.0, *) {
-                FraseWidgetView(entry: entry)
-                    .containerBackground(Color.mcAbyss, for: .widget)   // sfondo unico, no bordi
-            } else {
-                ZStack {
-                    Color.mcAbyss
-                    FraseWidgetView(entry: entry)
-                }
-            }
+            FraseWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Frase del giorno")
-        .description("Le frasi di MentalClass, che cambiano durante il giorno sulla tua Home.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .description("Le frasi di MentalClass sulla tua Home: toccala per aprirla e condividerla.")
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .accessoryRectangular])
         .contentMarginsDisabled()
     }
 }

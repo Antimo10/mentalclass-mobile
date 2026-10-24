@@ -5,14 +5,14 @@
 	"server": {
 		"androidScheme": "https"
 	},
-	"backgroundColor": "#08444C",
+	"backgroundColor": "#052c31",
 	"ios": {
 		"contentInset": "automatic"
 	},
 	"plugins": {
 		"SplashScreen": {
 			"launchShowDuration": 800,
-			"backgroundColor": "#08444C",
+			"backgroundColor": "#052c31",
 			"androidScaleType": "CENTER_CROP",
 			"showSpinner": false
 		},
@@ -22,6 +22,7 @@
 		}
 	},
 	"packageClassList": [
+		"AppPlugin",
 		"SplashScreenPlugin",
 		"PushNotificationsPlugin",
 		"LocalNotificationsPlugin",

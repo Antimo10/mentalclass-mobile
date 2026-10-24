@@ -8579,6 +8579,8 @@ document.addEventListener('DOMContentLoaded', function(){
     var abb = (typeof MCabbonato === 'function') ? MCabbonato() : false;
     c.classList.toggle('mc-pro-free', !abb);
     var sp = c.querySelector('span'); if(sp) sp.textContent = abb ? 'PRO' : 'PASSA A PRO';
+    /* app iOS senza acquisti in-app: niente inviti all'acquisto (regola Apple 3.1.1) */
+    c.style.display = (!abb && document.body.classList.contains('no-acquisti')) ? 'none' : '';
   }
   setInterval(aggiornaChipPro, 4000); setTimeout(aggiornaChipPro, 1500);
   function pickTime(el){

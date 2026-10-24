@@ -5,7 +5,8 @@
 //  schermata di blocco, a rotazione durante il giorno.
 //  - sfondo con il gradiente del marchio, luce lime e cerchi sottili
 //  - il testo si rimpicciolisce da solo quando la frase è lunga
-//  - al tocco apre l'app proprio su quella frase e propone di condividerla
+//  - al tocco apre l'app proprio su quella frase
+//  - (medio e grande) tasti Salva e Condividi: aprono l'app ed eseguono l'azione
 //
 //  ATTENZIONE: nella cartella ios/App/FraseWidget/ ci deve essere UN SOLO
 //  file .swift. Sostituisci il contenuto di FraseWidget.swift con questo.
@@ -120,13 +121,42 @@ func mcDataBreve(_ d: Date) -> String {
     return f.string(from: d).uppercased()
 }
 
-/// Link che apre l'app su questa frase e propone di condividerla
-func mcLinkFrase(_ frase: String) -> URL {
+/// Link che apre l'app proprio su questa frase.
+/// azione: "" = mostra la frase · "like" = la salva nei preferiti · "condividi" = apre la condivisione
+func mcLinkFrase(_ frase: String, _ autore: String = "", azione: String = "") -> URL {
     var c = URLComponents()
     c.scheme = "mentalclass"
     c.host = "frase"
-    c.queryItems = [URLQueryItem(name: "t", value: frase), URLQueryItem(name: "c", value: "1")]
+    var q = [URLQueryItem(name: "t", value: frase)]
+    if !autore.isEmpty { q.append(URLQueryItem(name: "a", value: autore)) }
+    if azione == "like" { q.append(URLQueryItem(name: "l", value: "1")) }
+    if azione == "condividi" { q.append(URLQueryItem(name: "c", value: "1")) }
+    c.queryItems = q
     return c.url ?? URL(string: "mentalclass://home")!
+}
+
+/// Tasto a pillola del widget (Salva / Condividi)
+struct MCTasto: View {
+    let icona: String
+    let testo: String
+    let pieno: Bool
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: icona)
+                .font(.system(size: 10, weight: .bold))
+            Text(testo)
+                .font(.system(size: 10.5, weight: .heavy))
+        }
+        .foregroundColor(pieno ? .mcAbyss : .mcLime)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(
+            Capsule().fill(pieno ? Color.mcLime : Color.mcLime.opacity(0.12))
+        )
+        .overlay(
+            Capsule().stroke(Color.mcLime.opacity(pieno ? 0 : 0.55), lineWidth: 1)
+        )
+    }
 }
 
 // MARK: - Sfondo del marchio
@@ -220,7 +250,7 @@ struct FraseWidgetView: View {
 
             Spacer(minLength: piccolo ? 6 : 8)
 
-            // firma + invito a condividere
+            // firma + tasti Salva e Condividi (veri: ognuno apre l'app con la sua azione)
             HStack(spacing: 7) {
                 RoundedRectangle(cornerRadius: 2)
                     .fill(Color.mcLime)
@@ -232,23 +262,19 @@ struct FraseWidgetView: View {
                     .minimumScaleFactor(0.8)
                 Spacer(minLength: 0)
                 if !piccolo {
-                    HStack(spacing: 4) {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 9.5, weight: .bold))
-                        Text("Condividi")
-                            .font(.system(size: 10.5, weight: .heavy))
+                    Link(destination: mcLinkFrase(entry.frase, entry.autore, azione: "like")) {
+                        MCTasto(icona: "heart.fill", testo: "Salva", pieno: false)
                     }
-                    .foregroundColor(.mcAbyss)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(Capsule().fill(Color.mcLime))
+                    Link(destination: mcLinkFrase(entry.frase, entry.autore, azione: "condividi")) {
+                        MCTasto(icona: "square.and.arrow.up", testo: "Condividi", pieno: true)
+                    }
                 }
             }
         }
         .padding(.horizontal, piccolo ? 14 : 18)
         .padding(.vertical, piccolo ? 13 : 15)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .widgetURL(mcLinkFrase(entry.frase))
+        .widgetURL(mcLinkFrase(entry.frase, entry.autore))
     }
 }
 
@@ -269,7 +295,7 @@ struct FraseBloccoView: View {
                 .minimumScaleFactor(0.7)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .widgetURL(mcLinkFrase(entry.frase))
+        .widgetURL(mcLinkFrase(entry.frase, entry.autore))
     }
 }
 
@@ -318,7 +344,7 @@ struct FraseWidget: Widget {
             FraseWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Frase del giorno")
-        .description("Le frasi di MentalClass sulla tua Home: toccala per aprirla e condividerla.")
+        .description("Le frasi di MentalClass sulla tua Home: toccala per aprirla, salvarla o condividerla.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .accessoryRectangular])
         .contentMarginsDisabled()
     }

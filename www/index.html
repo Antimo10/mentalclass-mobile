@@ -2511,6 +2511,28 @@ body.acquisti-app #lampo-bar, body.acquisti-app #promo-banner-home, body.acquist
   .deck .q{ font-size:18px !important; }
   .mc-oggi b{ font-size:19px !important; }
 }
+
+/* ===== OROSCOPO: segno, punti sulla stessa riga, consiglio in corsivo ===== */
+.or-head{ display:flex; flex-direction:column; align-items:center; margin:0 0 16px; }
+.or-glifo{ width:60px; height:60px; border-radius:50%; border:1.5px solid rgba(194,232,62,.55); display:flex; align-items:center; justify-content:center; color:var(--lime); background:radial-gradient(circle at 50% 40%, rgba(194,232,62,.14), rgba(194,232,62,0) 70%); box-shadow:0 0 0 6px rgba(194,232,62,.05); }
+.or-glifo svg{ width:32px; height:32px; }
+.or-nome{ font-family:'MCSans','Inter Tight',Inter,sans-serif; font-weight:700; font-size:30px; letter-spacing:-.02em; line-height:1; color:var(--cream); margin-top:12px; }
+.or-mese{ font-size:10px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--lime); margin-top:7px; }
+.or-punti{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; border:1px solid rgba(241,237,226,.14); background:rgba(0,0,0,.2); border-radius:14px; padding:9px 4px; margin:0 auto 16px; width:100%; max-width:420px; box-sizing:border-box; }
+.or-cell{ text-align:center; padding:0 8px; min-width:0; }
+.or-cell b{ display:block; font-size:9px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--lime); margin-bottom:3px; }
+.or-cell.deb b{ color:#F5B72E; }
+.or-cell span{ display:block; font-size:13px; font-weight:600; line-height:1.25; color:var(--cream); }
+.or-sep{ width:1px; height:28px; background:rgba(241,237,226,.16); }
+.or-cons{ font-family:'Playfair Display',Georgia,serif; font-style:italic; font-size:13.5px; line-height:1.5; color:rgba(241,237,226,.78); margin:22px auto 0; max-width:36ch; }
+.or-cons span{ font-style:normal; font-size:9.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--lime); display:block; margin-bottom:4px; font-family:'MCSans','Inter Tight',Inter,sans-serif; }
+body.native #deck-feed .fc-in.or-in{ max-width:34ch; }
+body.native #deck-feed .or-in .fc-q{ font-size:clamp(16px,4.4vw,19px); line-height:1.45; font-weight:500; margin:0; font-family:'MCSans','Inter Tight',Inter,sans-serif; }
+.deck .or-cons{ font-size:13px; margin-bottom:22px; }
+.deck .or-head{ margin-top:2px; }
+.deck.light .or-nome, .deck.light .or-cell span, .deck.light .or-cons{ color:#0f2b30 !important; }
+.deck.light .or-punti{ border-color:rgba(15,43,48,.2); background:rgba(255,255,255,.35); }
+.deck.light .or-mese, .deck.light .or-cell b, .deck.light .or-cons span, .deck.light .or-glifo{ color:#0f2b30 !important; border-color:rgba(15,43,48,.4); }
 </style>
 
 <style id="mc-consensi-css">
@@ -4168,6 +4190,49 @@ document.addEventListener('DOMContentLoaded', function(){
   /* =====================================================
      EXP 5: toast + confetti + suono
   ===================================================== */
+
+  /* Oroscopo: divide il testo in Punto forte, Punto debole, corpo e
+     Consiglio. Legge i campi del pannello (extra) e, se il testo è stato
+     incollato tutto insieme, li riconosce anche dentro il testo. */
+  var OROSCOPO_INFO = {};
+  function mcOroscopoParti(testo, extra){
+    var ex = extra || {}, t = String(testo || '').replace(/\r/g, '');
+    var r = { forte: ex.punto_forte || '', debole: ex.punto_debole || '', consiglio: ex.consiglio || '', corpo: '' };
+    var righe = t.split('\n').map(function(x){ return x.trim(); }).filter(function(x){ return x; });
+    var segni = ['ariete','toro','gemelli','cancro','leone','vergine','bilancia','scorpione','sagittario','capricorno','acquario','pesci'];
+    var corpo = [];
+    righe.forEach(function(x){
+      var m;
+      if(segni.indexOf(x.toLowerCase().replace(/[^a-zà-ù]/g,'')) > -1 && x.length < 20) return;          /* riga col solo nome del segno */
+      if((m = x.match(/^punto\s+forte\s*[·:\-–—]\s*(.+?)\s*[·|]\s*punto\s+debole\s*[·:\-–—]\s*(.+)$/i))){ if(!r.forte) r.forte = m[1]; if(!r.debole) r.debole = m[2]; return; }
+      if((m = x.match(/^punto\s+forte\s*[·:\-–—]\s*(.+)$/i))){ if(!r.forte) r.forte = m[1]; return; }
+      if((m = x.match(/^punto\s+debole\s*[·:\-–—]\s*(.+)$/i))){ if(!r.debole) r.debole = m[1]; return; }
+      if((m = x.match(/^consiglio\s*[:·\-–—]\s*(.+)$/i))){ if(!r.consiglio) r.consiglio = m[1]; return; }
+      corpo.push(x);
+    });
+    r.corpo = corpo.join(' ');
+    return r;
+  }
+  var MC_SEGNI_PATH = {"Ariete": "M12 21V10 M12 10C12 5.5 9.5 3.5 7 3.5S3 5.2 3 7.2 4.4 10.5 6.4 10.5 M12 10c0-4.5 2.5-6.5 5-6.5s4 1.7 4 3.7-1.4 3.3-3.4 3.3", "Toro": "M4 3.5c0 4 3.6 6.8 8 6.8s8-2.8 8-6.8 M12 10.3a5.3 5.3 0 1 0 0 10.6 5.3 5.3 0 1 0 0-10.6z", "Gemelli": "M4.5 4c4.6 1.8 10.4 1.8 15 0 M4.5 20c4.6-1.8 10.4-1.8 15 0 M9 5.2v13.6 M15 5.2v13.6", "Cancro": "M7.5 6.5a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 1 0 0-5.6z M4.7 9.3C4.7 5.6 8 3.5 12 3.5c3.2 0 5.6 1 7.5 2.8 M16.5 11.9a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 1 0 0-5.6z M19.3 14.7c0 3.7-3.3 5.8-7.3 5.8-3.2 0-5.6-1-7.5-2.8", "Leone": "M6.5 13.5a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 1 0 0-5.6z M9.3 16.3c0-3.5-2.1-5.2-2.1-8.3a4.2 4.2 0 0 1 8.4 0c0 3.5-3.4 6-3.4 9.6a2.9 2.9 0 0 0 5.8.4", "Vergine": "M3 5c1.5 0 2.2 1 2.2 2.8V19 M5.2 7.8c0-1.8 1-2.8 2.4-2.8s2.4 1 2.4 2.8V19 M10 7.8c0-1.8 1-2.8 2.4-2.8s2.4 1 2.4 2.8v7.5c0 2.4 1.2 4 3.2 4.7 M14.8 12.5c1.6-1.8 4.7-1.4 4.7 1.2 0 2.6-2.7 4.8-6 7", "Bilancia": "M3 19.5h18 M3 15.5h5.2a4.6 4.6 0 1 1 7.6 0H21", "Scorpione": "M3 5c1.5 0 2.2 1 2.2 2.8V19 M5.2 7.8c0-1.8 1-2.8 2.4-2.8s2.4 1 2.4 2.8V19 M10 7.8c0-1.8 1-2.8 2.4-2.8s2.4 1 2.4 2.8v9.4c0 1.4.8 2.3 2.2 2.3H21 M18.8 17.2l2.3 2.3-2.3 2.3", "Sagittario": "M4 20L20 4 M12.5 4H20v7.5 M6.5 11.5l6 6", "Capricorno": "M3 5c2 0 3 1.6 3 3.8V19 M6 8.8C6 6 7.8 4 10 4s4 2 4 4.8v6.6c0 2.6 1.6 4.6 3.8 4.6a2.9 2.9 0 0 0 0-5.8c-2.6 0-4.4 2.4-5.5 5.8", "Acquario": "M3 10l3-3 3 3 3-3 3 3 3-3 3 3 M3 17l3-3 3 3 3-3 3 3 3-3 3 3", "Pesci": "M5.5 3.5c2.8 2.6 4 5.5 4 8.5s-1.2 5.9-4 8.5 M18.5 3.5c-2.8 2.6-4 5.5-4 8.5s1.2 5.9 4 8.5 M8 12h8"};
+  function mcSegnoSvg(segno){
+    var d = MC_SEGNI_PATH[segno]; if(!d) return '';
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + d + '"/></svg>';
+  }
+  function mcOroscopoHtml(info, corpoHtml, segno){
+    var head = '<div class="or-head"><span class="or-glifo">' + mcSegnoSvg(segno) + '</span>' +
+      '<div class="or-nome">' + escapeHtml(segno || '') + '</div>' +
+      '<div class="or-mese">Oroscopo mentale · ' + mcMeseNome() + '</div></div>';
+    var p = '';
+    if(info && (info.forte || info.debole)){
+      p = '<div class="or-punti">' +
+        '<div class="or-cell"><b>Punto forte</b><span>' + escapeHtml(info.forte || '—') + '</span></div>' +
+        '<div class="or-sep"></div>' +
+        '<div class="or-cell deb"><b>Punto debole</b><span>' + escapeHtml(info.debole || '—') + '</span></div></div>';
+    }
+    var c = (info && info.consiglio) ? '<p class="or-cons"><span>Consiglio</span>' + escapeHtml(info.consiglio) + '</p>' : '';
+    return { sopra: head + p, sotto: c, corpo: corpoHtml };
+  }
+  window.mcOroscopoParti = mcOroscopoParti;
   function toast(msg, action){
     /* toast(testo, millisecondi) oppure toast(testo, {label, fn}) */
     var durata = (typeof action === 'number') ? action : null;
@@ -4483,7 +4548,9 @@ document.addEventListener('DOMContentLoaded', function(){
         };
       }
       if(d.oroscopo){
-        OROSCOPI[state.sign] = d.oroscopo.testo;
+        var _orp = mcOroscopoParti(d.oroscopo.testo, d.oroscopo.extra);
+        OROSCOPI[state.sign] = _orp.corpo || d.oroscopo.testo;
+        OROSCOPO_INFO[state.sign] = _orp;
         state.oroscopoId = d.oroscopo.id;
       }
 
@@ -4604,7 +4671,7 @@ document.addEventListener('DOMContentLoaded', function(){
           /* sopra il segno, sotto il testo dell'oroscopo di quel mese (se è già programmato nel pannello) */
           var dStr = dd.getFullYear() + '-' + String(dd.getMonth()+1).padStart(2,'0') + '-01';
           var orTesto = null;
-          try{ if(COLLEGATO && MC.contenuti.oroscopoPerData){ var orx = await MC.contenuti.oroscopoPerData(state.sign, dStr); if(orx && String(orx.data || '').slice(0,7) === dStr.slice(0,7)) orTesto = orx.testo; } }catch(e){}
+          try{ if(COLLEGATO && MC.contenuti.oroscopoPerData){ var orx = await MC.contenuti.oroscopoPerData(state.sign, dStr); if(orx && String(orx.data || '').slice(0,7) === dStr.slice(0,7)) orTesto = mcOroscopoParti(orx.testo, orx.extra).corpo || orx.testo; } }catch(e){}
           voci.push({ tipo:'oroscopo',
                       title:(SIGN_EMOJI && SIGN_EMOJI[state.sign] ? SIGN_EMOJI[state.sign] + ' ' : '') + state.sign,
                       body: orTesto || ('Il tuo oroscopo di ' + MESI[dd.getMonth()] + ' è arrivato: aprilo e leggi cosa allenare questo mese.'),
@@ -8951,7 +9018,8 @@ document.addEventListener('DOMContentLoaded', function(){
       }
       if(state.deck==='oroscopo'){
         var em = SIGN_EMOJI[state.sign];
-        html = '<span class="sign-mini">'+em+' '+state.sign+' · '+mcMeseNome()+'</span><p class="q quote">'+OROSCOPI[state.sign]+'</p><div class="a">Oroscopo mentale del mese</div>';
+        var _oh = mcOroscopoHtml(OROSCOPO_INFO[state.sign], escapeHtml(OROSCOPI[state.sign]), state.sign);
+        html = _oh.sopra+'<p class="q quote">'+_oh.corpo+'</p>'+_oh.sotto;
         dots.innerHTML=''; prev.disabled=true; next.disabled=true;
         var _pm = new Date(); _pm = new Date(_pm.getFullYear(), _pm.getMonth() + 1, 1);
         quota.textContent = '1 al mese per il tuo segno · il prossimo il ' + _pm.toLocaleDateString('it-IT', { day:'numeric', month:'long' });
@@ -8996,8 +9064,9 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     /* oroscopo del mese */
     if(OROSCOPI[state.sign]){
-      carte.push('<div class="feed-card" data-tipo="oroscopo" data-i="0"><div class="fc-in">' + tag('Oroscopo del mese · ' + escapeHtml(state.sign)) +
-        '<p class="fc-q quote">' + escapeHtml(OROSCOPI[state.sign]) + '</p></div></div>');
+      var _ohf = mcOroscopoHtml(OROSCOPO_INFO[state.sign], escapeHtml(OROSCOPI[state.sign]), state.sign);
+      carte.push('<div class="feed-card" data-tipo="oroscopo" data-i="0"><div class="fc-in or-in">' +
+        _ohf.sopra + '<p class="fc-q quote">' + _ohf.corpo + '</p>' + _ohf.sotto + '</div></div>');
     }
     carte.push(cartaFine('Per oggi è tutto', 'I prossimi contenuti arrivano domani, nella tua fascia ' + fmtRange() + '.'));
 
@@ -9669,7 +9738,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var it = currentDeckItem();
     if(!it) return null;
     if(it.type === 'dizionario') return { tipo:'parola', word:DIZIONARIO.word, fon:DIZIONARIO.fon || '', def:DIZIONARIO.def };
-    if(it.type === 'oroscopo')   return { tipo:'oroscopo', segno:state.sign };
+    if(it.type === 'oroscopo')   return { tipo:'oroscopo', segno:state.sign, info:(OROSCOPO_INFO[state.sign] || mcOroscopoParti(OROSCOPI[state.sign], null)) };
     if(it.type === 'pensieri')   return { tipo:'pensiero' };
     return { tipo:'frase' };
   }
@@ -9758,6 +9827,83 @@ document.addEventListener('DOMContentLoaded', function(){
     c.fillText(dataTxt.toUpperCase(), W - P, TOP + 36); ls('0px');
     c.textAlign = 'left';
 
+    /* ---------- OROSCOPO: impaginazione dedicata ---------- */
+    if(meta.tipo === 'oroscopo'){
+      var inf = meta.info || {};
+      var oaTop = TOP + 72 + (storia ? 90 : 50), oaBot = FOOT_Y - (storia ? 70 : 46), oaH = oaBot - oaTop, oW = W - 2 * P;
+      var R = storia ? 92 : 62, NOME = storia ? 112 : 84, BAR_H = storia ? 126 : 110;
+      var corpoTxt = String(frase || '').trim();
+      /* punti: font che entra nella mezza barra */
+      function fitV(t, max, min, w){ for(var f = max; f >= min; f -= 1){ c.font = '600 ' + f + 'px MCSans, Inter, Arial, sans-serif'; if(c.measureText(t).width <= w) return f; } return min; }
+      var cellW = oW / 2 - 40;
+      var fF = inf.forte ? fitV(inf.forte, storia ? 34 : 30, 18, cellW) : 0;
+      var fD = inf.debole ? fitV(inf.debole, storia ? 34 : 30, 18, cellW) : 0;
+      var haBar = !!(inf.forte || inf.debole);
+      /* consiglio */
+      var cons = null;
+      if(inf.consiglio) cons = adatta(inf.consiglio, 'italic 500 #px "Playfair Display", Georgia, serif', storia ? 36 : 30, 22, oW - 60, storia ? 200 : 130, 1.38);
+      var fisso = 2 * R + 26 + NOME + 16 + 26 + (storia ? 46 : 32) + (haBar ? BAR_H + (storia ? 48 : 34) : 0) + (cons ? (storia ? 44 : 34) + 30 + cons.r.length * cons.lh : 0);
+      var tbo = adatta(corpoTxt, '500 #px MCSans, Inter, Arial, sans-serif', storia ? 42 : 34, 22, oW, Math.max(120, oaH - fisso), 1.42);
+      var tot = fisso + tbo.r.length * tbo.lh;
+      var oy2 = oaTop + Math.max(0, (oaH - tot) / 2), cxm = W / 2;
+
+      /* glifo del segno in un anello luminoso */
+      var cyR = oy2 + R;
+      var glow = c.createRadialGradient(cxm, cyR, 0, cxm, cyR, R * 1.7);
+      glow.addColorStop(0, 'rgba(194,232,62,0.22)'); glow.addColorStop(1, 'rgba(194,232,62,0)');
+      c.fillStyle = glow; c.beginPath(); c.arc(cxm, cyR, R * 1.7, 0, Math.PI * 2); c.fill();
+      c.strokeStyle = 'rgba(194,232,62,0.65)'; c.lineWidth = 3; c.beginPath(); c.arc(cxm, cyR, R, 0, Math.PI * 2); c.stroke();
+      c.strokeStyle = 'rgba(194,232,62,0.14)'; c.lineWidth = 2; c.beginPath(); c.arc(cxm, cyR, R + 16, 0, Math.PI * 2); c.stroke();
+      var dGl = MC_SEGNI_PATH[meta.segno];
+      if(dGl && window.Path2D){
+        var gs = R * 1.1, sc = gs / 24;
+        c.save(); c.translate(cxm - gs / 2, cyR - gs / 2); c.scale(sc, sc);
+        c.strokeStyle = LIME; c.lineWidth = 1.5; c.lineCap = 'round'; c.lineJoin = 'round';
+        c.stroke(new Path2D(dGl)); c.restore();
+      }
+      oy2 += 2 * R + 26;
+
+      /* nome del segno */
+      c.textAlign = 'center'; c.textBaseline = 'top';
+      st('semi-condensed'); c.fillStyle = CREMA; c.font = '700 ' + NOME + 'px MCSans, Inter, Arial, sans-serif';
+      c.fillText(String(meta.segno || ''), cxm, oy2); st('normal');
+      oy2 += NOME + 16;
+      c.fillStyle = LIME; c.font = '800 ' + (storia ? 24 : 21) + 'px Inter, Arial, sans-serif'; ls('5px');
+      c.fillText(('Oroscopo mentale · ' + mcMeseNome() + ' ' + new Date().getFullYear()).toUpperCase(), cxm, oy2); ls('0px');
+      oy2 += 26 + (storia ? 46 : 32);
+
+      /* punto forte | punto debole sulla stessa riga */
+      if(haBar){
+        rr(P, oy2, oW, BAR_H, 28); c.fillStyle = 'rgba(0,0,0,0.28)'; c.fill();
+        c.strokeStyle = 'rgba(241,237,226,0.16)'; c.lineWidth = 2; c.stroke();
+        c.fillStyle = 'rgba(241,237,226,0.18)'; c.fillRect(cxm - 1, oy2 + 24, 2, BAR_H - 48);
+        [[inf.forte, 'PUNTO FORTE', LIME, fF, P + oW / 4], [inf.debole, 'PUNTO DEBOLE', '#F5B72E', fD, P + oW * 3 / 4]].forEach(function(cl){
+          if(!cl[0]) return;
+          c.fillStyle = cl[2]; c.font = '800 ' + (storia ? 18 : 16) + 'px Inter, Arial, sans-serif'; ls('3.5px');
+          c.fillText(cl[1], cl[4], oy2 + BAR_H * 0.2); ls('0px');
+          c.fillStyle = CREMA; c.font = '600 ' + cl[3] + 'px MCSans, Inter, Arial, sans-serif';
+          c.fillText(cl[0], cl[4], oy2 + BAR_H * 0.2 + (storia ? 36 : 30));
+        });
+        oy2 += BAR_H + (storia ? 48 : 34);
+      }
+
+      /* testo */
+      c.fillStyle = CREMA; c.font = '500 ' + tbo.fs + 'px MCSans, Inter, Arial, sans-serif';
+      tbo.r.forEach(function(rg){ c.fillText(rg, cxm, oy2); oy2 += tbo.lh; });
+
+      /* consiglio, piccolo e in corsivo */
+      if(cons){
+        oy2 += (storia ? 44 : 34) - 10;
+        c.fillStyle = LIME; c.fillRect(cxm - 30, oy2, 60, 4);
+        oy2 += 20;
+        c.font = '800 ' + (storia ? 18 : 16) + 'px Inter, Arial, sans-serif'; ls('4px');
+        c.fillText('CONSIGLIO', cxm, oy2); ls('0px');
+        oy2 += 30;
+        c.fillStyle = 'rgba(241,237,226,0.85)'; c.font = 'italic 500 ' + cons.fs + 'px "Playfair Display", Georgia, serif';
+        cons.r.forEach(function(rg){ c.fillText(rg, cxm, oy2); oy2 += cons.lh; });
+      }
+      c.textAlign = 'left';
+    } else {
     /* ---------- CONTENUTO ---------- */
     var areaTop = TOP + 72 + (storia ? 120 : 70);
     var areaBot = FOOT_Y - (storia ? 210 : 70);
@@ -9850,8 +9996,10 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     }
 
+    } /* fine contenuto non-oroscopo */
+
     /* ---------- STORIA: onda e invito ---------- */
-    if(storia){
+    if(storia && meta.tipo !== 'oroscopo'){
       var oy = FOOT_Y - 120, bars = 40, bw = 7, gap = 9, ox = (W - (bars * bw + (bars - 1) * gap)) / 2;
       for(var b = 0; b < bars; b++){
         var h = 14 + Math.abs(Math.sin(b * 0.55) * Math.cos(b * 0.21)) * 58;

@@ -1526,6 +1526,7 @@ const MC = (function(){
     async riscattaOmaggio(codice){
       richiediLogin();
       const { data, error } = await sb.rpc('riscatta_codice_omaggio', { p_codice: String(codice || '').trim().toUpperCase() });
+      if(error && /profilo_non_aggiornato/.test(error.message || '')) return { ok:false, motivo:'bloccato' };
       if(error) throw new Error(error.message);
       if(data && data.ok) await caricaProfilo();
       return data;

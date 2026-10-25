@@ -2536,6 +2536,50 @@ body.native #deck-feed .or-in .fc-q{ font-size:clamp(16px,4.4vw,19px); line-heig
 
 /* pensiero del giorno: carattere un po' più piccolo */
 body.native #deck-feed .feed-card[data-tipo="pensieri"] .fc-q{ font-size:clamp(22px,6vw,28px); line-height:1.36; }
+
+/* ===== ABBONAMENTO: card "Il tuo abbonamento" e box codici ===== */
+.sub-card{ position:relative; overflow:hidden; border-radius:20px !important; padding:22px 22px 18px !important; background:linear-gradient(150deg, rgba(194,232,62,.10), rgba(8,68,76,.55) 45%, rgba(3,20,23,.6)) !important; border:1px solid rgba(194,232,62,.28) !important; }
+.sub-card::after{ content:""; position:absolute; right:-60px; top:-60px; width:180px; height:180px; border-radius:50%; background:radial-gradient(circle, rgba(194,232,62,.22), rgba(194,232,62,0) 70%); pointer-events:none; }
+.sub-k{ font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--lime); font-weight:800; }
+.sub-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:10px 0 14px; }
+.sub-plan{ font-family:'MCSans','Inter Tight',Inter,sans-serif; font-weight:700; font-size:22px; letter-spacing:-.015em; color:var(--cream); line-height:1.15; }
+.sub-badge{ flex:none; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; border-radius:100px; padding:6px 11px; background:var(--lime); color:#052c31; }
+.sub-badge.prova{ background:#F5B72E; }
+.sub-badge.omaggio{ background:transparent; color:var(--lime); border:1px solid rgba(194,232,62,.6); }
+.sub-badge.attesa{ background:rgba(241,237,226,.14); color:var(--cream); }
+.sub-rows{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.sub-row{ background:rgba(0,0,0,.22); border:1px solid rgba(241,237,226,.1); border-radius:12px; padding:10px 12px; }
+.sub-row span{ display:block; font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--tx-mut); margin-bottom:3px; }
+.sub-row b{ font-size:14px; color:var(--cream); font-weight:700; }
+.sub-bar{ height:6px; border-radius:6px; background:rgba(241,237,226,.1); overflow:hidden; margin:2px 0 12px; }
+.sub-bar i{ display:block; height:100%; background:linear-gradient(90deg, var(--lime), #e6ff8a); border-radius:6px; }
+.sub-note{ font-size:12.5px; line-height:1.55; color:var(--tx-mut); margin:0 0 14px; }
+.sub-note b{ color:var(--cream); }
+.sub-card .btn{ position:relative; z-index:1; }
+
+.cod-box{ max-width:640px; margin:0 auto 16px; padding:18px; border-radius:18px; background:rgba(255,255,255,.035); border:1px dashed rgba(194,232,62,.35); }
+.cod-head{ display:flex; gap:12px; align-items:center; margin-bottom:12px; }
+.cod-ico{ flex:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:rgba(194,232,62,.12); color:var(--lime); }
+.cod-ico svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.cod-tit{ font-size:14.5px; font-weight:800; color:var(--cream); }
+.cod-sub{ font-size:11.5px; color:var(--tx-mut); margin-top:2px; line-height:1.45; }
+.cod-row{ display:flex; gap:8px; }
+.cod-row input{ flex:1; min-width:0; padding:13px 14px; border-radius:12px; border:1px solid var(--pane-b); background:rgba(0,0,0,.3); color:var(--cream); font-size:14px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; outline:none; transition:border-color .2s; }
+.cod-row input:focus{ border-color:rgba(194,232,62,.7); }
+.cod-row input::placeholder{ letter-spacing:.06em; font-weight:600; color:rgba(241,237,226,.35); }
+.cod-row .btn{ flex:none; padding:13px 20px; font-size:13px; }
+.cod-esito{ display:none; margin-top:12px; padding:11px 13px; border-radius:12px; font-size:12.5px; line-height:1.5; }
+.cod-esito.ok{ background:rgba(194,232,62,.1); border:1px solid rgba(194,232,62,.35); color:var(--cream) !important; }
+.cod-esito.ko{ background:rgba(232,84,62,.1); border:1px solid rgba(232,84,62,.4); color:#ffb4a6 !important; }
+.cod-esito .det{ display:block; margin-top:4px; font-size:10.5px; opacity:.6; }
+@media (max-width:420px){ .sub-rows{ grid-template-columns:1fr; } }
+
+/* prezzi: mai spezzati su due righe (€49,9 / 9) */
+#s-plan .p-card .pp{ white-space:nowrap; }
+@media (max-width:520px){ #s-plan .p-card .pp{ font-size:clamp(26px,8.2vw,40px) !important; letter-spacing:-.03em; } #s-plan .p-card .pp small{ font-size:12px; display:block; letter-spacing:0; margin-top:2px; } }
+
+/* rivista: pagina successiva in preparazione */
+#rd-viewport.rd-attesa::after{ content:""; position:absolute; right:18px; bottom:18px; width:26px; height:26px; border-radius:50%; border:3px solid rgba(241,237,226,.2); border-top-color:var(--lime); animation:vcspin .8s linear infinite; z-index:20; pointer-events:none; }
 </style>
 
 <style id="mc-consensi-css">
@@ -3322,21 +3366,28 @@ document.addEventListener('DOMContentLoaded', function(){
           <h1 class="disp">Tutta MentalClass<br>senza limiti</h1>
           <div class="tag">Audio, Compagno Invisibile e Magazine: un unico abbonamento.</div>
         </div>
+        <div class="pane sub-card" id="plan-attivo" style="display:none;max-width:640px;margin:0 auto 18px;">
+          <div class="sub-k">Il tuo abbonamento</div>
+          <div id="plan-attivo-tx"></div>
+          <button class="btn btn-ghost" style="width:100%;" onclick="gestisciAbbonamento()">Gestisci: carta e disdetta</button>
+        </div>
         <div class="lampo-plan" id="lampo-plan">⚡ OFFERTA WEBINAR ATTIVA · Annuale a €29,99 invece di €49,99 · scade tra <span class="cd" id="lampo-plan-cd">15:00</span></div>
         <div class="lampo-plan" id="promo-banner-plan" style="display:none;"></div>
 
         <!-- codice amico: chi è stato invitato lo inserisce qui e ottiene lo sconto -->
         <!-- codice sconto generico (promozioni): sempre visibile,
              indipendente dal referral -->
-        <div id="cod-promo-box" style="max-width:560px;margin:0 auto 14px;padding:16px 18px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--pane-b);">
-          <div style="font-size:13px;font-weight:800;margin-bottom:4px;">Hai un codice sconto o un codice omaggio?</div>
-          <div style="font-size:11.5px;color:var(--tx-mut);margin-bottom:11px;">Inseriscilo prima di scegliere il piano: lo sconto si applica al pagamento, i mesi omaggio si attivano subito.</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <input id="cod-promo-input" type="text" placeholder="Es. ESTATE26" autocomplete="off"
-              style="flex:1;min-width:150px;padding:11px 13px;border-radius:10px;border:1px solid var(--pane-b);background:rgba(0,0,0,.3);color:var(--cream);font-size:13.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;">
-            <button class="btn btn-ghost" style="padding:11px 18px;font-size:12.5px;" onclick="applicaCodicePromo()">Applica</button>
+        <div id="cod-promo-box" class="cod-box">
+          <div class="cod-head">
+            <div class="cod-ico"><svg viewBox="0 0 24 24"><path d="M3 12V5a2 2 0 012-2h7l9 9-9 9z"/><circle cx="8" cy="8" r="1.4"/></svg></div>
+            <div><div class="cod-tit">Hai un codice sconto o un codice omaggio?</div>
+            <div class="cod-sub">Lo sconto si applica al pagamento. I mesi omaggio si attivano subito, senza carta.</div></div>
           </div>
-          <div id="cod-promo-esito" style="font-size:12px;margin-top:10px;display:none;"></div>
+          <div class="cod-row">
+            <input id="cod-promo-input" type="text" placeholder="Es. ESTATE26" autocomplete="off" autocapitalize="characters" onkeydown="if(event.key==='Enter')applicaCodicePromo()">
+            <button class="btn btn-lime" onclick="applicaCodicePromo()">Applica</button>
+          </div>
+          <div id="cod-promo-esito" class="cod-esito"></div>
         </div>
         <div id="cod-amico-box" style="max-width:560px;margin:0 auto 20px;padding:16px 18px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--pane-b);">
           <div style="font-size:13px;font-weight:800;margin-bottom:4px;">Hai un codice invito?</div>
@@ -3378,11 +3429,7 @@ document.addEventListener('DOMContentLoaded', function(){
             <button class="btn btn-ghost" id="plan-btn-free" disabled style="opacity:.5;cursor:default;">Piano attuale</button>
           </div>
         </div>
-        <div class="pane" id="plan-attivo" style="display:none;max-width:640px;margin:0 auto 18px;padding:18px;">
-          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--lime);font-weight:800;">Il tuo abbonamento</div>
-          <div id="plan-attivo-tx" style="margin:8px 0 14px;font-size:14px;color:var(--cream);line-height:1.6;"></div>
-          <button class="btn btn-ghost" style="width:100%;" onclick="gestisciAbbonamento()">Gestisci: carta e disdetta</button>
-        </div>
+        
         <div id="plan-iap-legal">
           <p>Gli abbonamenti si rinnovano automaticamente alla fine di ogni periodo, salvo disdetta almeno 24 ore prima della scadenza. Il pagamento viene addebitato sul tuo account <span class="iap-store">Apple</span> alla conferma dell'acquisto. Puoi gestire o disdire l'abbonamento in qualsiasi momento dalle impostazioni del tuo account <span class="iap-store">Apple</span>. Con la prova gratuita dell'Annuale, l'addebito parte alla fine dei 7 giorni se non disdici prima.</p>
           <p><a href="#" onclick="ripristinaAcquisti();return false;">Ripristina acquisti</a> · <a href="#" onclick="openLegal('termini');return false;">Termini di utilizzo</a> · <a href="#" onclick="openLegal('privacy');return false;">Privacy</a></p>
@@ -4345,6 +4392,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY || typeof MC === 'undefined' || typeof window.supabase === 'undefined'){
       COLLEGATO = false;
       console.warn('MentalClass: libreria o configurazione non disponibili');
+      mcRichiediAccesso();
       /* Non lasciamo l'utente in una finta demo silenziosa: glielo
          diciamo, così ricarica invece di credere che l'app sia rotta. */
       if(typeof window.supabase === 'undefined' && window.SUPABASE_URL){
@@ -4395,12 +4443,15 @@ document.addEventListener('DOMContentLoaded', function(){
             Promise.all([ caricaCatalogoAudio(), caricaRiviste() ]).then(togliVelo);
           }
         });
-        /* non loggato: mostro subito la registrazione, via il velo */
+        /* non loggato: mostro subito la registrazione, POI tolgo il velo
+           (così l'app non si intravede nemmeno per un istante) */
+        mcRichiediAccesso();
         togliVelo();
       }
     }catch(e){
       COLLEGATO = false;
       console.warn('Backend non raggiungibile:', e.message);
+      mcRichiediAccesso();
       togliVelo();
     }
   }
@@ -5554,7 +5605,7 @@ document.addEventListener('DOMContentLoaded', function(){
     try{ caricaPdfLib().catch(function(){}); }catch(e){}
     var sx0 = document.getElementById('rd-pg-sx');
     if(sx0) sx0.innerHTML = '<div class="rd-skel"></div>';
-    RD.corrente = 1; RD.zoom = 1; RD.px = RD.py = 0; RD.caricate = {}; RD.pronta = false; RD.ratio = 1.414;
+    RD.corrente = 1; RD.zoom = 1; RD.px = RD.py = 0; RD.caricate = {}; RD.caricateLow = {}; RD.pronta = false; RD.ratio = 1.414;
     RD.modo = 'immagini';
     if(RD.pdf && RD.pdf.destroy){ try{ RD.pdf.destroy(); }catch(e){} }
     RD.pdf = null;
@@ -5697,7 +5748,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   /* disegna una pagina del PDF e la trasforma in immagine */
-  async function rdPaginaPdf(n){
+  async function rdPaginaPdf(n, bassa){
     if(!RD.pdf) return null;
     try{
       var pagina = await RD.pdf.getPage(n);
@@ -5707,7 +5758,7 @@ document.addEventListener('DOMContentLoaded', function(){
          La pagina va disegnata alla densità reale dello schermo:
          su un telefono moderno un pixel CSS vale 2 o 3 pixel veri.
          Disegnare a densità 1 è ciò che rendeva il testo sfocato. */
-      var densita = Math.min(window.devicePixelRatio || 1, 2.5);
+      var densita = Math.min(window.devicePixelRatio || 1, 2);
 
       /* larghezza che la pagina occuperà davvero a schermo */
       var stage = document.getElementById('rd-stage');
@@ -5722,7 +5773,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
       /* con lo zoom serve ancora più dettaglio */
       var scala = scalaCss * densita * Math.max(RD.zoom, 1);
-      scala = Math.min(Math.max(scala, 1.5), 3.5);
+      scala = Math.min(Math.max(scala, 1.3), RD.zoom > 1.2 ? 3.5 : 2.6);
+      /* anteprima veloce: circa 4 volte meno lavoro, serve solo a far
+         girare subito la pagina; la versione nitida arriva subito dopo */
+      if(bassa) scala = Math.min(Math.max(scalaCss * 0.9, 0.6), 1.1);
 
       var vp = pagina.getViewport({ scale: scala });
       var canvas = document.createElement('canvas');
@@ -5740,7 +5794,7 @@ document.addEventListener('DOMContentLoaded', function(){
         canvas.toBlob(function(b){
           ok(b ? URL.createObjectURL(b) : canvas.toDataURL('image/jpeg', 0.9));
           canvas.width = canvas.height = 0;   /* libero subito la memoria */
-        }, RD.zoom > 1.5 ? 'image/png' : 'image/jpeg', 0.9);
+        }, (!bassa && RD.zoom > 1.5) ? 'image/png' : 'image/jpeg', bassa ? 0.7 : 0.86);
       });
     }catch(e){ return null; }
   }
@@ -5756,30 +5810,61 @@ document.addEventListener('DOMContentLoaded', function(){
        altrimenti la pagina resterebbe grigia per sempre */
     if(RD.caricate[n]) return RD.caricate[n];
 
+    function pronta(url){
+      if(!url) return null;
+      /* decodifico l'immagine prima di mostrarla: niente pagina vuota o "vecchia" */
+      var im = new Image(); im.src = url; p.img = im;
+      var dec = im.decode ? im.decode().catch(function(){}) : Promise.resolve();
+      return dec.then(function(){ p.url = url; return url; });
+    }
     if(RD.modo === 'pdf'){
-      RD.caricate[n] = rdPaginaPdf(n)
-        .then(function(url){ p.url = url; return url; })
-        .catch(function(){ return null; });
+      RD.caricate[n] = rdPaginaPdf(n).then(pronta).catch(function(){ return null; });
     }else{
       if(!p.path) return Promise.resolve(null);
-      RD.caricate[n] = MC.magazine.linkPagina({ immagine_path: p.path })
-        .then(function(url){ p.url = url; return url; })
-        .catch(function(){ return null; });
+      RD.caricate[n] = MC.magazine.linkPagina({ immagine_path: p.path }).then(pronta).catch(function(){ return null; });
     }
+    RD.caricate[n].then(function(u){ if(!u) delete RD.caricate[n]; });   /* se fallisce, si potrà riprovare */
     return RD.caricate[n];
+  }
+
+  /* versione veloce (bassa risoluzione) di una pagina PDF */
+  function rdCaricaVeloce(n){
+    var p = RD.pagine[n-1];
+    if(!p) return Promise.resolve(null);
+    if(p.url) return Promise.resolve(p.url);
+    if(p.urlLow) return Promise.resolve(p.urlLow);
+    if(RD.modo !== 'pdf' || p.bloccata || !COLLEGATO) return rdCarica(n);
+    RD.caricateLow = RD.caricateLow || {};
+    if(RD.caricateLow[n]) return RD.caricateLow[n];
+    RD.caricateLow[n] = rdPaginaPdf(n, true).then(function(url){
+      if(!url) return null;
+      var im = new Image(); im.src = url;
+      var dec = im.decode ? im.decode().catch(function(){}) : Promise.resolve();
+      return dec.then(function(){ if(!p.url) p.urlLow = url; return url; });
+    }).catch(function(){ return null; });
+    RD.caricateLow[n].then(function(u){ if(!u) delete RD.caricateLow[n]; });
+    return RD.caricateLow[n];
   }
 
   /* carica in anticipo le pagine vicine, così lo sfoglio è fluido */
   function rdPrecarica(){
-    /* una alla volta, prima la successiva: sul telefono disegnare 6 pagine
-       insieme bloccava tutto e rendeva lenta anche la pagina aperta */
-    var ordine = [RD.corrente+1, RD.corrente+2, RD.corrente-1, RD.corrente+3];
-    if(RD.doppia) ordine = [RD.corrente+2, RD.corrente+3, RD.corrente-1, RD.corrente-2];
+    /* 1) anteprime leggere delle pagine vicine (velocissime): così girare
+          la pagina è sempre immediato;
+       2) poi la versione nitida delle due pagine successive e della precedente;
+       3) infine, piano piano, le anteprime leggere di TUTTA la rivista.
+       Un nuovo giro (pagina cambiata) ferma quello vecchio. */
+    var c = RD.corrente, passo = RD.doppia ? 2 : 1;
+    var vicine = [c+1, c+2, c+3, c+4, c+5, c-1, c-2, c+6, c+7];
+    var nitide = RD.doppia ? [c+2, c+3, c-1, c-2] : [c+1, c+2, c-1];
     var giro = RD.giroPrecarica = (RD.giroPrecarica || 0) + 1;
-    ordine.filter(function(n){ return n >= 1 && n <= RD.tot; })
-      .reduce(function(cat, n){
-        return cat.then(function(){ if(giro === RD.giroPrecarica) return rdCarica(n); });
-      }, Promise.resolve());
+    function ok(n){ return n >= 1 && n <= RD.tot; }
+    var lavori = [];
+    vicine.filter(ok).forEach(function(n){ lavori.push(function(){ return rdCaricaVeloce(n); }); });
+    nitide.filter(ok).forEach(function(n){ lavori.push(function(){ return rdCarica(n); }); });
+    for(var n = 1; n <= RD.tot; n++){ (function(k){ lavori.push(function(){ return rdCaricaVeloce(k); }); })(n); }
+    lavori.reduce(function(cat, lav){
+      return cat.then(function(){ if(giro === RD.giroPrecarica) return lav(); });
+    }, Promise.resolve());
   }
 
   /* dimensiona le pagine perché stiano INTERE nello schermo:
@@ -5854,6 +5939,14 @@ document.addEventListener('DOMContentLoaded', function(){
       el.innerHTML = '<div class="rd-skel" style="animation:none;opacity:.35"></div>';
       return;
     }
+    el.dataset.n = n;
+    if(!p.url && p.urlLow){
+      el.innerHTML = '<img src="' + p.urlLow + '" alt="pagina ' + n + '" draggable="false">';
+      rdCarica(n).then(function(u){
+        if(u && el.dataset.n == n){ var im = el.querySelector('img'); if(im) im.src = u; }
+      });
+      return;
+    }
     if(!p.url){
       el.innerHTML = '<div class="rd-skel"></div>';
       await rdCarica(n);
@@ -5903,6 +5996,13 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   /* --- navigazione --- */
+  /* pagine visibili per una certa pagina corrente */
+  function rdPagineDi(c){
+    if(!RD.doppia) return [c];
+    if(c === 1) return [1, 2 <= RD.tot ? 2 : null].filter(Boolean);
+    var a = c % 2 === 0 ? c : c - 1;
+    return [a, a + 1 <= RD.tot ? a + 1 : null].filter(Boolean);
+  }
   function rdVai(dir){
     var passo = (RD.doppia && RD.corrente > 1) ? 2 : 1;
     var nuova = RD.corrente + dir * passo;
@@ -5910,19 +6010,34 @@ document.addEventListener('DOMContentLoaded', function(){
     if(nuova < 1) nuova = 1;
     if(nuova > RD.tot) nuova = RD.tot;
     if(nuova === RD.corrente) return;
-    if(RD.staGirando) return;   /* evita doppi giri sovrapposti */
+    if(RD.staGirando || RD.inAttesa) return;   /* evita doppi giri sovrapposti */
 
     var vecchia = RD.corrente;
-    RD.corrente = nuova;
-    /* Lo zoom scelto RESTA. Si riparte dall'alto della nuova pagina. */
-    RD.px = 0; RD.py = rdAltoPagina(); rdApplicaZoom();
+    var serve = rdPagineDi(nuova).filter(function(n){ var p = RD.pagine[n-1]; return p && !p.bloccata && !p.url && !p.urlLow; });
 
-    /* effetto carta: fa girare il foglio, poi disegna la nuova pagina */
-    rdSfoglia(dir, vecchia, function(){
-      document.getElementById('rd-hint').classList.add('via');
-      rdDisegna();
-    });
+    function gira(){
+      RD.inAttesa = false;
+      var vp = document.getElementById('rd-viewport'); if(vp) vp.classList.remove('rd-attesa');
+      RD.corrente = nuova;
+      /* Lo zoom scelto RESTA. Si riparte dall'alto della nuova pagina. */
+      RD.px = 0; RD.py = rdAltoPagina(); rdApplicaZoom();
+      rdSfoglia(dir, vecchia, function(){
+        document.getElementById('rd-hint').classList.add('via');
+        rdDisegna();
+      });
+    }
+    if(!serve.length){ gira(); return; }
+    /* la pagina nuova non è ancora pronta: resto sulla attuale con un
+       indicatore e giro il foglio solo quando è pronta (niente "pagina
+       uguale" che poi cambia) */
+    RD.inAttesa = true;
+    var vp = document.getElementById('rd-viewport'); if(vp) vp.classList.add('rd-attesa');
+    /* precedenza assoluta alla pagina richiesta: fermo le altre in coda */
+    RD.giroPrecarica = (RD.giroPrecarica || 0) + 1;
+    var stop = setTimeout(gira, 4000);   /* rete di sicurezza */
+    Promise.all(serve.map(rdCaricaVeloce)).then(function(){ clearTimeout(stop); if(RD.inAttesa) gira(); });
   }
+
 
   /* Anima il foglio che gira. Prende l'immagine della pagina che si
      lascia (fronte) e di quella nuova (retro), le mette sul foglio e lo
@@ -5940,14 +6055,25 @@ document.addEventListener('DOMContentLoaded', function(){
       : (RD.doppia ? (paginaVecchia % 2 === 0 ? paginaVecchia : paginaVecchia - 1) : paginaVecchia);
     var pagRetro = RD.corrente;
 
-    var urlF = RD.pagine[pagFronte-1] && RD.pagine[pagFronte-1].url;
-    var urlR = RD.pagine[pagRetro-1] && RD.pagine[pagRetro-1].url;
+    var urlF = RD.pagine[pagFronte-1] && (RD.pagine[pagFronte-1].url || RD.pagine[pagFronte-1].urlLow);
+    var urlR = RD.pagine[pagRetro-1] && (RD.pagine[pagRetro-1].url || RD.pagine[pagRetro-1].urlLow);
 
     /* senza le immagini pronte l'effetto stona: si salta e si disegna e basta */
     if(!urlF){ poi(); return; }
 
     fronte.src = urlF;
-    retro.src = urlR || urlF;
+    if(urlR){ retro.src = urlR; retro.style.visibility = ''; } else { retro.style.visibility = 'hidden'; }
+
+    /* sotto il foglio che gira c'è GIÀ la pagina nuova */
+    try{
+      var nuove = rdPagineDi(RD.corrente);
+      var elSx = document.getElementById('rd-pg-sx'), elDx = document.getElementById('rd-pg-dx');
+      [[elSx, nuove[0]], [elDx, nuove[1]]].forEach(function(c){
+        var pg = c[1] && RD.pagine[c[1]-1];
+        var u = pg && (pg.url || pg.urlLow);
+        if(c[0] && u && !pg.bloccata){ c[0].innerHTML = '<img src="' + u + '" alt="pagina ' + c[1] + '" draggable="false">'; c[0].dataset.n = c[1]; }
+      });
+    }catch(_){}
 
     /* posiziono il foglio sopra la metà giusta dello spread */
     var spread = document.getElementById('rd-spread');
@@ -5964,8 +6090,17 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     RD.staGirando = true;
-    flip.classList.remove('avanti','indietro');
-    flip.classList.add('attiva', dir > 0 ? 'avanti' : 'indietro');
+    /* il foglio parte solo quando le sue due facce sono GIÀ decodificate:
+       prima per un istante si vedeva la faccia vecchia e poi quella nuova */
+    function dec(im){ try{ return (im && im.decode) ? im.decode().catch(function(){}) : Promise.resolve(); }catch(_){ return Promise.resolve(); } }
+    var avviato = false;
+    function avvia(){
+      if(avviato) return; avviato = true;
+      flip.classList.remove('avanti','indietro');
+      flip.classList.add('attiva', dir > 0 ? 'avanti' : 'indietro');
+    }
+    Promise.all([dec(fronte), urlR ? dec(retro) : null]).then(avvia);
+    setTimeout(avvia, 160);
 
     var fine = function(){
       flip.classList.remove('attiva','avanti','indietro');
@@ -5975,7 +6110,7 @@ document.addEventListener('DOMContentLoaded', function(){
     };
     flip.addEventListener('animationend', fine);
     /* rete di sicurezza: se l'evento non scatta, sblocco comunque */
-    setTimeout(function(){ if(RD.staGirando) fine(); }, 750);
+    setTimeout(function(){ if(RD.staGirando) fine(); }, 950);
   }
 
   function rdApri(n){
@@ -7748,32 +7883,38 @@ document.addEventListener('DOMContentLoaded', function(){
           { day:'numeric', month:'long', year:'numeric' }) : null;
 
         var tx = document.getElementById('plan-attivo-tx');
-        if(st.stato === 'in_prova'){
-          /* In prova la persona deve sapere quanto le resta e quando
-             pagherà: la trasparenza che usano le app migliori. */
-          var giorni = null;
-          if(st.scadenza){
-            var ms = new Date(st.scadenza) - new Date();
-            giorni = Math.max(0, Math.ceil(ms / 86400000));
-          }
-          var testa = giorni === null ? 'Sei nella prova gratuita.'
-                    : giorni === 0    ? 'Ultimo giorno di prova gratuita.'
-                    : giorni === 1    ? 'Ti resta 1 giorno di prova gratuita.'
-                    : 'Ti restano ' + giorni + ' giorni di prova gratuita.';
-
-          tx.innerHTML = '<b>' + testa + '</b><br>'
-            + 'Finora non ti abbiamo addebitato nulla.'
-            + (quando ? ' Il primo pagamento del piano ' + nome + ' è previsto il <b>' + quando + '</b>.' : '')
-            + '<br><span style="color:var(--tx-mut);">Se disdici prima di quella data non paghi niente, '
-            + 'e continui a usare tutto fino alla fine della prova.</span>';
-        } else if(st.omaggio){
-          tx.innerHTML = '<b>Premium in omaggio attivo' + (quando ? ' fino al ' + quando : '') + '.</b>'
-            + '<br>Non si rinnova da solo e non ti addebitiamo nulla.'
-            + '<br><span style="color:var(--tx-mut);">Se ti abboni adesso, il pagamento parte subito e i giorni omaggio rimasti non si sommano.</span>';
-        } else {
-          tx.innerHTML = '<b>Piano ' + nome + ' attivo' + (quando ? ' fino al ' + quando : '') + '.</b>'
-            + (quando ? '<br>In quella data si rinnova automaticamente, salvo disdetta.' : '');
+        /* quanti giorni restano e che percentuale del periodo è passata */
+        var giorni = null, perc = null;
+        if(st.scadenza){
+          var ms = new Date(st.scadenza) - new Date();
+          giorni = Math.max(0, Math.ceil(ms / 86400000));
+          var totGiorni = st.stato === 'in_prova' ? 14 : st.omaggio ? Math.max(giorni, 30) : (st.piano === 'annuale' ? 365 : 30);
+          perc = Math.max(4, Math.min(100, Math.round(100 * giorni / totGiorni)));
         }
+        function riga(k, v){ return '<div class="sub-row"><span>' + k + '</span><b>' + v + '</b></div>'; }
+        var badge, titolo, righe = '', nota = '', barra = '';
+        if(st.stato === 'in_prova'){
+          badge = '<span class="sub-badge prova">Prova gratuita</span>';
+          titolo = 'Piano ' + nome;
+          righe = riga('Giorni rimasti', giorni === null ? '—' : (giorni === 1 ? '1 giorno' : giorni + ' giorni'))
+                + riga('Primo pagamento', quando || '—');
+          nota = 'Finora non ti abbiamo addebitato nulla. <b>Se disdici prima di quella data non paghi niente</b> e continui a usare tutto fino alla fine della prova.';
+        } else if(st.omaggio){
+          badge = '<span class="sub-badge omaggio">Omaggio</span>';
+          titolo = 'Premium in omaggio';
+          righe = riga('Attivo fino al', quando || '—')
+                + riga(st.codiceOmaggio ? 'Codice usato' : 'Giorni rimasti', st.codiceOmaggio ? st.codiceOmaggio : (giorni === null ? '—' : giorni + ' giorni'));
+          nota = '<b>Non si rinnova da solo</b> e non ti addebitiamo nulla.' + (giorni !== null ? ' Ti restano ' + (giorni === 1 ? '1 giorno' : giorni + ' giorni') + '.' : '') + ' Alla scadenza torni al piano Free, a meno che tu non scelga un abbonamento.';
+        } else {
+          badge = '<span class="sub-badge">Attivo</span>';
+          titolo = 'Piano ' + nome;
+          righe = riga('Rinnovo', quando || 'Automatico')
+                + riga('Pagamento', st.fonte === 'app_store' ? 'App Store' : st.fonte === 'play_store' ? 'Google Play' : 'Carta (Stripe)');
+          nota = quando ? 'In quella data si rinnova automaticamente, salvo disdetta. Puoi disdire quando vuoi.' : 'Rinnovo automatico, salvo disdetta.';
+        }
+        if(perc !== null && st.stato === 'in_prova') barra = '<div class="sub-bar"><i style="width:' + perc + '%"></i></div>';
+        tx.innerHTML = '<div class="sub-top"><div class="sub-plan">' + titolo + '</div>' + badge + '</div>'
+          + '<div class="sub-rows">' + righe + '</div>' + barra + '<p class="sub-note">' + nota + '</p>';
         box.style.display = 'block';
         /* omaggio: niente Stripe da gestire, i piani restano acquistabili */
         var btnGest = box.querySelector('button');
@@ -7806,9 +7947,9 @@ document.addEventListener('DOMContentLoaded', function(){
         if(pagatoIl && Date.now() - pagatoIl < 30 * 60 * 1000){
           var txA = document.getElementById('plan-attivo-tx');
           if(txA){
-            txA.innerHTML = '<b>Pagamento ricevuto: stiamo attivando il tuo abbonamento.</b>'
-              + '<br>Di solito bastano pochi secondi. Se tra qualche minuto non risulta ancora attivo, '
-              + 'scrivi a <a href="mailto:supporto@mentalclass.it" style="color:var(--lime);">supporto@mentalclass.it</a>: non pagare una seconda volta.';
+            txA.innerHTML = '<div class="sub-top"><div class="sub-plan">Attivazione in corso</div><span class="sub-badge attesa">In attesa</span></div>'
+              + '<p class="sub-note"><b>Pagamento ricevuto: stiamo attivando il tuo abbonamento.</b> Di solito bastano pochi secondi. Se tra qualche minuto non risulta ancora attivo, '
+              + 'scrivi a <a href="mailto:supporto@mentalclass.it" style="color:var(--lime);">supporto@mentalclass.it</a>: non pagare una seconda volta.</p>';
             box.style.display = 'block';
             var bg2 = box.querySelector('button'); if(bg2) bg2.style.display = 'none';
           }
@@ -7845,7 +7986,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var cod = (inp.value || '').trim().toUpperCase();
     function dillo(testo, ok){
       esito.style.display = 'block';
-      esito.style.color = ok ? 'var(--lime)' : '#E8543E';
+      esito.className = 'cod-esito ' + (ok ? 'ok' : 'ko');
       esito.innerHTML = testo;
     }
     if(!cod){ dillo('Scrivi il codice.', false); return; }
@@ -7888,7 +8029,8 @@ document.addEventListener('DOMContentLoaded', function(){
       mostraScontoGrafico(CODICE_PROMO_ATTIVO);
       chime();
     }catch(e){
-      dillo('Non riesco a verificare il codice ora.', false);
+      console.warn('Verifica codice:', e && e.message);
+      dillo('✕ Non riesco a verificare il codice ora.<span class="det">Dettaglio tecnico: ' + String((e && e.message) || 'sconosciuto').replace(/[<>&]/g,'') + '</span>', false);
     }
   }
 
@@ -7909,19 +8051,20 @@ document.addEventListener('DOMContentLoaded', function(){
           scaduto:       'Questo codice è scaduto.',
           non_ancora:    'Questo codice non è ancora attivo.',
           non_valido:    'Codice non valido.',
-          login:         'Devi prima accedere.'
+          login:         'Devi prima accedere.',
+          bloccato:      'Il codice è valido ma non sono riuscito ad attivare il Premium sul tuo profilo. Il codice NON è stato consumato: scrivi a supporto@mentalclass.it.'
         };
-        if(esito){ esito.style.color = '#E8543E'; esito.innerHTML = '✕ ' + (motivi[r && r.motivo] || 'Non sono riuscito ad attivare il codice.'); }
+        if(esito){ esito.style.display = 'block'; esito.className = 'cod-esito ko'; esito.innerHTML = '✕ ' + (motivi[r && r.motivo] || 'Non sono riuscito ad attivare il codice.'); }
         return;
       }
       var fino = new Date(r.fino).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
       /* controllo che il profilo sia davvero passato a Premium */
       try{ if(MC.caricaProfilo) await MC.caricaProfilo(); }catch(_){}
       if(!(MC.abbonato && MC.abbonato())){
-        if(esito){ esito.style.color = '#E8543E'; esito.innerHTML = '✕ Il codice è stato accettato ma il tuo profilo non risulta Premium. Scrivi a supporto@mentalclass.it indicando il codice: lo sistemiamo subito.'; }
+        if(esito){ esito.style.display = 'block'; esito.className = 'cod-esito ko'; esito.innerHTML = '✕ Il codice è stato accettato ma il tuo profilo non risulta Premium. Scrivi a supporto@mentalclass.it indicando il codice: lo sistemiamo subito.'; }
         return;
       }
-      if(esito){ esito.style.color = 'var(--lime)'; esito.innerHTML = '✓ Premium attivo fino al <b>' + fino + '</b>. Non si rinnova da solo e non ti addebitiamo nulla.'; }
+      if(esito){ esito.style.display = 'block'; esito.className = 'cod-esito ok'; esito.innerHTML = '✓ Premium attivo fino al <b>' + fino + '</b>. Non si rinnova da solo e non ti addebitiamo nulla.'; }
       try{ var _inp = document.getElementById('cod-promo-input'); if(_inp){ _inp.value = ''; } }catch(_){}
       CODICE_OMAGGIO = null;
       try{ confetti(40); }catch(e){}
@@ -7929,7 +8072,8 @@ document.addEventListener('DOMContentLoaded', function(){
       toast('Premium attivo fino al ' + fino);
       setTimeout(function(){ window.location.reload(); }, 1800);
     }catch(e){
-      if(esito){ esito.style.color = '#E8543E'; esito.innerHTML = '✕ Non riesco ad attivare il codice ora. Riprova tra poco.'; }
+      console.warn('Attivazione codice:', e && e.message);
+      if(esito){ esito.style.display = 'block'; esito.className = 'cod-esito ko'; esito.innerHTML = '✕ Non sono riuscito ad attivare il codice.<span class="det">Dettaglio tecnico: ' + String((e && e.message) || 'sconosciuto').replace(/[<>&]/g,'') + '</span>'; }
     }finally{
       if(btn){ btn.disabled = false; btn.textContent = 'Attiva'; }
     }
@@ -8568,6 +8712,13 @@ document.addEventListener('DOMContentLoaded', function(){
     }catch(e){ toast(e.message); }
   }
 
+  /* Senza account l'app NON si vede: si apre sempre registrazione/accesso. */
+  function mcRichiediAccesso(){
+    AUTH_OBBLIGATORIA = true;
+    var tipo = 'signup';
+    try{ if(new URLSearchParams(window.location.search).get('auth') === 'login') tipo = 'login'; }catch(e){}
+    enterApp(); openAuth(tipo);
+  }
   function openAuth(kind){ document.getElementById('auth').classList.add('show'); authTab(kind); }
   function closeAuth(){
     /* Se l'utente è arrivato dalla landing per autenticarsi e non ha
@@ -12240,25 +12391,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
       if(COLLEGATO && MC.utenteCorrente()) return;   /* già dentro: niente da fare */
 
-      if(vai){ enterApp(vai); return; }
-      if(auth === 'login' || auth === 'signup'){
-        /* Arriva dalla landing per registrarsi/accedere: l'app dietro NON
-           deve essere esplorabile. Se chiude il modulo (X), lo riportiamo
-           alla landing invece di rivelargli l'app senza account. */
-        AUTH_OBBLIGATORIA = true;
-        enterApp(); openAuth(auth); return;
-      }
-      /* Regalo nascosto per ora: ignoro ?gift=1 così non si apre da link.
-         Per riattivarlo, togli questa riga. */
-      if(gift){ enterApp(); return; }
-      if(false && gift){ enterApp(); openGift(); return; }
-      /* NELL'APP NATIVA l'accesso è obbligatorio: da anonimo l'RLS di Supabase
-         non restituisce contenuti. Se non c'è sessione, apriamo la registrazione. */
-      if(eAppNativa() && !(COLLEGATO && MC.utenteCorrente())){
-        AUTH_OBBLIGATORIA = true;
-        enterApp(); openAuth('signup'); return;
-      }
-      enterApp();   /* browser senza parametri: sfoglia libera */
+      /* Qualsiasi arrivo senza account (Entra, Prova gratis, Guarda l'app,
+         link diretti, regalo): prima la registrazione, l'app dopo. */
+      mcRichiediAccesso();
+      if(!COLLEGATO){ setTimeout(function(){ toast('Non riesco a collegarmi a MentalClass: controlla la connessione e ricarica la pagina.', 7000); }, 400); }
     })();
   })();
 

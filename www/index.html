@@ -9527,6 +9527,7 @@ document.addEventListener('DOMContentLoaded', function(){
     shareOverride = (typeof customText==='string') ? customText : null;
     document.getElementById('share-prev').textContent = shareText();
     document.getElementById('share-bg').classList.add('show');
+    mcPreparaImmagini();
   }
   function closeShare(){ document.getElementById('share-bg').classList.remove('show'); shareOverride = null; }
   function shareTo(net){
@@ -9543,7 +9544,7 @@ document.addEventListener('DOMContentLoaded', function(){
       linkedin:'https://www.linkedin.com/sharing/share-offsite/?url='+url
     };
     if(net==='copy'){
-      try{ navigator.clipboard.writeText(testo + ' ' + linkApp); }catch(e){}
+      mcCopia(testo + ' ' + linkApp);
       toast('📋 Testo e link copiati'); closeShare(); return;
     }
     /* Instagram e Facebook (Storie, post, feed): dal web non accettano
@@ -9563,40 +9564,92 @@ document.addEventListener('DOMContentLoaded', function(){
   /* Genera un'immagine quadrata con la frase e il logo MentalClass sotto,
      poi la offre alla condivisione nativa del telefono. È il modo che
      funziona davvero per Storie e post. */
-  async function condividiImmagine(testo, linkApp, formato){
+  /* Copia negli appunti senza mai mostrare errori tecnici */
+  function mcCopia(t){
     try{
-      toast('Preparo l\'immagine…');
-      var frase = testo.replace(' · via MentalClass', '');
-      var blob = await generaImmagineFrase(frase, formato, mcMetaCondivisione());
-
-      /* condivisione nativa con file: apre il pannello del telefono
-         (Instagram, Storie, WhatsApp…) con l'immagine allegata */
-      if(navigator.share && navigator.canShare){
-        var file = new File([blob], 'mentalclass.png', { type:'image/png' });
-        if(navigator.canShare({ files:[file] })){
-          await navigator.share({
-            files:[file],
-            text: frase + ' · via MentalClass — mentalclass.it'
-          });
-          closeShare(); return;
-        }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        return navigator.clipboard.writeText(t).then(function(){ return true; }, function(){ return false; });
       }
+    }catch(e){}
+    return Promise.resolve(false);
+  }
 
-      /* se il telefono non supporta la condivisione di file: scarico
-         l'immagine, così l'utente la posta a mano */
+  /* L'immagine si prepara APPENA si apre il pannello "Condividi".
+     Motivo: il telefono permette di aprire la condivisione solo
+     nell'istante del tocco. Se prima del tocco l'immagine è già pronta,
+     basta UN tocco; prima servivano due tocchi e a volte dava errore. */
+  var MC_IMG_CACHE = {};
+  function mcChiaveImg(formato){ return formato + '|' + shareText(); }
+  function mcPreparaImmagine(formato){
+    var k = mcChiaveImg(formato);
+    if(MC_IMG_CACHE[k]) return MC_IMG_CACHE[k].promessa;
+    var frase = shareText().replace(' · via MentalClass', '');
+    var voce = { blob:null, frase:frase };
+    voce.promessa = generaImmagineFrase(frase, formato, mcMetaCondivisione())
+      .then(function(b){ voce.blob = b; return b; })
+      .catch(function(e){ delete MC_IMG_CACHE[k]; throw e; });
+    MC_IMG_CACHE[k] = voce;
+    return voce.promessa;
+  }
+  function mcPreparaImmagini(){
+    var tieni = {}; ['story','post'].forEach(function(fm){ tieni[mcChiaveImg(fm)] = 1; });
+    Object.keys(MC_IMG_CACHE).forEach(function(k){ if(!tieni[k]) delete MC_IMG_CACHE[k]; });
+    setTimeout(function(){
+      mcPreparaImmagine('story').catch(function(){});
+      mcPreparaImmagine('post').catch(function(){});
+    }, 60);
+  }
+
+  /* apre il pannello del telefono con l'immagine: va chiamata
+     direttamente dal tocco, senza attese prima */
+  function mcApriCondivisioneFile(blob, frase, testo, linkApp){
+    var file = null;
+    try{ file = new File([blob], 'mentalclass.png', { type:'image/png' }); }catch(e){}
+    if(file && navigator.share && navigator.canShare && navigator.canShare({ files:[file] })){
+      navigator.share({ files:[file], text: frase + ' · via MentalClass — mentalclass.it' })
+        .then(function(){ closeShare(); })
+        .catch(function(e){
+          if(e && e.name === 'AbortError') return;          /* l'utente ha chiuso: va bene così */
+          mcScaricaImmagine(blob);
+        });
+      return;
+    }
+    mcScaricaImmagine(blob);
+  }
+  function mcScaricaImmagine(blob){
+    try{
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = 'mentalclass.png';
-      a.click();
-      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
-      toast('📥 Immagine salvata — postala dove vuoi');
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+      toast('📥 Immagine salvata: pubblicala dove vuoi');
+    }catch(e){ toast('Non sono riuscito a preparare l\'immagine. Riprova tra un attimo.'); }
+    closeShare();
+  }
+
+  var MC_IMG_IN_ATTESA = null;
+  window.mcCondividiPronta = function(){
+    var w = MC_IMG_IN_ATTESA; MC_IMG_IN_ATTESA = null;
+    if(w && w.blob) mcApriCondivisioneFile(w.blob, w.frase, w.testo, w.linkApp);
+  };
+
+  function condividiImmagine(testo, linkApp, formato){
+    var k = mcChiaveImg(formato);
+    var voce = MC_IMG_CACHE[k];
+    /* già pronta: un solo tocco */
+    if(voce && voce.blob){ mcApriCondivisioneFile(voce.blob, voce.frase, testo, linkApp); return; }
+    /* non ancora pronta: la finisco e chiedo un tocco su "Condividi" */
+    toast('Preparo l\'immagine…', 2500);
+    mcPreparaImmagine(formato).then(function(blob){
+      MC_IMG_IN_ATTESA = { blob:blob, frase:(MC_IMG_CACHE[k] || {}).frase || testo, testo:testo, linkApp:linkApp };
+      toast('Immagine pronta', { label:'Condividi', fn:'mcCondividiPronta' });
+    }).catch(function(){
+      mcCopia(testo + ' ' + linkApp).then(function(ok){
+        toast(ok ? '📋 Testo copiato: incollalo dove vuoi' : 'Non sono riuscito a preparare l\'immagine. Riprova tra un attimo.');
+      });
       closeShare();
-    }catch(e){
-      /* ultimo ripiego: copio il testo */
-      try{ navigator.clipboard.writeText(testo + ' ' + linkApp); }catch(_){}
-      toast('📋 Testo copiato — incollalo dove vuoi');
-      closeShare();
-    }
+    });
   }
 
   /* =====================================================
@@ -11911,6 +11964,8 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     window.addEventListener('unhandledrejection', function(ev){
       try{
+        var nomeErr = ev && ev.reason && ev.reason.name;
+        if(nomeErr === 'NotAllowedError' || nomeErr === 'AbortError') return;
         var msg = (ev && ev.reason && ev.reason.message) ? ev.reason.message : 'Richiesta di rete non riuscita';
         toast('\u26a0\ufe0f ' + msg);
       }catch(e){}

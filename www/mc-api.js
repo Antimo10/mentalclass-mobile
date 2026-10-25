@@ -460,6 +460,15 @@ const MC = (function(){
       const delSegno = lista.filter(o => o && o.extra && String(o.extra.segno || '').toLowerCase() === String(segno).toLowerCase());
       const datati = delSegno.filter(o => o.data && String(o.data).slice(0,10) <= oggiStr)
         .sort((a, b) => String(b.data).localeCompare(String(a.data)));
+      /* quello del mese in corso (o il più recente già uscito) */
+      const meseOra = oggiStr.slice(0,7);
+      if(datati.length && String(datati[0].data).slice(0,7) === meseOra) return datati[0];
+      /* negli ultimi 10 giorni del mese mostro in anteprima quello del mese dopo, se è già programmato */
+      const fra10 = new Date(oggi.getTime() + 10 * 86400000);
+      const fra10Str = fra10.getFullYear() + '-' + String(fra10.getMonth()+1).padStart(2,'0') + '-' + String(fra10.getDate()).padStart(2,'0');
+      const prossimo = delSegno.filter(o => o.data && String(o.data).slice(0,10) > oggiStr && String(o.data).slice(0,10) <= fra10Str)
+        .sort((a, b) => String(a.data).localeCompare(String(b.data)))[0];
+      if(prossimo) return prossimo;
       if(datati.length) return datati[0];
       return delSegno.find(o => !o.data) || null;
     },
@@ -1379,6 +1388,7 @@ const MC = (function(){
         /* omaggio = Premium attivato con un codice "mesi gratis":
            non passa da Stripe e non si rinnova da solo */
         omaggio: omaggioAttivo(),
+        codiceOmaggio: (omaggioAttivo() && profilo && profilo.omaggio_codice) ? profilo.omaggio_codice : null,
         /* da dove arriva l'abbonamento: 'app_store' | 'play_store' | 'stripe' (o vuoto = sito) */
         fonte: profilo ? (profilo.fonte_abbonamento || null) : null
       };

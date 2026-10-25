@@ -68,6 +68,35 @@
       }
     },
 
+    /* Programma completo: stessi contenuti e stessi orari delle notifiche.
+       Ogni voce: { t: secondi, tipo, k: intestazione, q: testo, a, w: parola,
+       pf/pd: punto forte/debole, c: consiglio }. Il widget cambia da solo
+       all'orario di ogni voce, anche ad app chiusa. */
+    aggiornaProgramma: async function (voci) {
+      var p = plugin();
+      if (!p || !eApp()) { MCW.ultimoErrore = "plugin non disponibile"; return false; }
+      var lista = (voci || []).filter(function (v) { return v && v.q; }).slice(0, 160).map(function (v) {
+        var o = { q: String(v.q).replace(/^["“]|["”]$/g, "").trim(), a: String(v.a || "MentalClass"), t: v.t || 0, tipo: v.tipo || "frase", k: v.k || "" };
+        if (v.w) o.w = v.w; if (v.pf) o.pf = v.pf; if (v.pd) o.pd = v.pd; if (v.c) o.c = v.c;
+        return o;
+      });
+      if (!lista.length) return false;
+      var ora = Date.now() / 1000, adesso = lista[0];
+      lista.forEach(function (v) { if (v.t && v.t <= ora) adesso = v; });
+      try {
+        await p.setItem({ group: APP_GROUP, key: CHIAVE_LISTA,  value: JSON.stringify(lista) });
+        await p.setItem({ group: APP_GROUP, key: CHIAVE_FRASE,  value: adesso.q });
+        await p.setItem({ group: APP_GROUP, key: CHIAVE_AUTORE, value: adesso.a });
+        try { await p.reloadAllTimelines(); } catch (e) {}
+        MCW.ultimoErrore = null;
+        MCW.ultimaScrittura = new Date().toISOString();
+        return true;
+      } catch (e) {
+        MCW.ultimoErrore = (e && e.message) ? e.message : String(e);
+        return false;
+      }
+    },
+
     /* Esegue ogni passaggio e restituisce un resoconto leggibile */
     diagnostica: async function (frasiAttuali) {
       var r = [];

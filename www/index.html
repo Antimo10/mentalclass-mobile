@@ -394,7 +394,7 @@
   /* il feed riempie tutto lo schermo, bordo a bordo: nessuno scorrimento laterale visibile, nessun rimbalzo che scopre un altro colore */
   body.native #deck-feed{ display:block; position:absolute; inset:0; max-height:none; height:100%; margin:0; overflow-y:scroll; overflow-x:hidden; overscroll-behavior-y:contain; scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch; }
   body.native #deck-feed::-webkit-scrollbar{ display:none; }
-  body.native #deck-feed .feed-card{ height:100%; min-height:100%; width:100%; scroll-snap-align:start; scroll-snap-stop:always; padding:0 28px; display:flex; align-items:center; justify-content:center; }
+  body.native #deck-feed .feed-card{ height:100%; min-height:100%; width:100%; scroll-snap-align:start; scroll-snap-stop:always; padding:calc(env(safe-area-inset-top) + 74px) 28px 178px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; overflow:hidden; }
   body.native #deck-feed .fc-in{ max-width:26ch; }
   body.native #deck-feed .fc-q{ font-size:clamp(26px,7.2vw,34px); line-height:1.34; font-style:normal; font-weight:600; letter-spacing:-.01em; }
   body.native #deck-feed .fc-a{ text-transform:none; letter-spacing:.01em; font-weight:600; font-size:14px; color:var(--lime); margin-top:20px; display:block; }
@@ -2533,6 +2533,9 @@ body.native #deck-feed .or-in .fc-q{ font-size:clamp(16px,4.4vw,19px); line-heig
 .deck.light .or-nome, .deck.light .or-cell span, .deck.light .or-cons{ color:#0f2b30 !important; }
 .deck.light .or-punti{ border-color:rgba(15,43,48,.2); background:rgba(255,255,255,.35); }
 .deck.light .or-mese, .deck.light .or-cell b, .deck.light .or-cons span, .deck.light .or-glifo{ color:#0f2b30 !important; border-color:rgba(15,43,48,.4); }
+
+/* pensiero del giorno: carattere un po' più piccolo */
+body.native #deck-feed .feed-card[data-tipo="pensieri"] .fc-q{ font-size:clamp(22px,6vw,28px); line-height:1.36; }
 </style>
 
 <style id="mc-consensi-css">
@@ -2779,7 +2782,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
       <!-- HOME -->
       <section class="app-screen" id="s-home">
-        <div class="mc-native-top"><span class="mc-logo logo" role="img" aria-label="MentalClass"></span><span class="mc-streak" id="mc-streak" onclick="goScreen('diario')" style="display:none;">🔥 <b id="mc-streak-n">0</b></span><span class="mc-crown mc-pro" id="mc-pro-chip" onclick="apriPro()" style="pointer-events:auto;cursor:pointer;"><b class="mc-m">M</b><span>PRO</span></span></div>
+        <div class="mc-native-top"><span class="mc-logo logo" role="img" aria-label="MentalClass"></span><span class="mc-streak" id="mc-streak" onclick="goScreen('diario')" style="display:none;">🔥 <b id="mc-streak-n">0</b></span><span class="mc-crown mc-pro" id="mc-pro-chip" onclick="if(!(typeof MCabbonato==='function' && MCabbonato())) apriPro();" style="pointer-events:auto;cursor:pointer;"><b class="mc-m">M</b><span>PRO</span></span></div>
         <div class="screen-title"><h1 class="disp" id="greet">Buongiorno</h1></div>
         <p class="screen-sub" id="greet-sub">Il tuo allenamento di oggi ti aspetta.</p>
 
@@ -4221,7 +4224,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function mcOroscopoHtml(info, corpoHtml, segno){
     var head = '<div class="or-head"><span class="or-glifo">' + mcSegnoSvg(segno) + '</span>' +
       '<div class="or-nome">' + escapeHtml(segno || '') + '</div>' +
-      '<div class="or-mese">Oroscopo mentale · ' + mcMeseNome() + '</div></div>';
+      '<div class="or-mese">Oroscopo mentale · ' + ((info && info.mese) || mcMeseNome()) + '</div></div>';
     var p = '';
     if(info && (info.forte || info.debole)){
       p = '<div class="or-punti">' +
@@ -4547,8 +4550,12 @@ document.addEventListener('DOMContentLoaded', function(){
           id:   dz.id
         };
       }
+      if(!d.oroscopo && COLLEGATO){ OROSCOPI[state.sign] = ''; OROSCOPO_INFO[state.sign] = null; }
       if(d.oroscopo){
         var _orp = mcOroscopoParti(d.oroscopo.testo, d.oroscopo.extra);
+        /* il mese è quello dell'oroscopo, non quello di oggi */
+        var _dm = String(d.oroscopo.data || '');
+        _orp.mese = /^\d{4}-\d{2}/.test(_dm) ? MC_MESI[parseInt(_dm.slice(5,7), 10) - 1] : mcMeseNome();
         OROSCOPI[state.sign] = _orp.corpo || d.oroscopo.testo;
         OROSCOPO_INFO[state.sign] = _orp;
         state.oroscopoId = d.oroscopo.id;
@@ -4590,8 +4597,32 @@ document.addEventListener('DOMContentLoaded', function(){
   document.addEventListener('visibilitychange', function(){
     if(document.visibilityState==='visible'){ try{ aggiornaWidgetApp(); }catch(e){} }
   });
+  var MC_WIDGET_PROGRAMMA = null;
+  function mcAggiornaWidgetProgramma(giorni){
+    if(!window.MCW || !window.MCN || !MCN.calcolaProgramma || !MCW.aggiornaProgramma) return;
+    var prog = MCN.calcolaProgramma(giorni, state.notifFrom, state.notifTo);
+    var lista = [];
+    prog.forEach(function(it){
+      var v = it.v, el = { t: Math.round(it.quando.getTime() / 1000), tipo: v.tipo || 'frase' };
+      if(v.tipo === 'frase'){ el.q = v.testo; el.a = v.autore || 'MentalClass'; el.k = 'FRASE DEL GIORNO'; }
+      else if(v.tipo === 'pensiero'){ el.q = v.testo; el.a = 'MentalClass'; el.k = 'PENSIERO DEL GIORNO'; }
+      else if(v.tipo === 'dizionario'){ el.q = v.testo; el.w = v.parola || ''; el.a = 'MentalClass'; el.k = 'PAROLA DEL GIORNO'; }
+      else if(v.tipo === 'oroscopo'){
+        if(!v.testo) return;                         /* niente testi di ripiego sul widget */
+        var inf = v.info || {};
+        el.q = v.testo; el.a = state.sign; el.k = ('Oroscopo · ' + state.sign + ' · ' + (v.mese || '')).toUpperCase();
+        el.pf = inf.forte || ''; el.pd = inf.debole || ''; el.c = inf.consiglio || '';
+      }
+      else return;
+      if(el.q) lista.push(el);
+    });
+    if(!lista.length) return;
+    MC_WIDGET_PROGRAMMA = lista;
+    MCW.aggiornaProgramma(lista);
+  }
   async function aggiornaWidgetApp(){
     if(!window.MCW) return;
+    if(MC_WIDGET_PROGRAMMA && MCW.aggiornaProgramma){ try{ await MCW.aggiornaProgramma(MC_WIDGET_PROGRAMMA); }catch(e){} return; }
     if(!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())) return;
     try{
       var f = (FRASI && FRASI.length) ? FRASI[0] : null;
@@ -4633,8 +4664,9 @@ document.addEventListener('DOMContentLoaded', function(){
       state.notifProfiloLetto = true;
     }
     if(!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())) return;
-    /* se l'utente ha spento le notifiche dal profilo, non programmo */
-    if(state.notifSpente){ MCN.spegni(); return; }
+    /* se l'utente ha spento le notifiche non le programmo, ma il widget
+       continua a cambiare con gli stessi contenuti e orari */
+    var _spente = !!state.notifSpente;
     try{
       var frasi = (FRASI || []).map(function(f){
         return { testo: f.q || f.testo || '', autore: (f.a && f.a !== 'MentalClass') ? f.a : '' };
@@ -4653,7 +4685,7 @@ document.addEventListener('DOMContentLoaded', function(){
         var voci = [];
         mcFrasiDelGiorno(dd, perGiorno).slice(0, perGiorno).forEach(function(f){
           var aut = (f.a && f.a !== 'MentalClass') ? f.a : '';
-          voci.push({ tipo:'frase', title:'', body: f.q + (aut ? ' — ' + aut : ''), testo: f.q });
+          voci.push({ tipo:'frase', title:'', body: f.q + (aut ? ' — ' + aut : ''), testo: f.q, autore: aut });
         });
         if(conPensiero){
           var pz = mcPensieroDelGiorno(dd);
@@ -4670,15 +4702,18 @@ document.addEventListener('DOMContentLoaded', function(){
         if(conOroscopo && dd.getDate() === 1 && state.sign){
           /* sopra il segno, sotto il testo dell'oroscopo di quel mese (se è già programmato nel pannello) */
           var dStr = dd.getFullYear() + '-' + String(dd.getMonth()+1).padStart(2,'0') + '-01';
-          var orTesto = null;
-          try{ if(COLLEGATO && MC.contenuti.oroscopoPerData){ var orx = await MC.contenuti.oroscopoPerData(state.sign, dStr); if(orx && String(orx.data || '').slice(0,7) === dStr.slice(0,7)) orTesto = mcOroscopoParti(orx.testo, orx.extra).corpo || orx.testo; } }catch(e){}
+          var orTesto = null, orInfo = null;
+          try{ if(COLLEGATO && MC.contenuti.oroscopoPerData){ var orx = await MC.contenuti.oroscopoPerData(state.sign, dStr); if(orx && String(orx.data || '').slice(0,7) === dStr.slice(0,7)){ orInfo = mcOroscopoParti(orx.testo, orx.extra); orTesto = orInfo.corpo || orx.testo; } } }catch(e){}
           voci.push({ tipo:'oroscopo',
                       title:(SIGN_EMOJI && SIGN_EMOJI[state.sign] ? SIGN_EMOJI[state.sign] + ' ' : '') + state.sign,
                       body: orTesto || ('Il tuo oroscopo di ' + MESI[dd.getMonth()] + ' è arrivato: aprilo e leggi cosa allenare questo mese.'),
-                      testo: orTesto || '' });
+                      testo: orTesto || '', info: orInfo, mese: MC_MESI[dd.getMonth()] });
         }
         giorni.push(voci);
       }
+      /* widget: stessi contenuti e stessi orari delle notifiche */
+      try{ mcAggiornaWidgetProgramma(giorni); }catch(e){}
+      if(_spente){ MCN.spegni(); return; }
       if(MCN.riprogrammaGiorni) await MCN.riprogrammaGiorni(giorni, state.notifFrom, state.notifTo);
       else{
         var frasiVecchie = giorni.map(function(v){ return v.filter(function(x){ return x.tipo === 'frase'; }).map(function(x){ return { testo:x.body }; }); });
@@ -4706,8 +4741,10 @@ document.addEventListener('DOMContentLoaded', function(){
   /* Tocco sul widget: mostra SEMPRE quella frase (anche se oggi non è nel
      feed), con i tasti Salva e Condividi. azione: '' | 'like' | 'condividi' */
   var MC_WIDGET_FRASE = null;
-  function mcApriDaWidget(testo, autore, azione){
-    MC_WIDGET_FRASE = { q: testo, a: autore || 'MentalClass', azione: azione || '', da: Date.now() };
+  var MC_WIDGET_TITOLI = { frase:'Frase del giorno', pensiero:'Pensiero del giorno', dizionario:'Parola del giorno', oroscopo:'Il tuo oroscopo' };
+  var MC_WIDGET_TIPI   = { frase:'frasi', pensiero:'pensieri', dizionario:'dizionario', oroscopo:'oroscopo' };
+  function mcApriDaWidget(testo, autore, azione, tipo){
+    MC_WIDGET_FRASE = { q: testo, a: autore || 'MentalClass', azione: azione || '', tipo: MC_WIDGET_TIPI[tipo] ? tipo : 'frase', da: Date.now() };
     mcMostraFraseWidget();
   }
   function mcMostraFraseWidget(){
@@ -4717,11 +4754,12 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!dentro && Date.now() - w.da < 6000){ setTimeout(mcMostraFraseWidget, 400); return; }
     MC_WIDGET_FRASE = null;
     var bg = document.getElementById('notif-tap-bg'); if(!bg) return;
-    document.getElementById('notif-tap-tit').textContent = 'Frase del giorno';
+    document.getElementById('notif-tap-tit').textContent = MC_WIDGET_TITOLI[w.tipo] || 'Frase del giorno';
     document.getElementById('notif-tap-txt').textContent = w.q;
     var au2 = document.getElementById('notif-tap-aut');
-    if(au2) au2.textContent = (w.a && w.a !== 'MentalClass') ? '— ' + w.a : '';
+    if(au2) au2.textContent = (w.tipo === 'frase' && w.a && w.a !== 'MentalClass') ? '— ' + w.a : '';
     bg.dataset.autore = w.a || 'MentalClass';
+    bg.dataset.tipo = MC_WIDGET_TIPI[w.tipo] || 'frasi';
     mcAggiornaCuoreWidget();
     bg.classList.add('show');
     if(w.azione === 'like'){ setTimeout(function(){ if(!mcFraseWidgetSalvata()) mcSalvaFraseWidget(); else toast('♥ È già nei tuoi preferiti'); }, 350); }
@@ -4730,9 +4768,10 @@ document.addEventListener('DOMContentLoaded', function(){
   function mcFraseWidgetItem(){
     var bg = document.getElementById('notif-tap-bg');
     var q = document.getElementById('notif-tap-txt').textContent;
-    return { type:'frasi', id:'w-' + mcNorm(q).slice(0,40), q:q, a:(bg && bg.dataset.autore) || 'MentalClass' };
+    var tp = (bg && bg.dataset.tipo && state.saved[bg.dataset.tipo]) ? bg.dataset.tipo : 'frasi';
+    return { type:tp, id:'w-' + mcNorm(q).slice(0,40), q:q, a:(bg && bg.dataset.autore) || 'MentalClass' };
   }
-  function mcFraseWidgetSalvata(){ var it = mcFraseWidgetItem(); return state.saved.frasi.some(function(x){ return mcStessoPref(x,it); }); }
+  function mcFraseWidgetSalvata(){ var it = mcFraseWidgetItem(); return state.saved[it.type].some(function(x){ return mcStessoPref(x,it); }); }
   function mcAggiornaCuoreWidget(){
     var b = document.getElementById('notif-tap-like'); if(!b) return;
     var on = mcFraseWidgetSalvata();
@@ -4741,7 +4780,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   function mcSalvaFraseWidget(){
     var it = mcFraseWidgetItem();
-    var arr = state.saved.frasi;
+    var arr = state.saved[it.type];
     var i = arr.findIndex(function(x){ return mcStessoPref(x,it); });
     if(i >= 0){ arr.splice(i,1); toast('Rimossa dai preferiti'); }
     else { it.at = Date.now(); arr.push(it); try{ chime(); }catch(e){} toast('❤️ Salvata nei preferiti'); }
@@ -4790,7 +4829,7 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('notif-tap-tit').textContent = t.titolo;
       document.getElementById('notif-tap-txt').textContent = t.corpo;
       var _au = document.getElementById('notif-tap-aut'); if(_au) _au.textContent = '';
-      bg.dataset.autore = 'MentalClass'; mcAggiornaCuoreWidget();
+      bg.dataset.autore = 'MentalClass'; bg.dataset.tipo = 'frasi'; mcAggiornaCuoreWidget();
       bg.classList.add('show');
     }
   }
@@ -7826,7 +7865,14 @@ document.addEventListener('DOMContentLoaded', function(){
         CODICE_PROMO_ATTIVO = null; rimuoviScontoGrafico();
         CODICE_OMAGGIO = { codice: cod, mesi: v.mesi_gratis };
         var etichetta = v.mesi_gratis == 1 ? '1 mese' : v.mesi_gratis + ' mesi';
-        dillo('✓ Questo codice ti regala <b>' + etichetta + ' di Premium</b>. Nessuna carta richiesta, non si rinnova da solo.'
+        /* già dentro con l'account: si attiva SUBITO, senza un secondo tasto
+           (prima molti si fermavano al messaggio e il Premium non partiva) */
+        if(COLLEGATO && MC.utenteCorrente()){
+          dillo('✓ Codice valido: ' + etichetta + ' di Premium. Lo attivo sul tuo account…', true);
+          attivaCodiceOmaggio();
+          return;
+        }
+        dillo('✓ Questo codice ti regala <b>' + etichetta + ' di Premium</b>. Accedi o crea l\'account per attivarlo.'
           + '<br><button class="btn btn-lime" id="cod-omaggio-btn" style="margin-top:10px;padding:11px 18px;font-size:12.5px;" onclick="attivaCodiceOmaggio()">Attiva ' + etichetta + ' gratis</button>', true);
         chime();
         return;
@@ -7869,7 +7915,14 @@ document.addEventListener('DOMContentLoaded', function(){
         return;
       }
       var fino = new Date(r.fino).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
-      if(esito){ esito.style.color = 'var(--lime)'; esito.innerHTML = '✓ Premium attivo fino al <b>' + fino + '</b>.'; }
+      /* controllo che il profilo sia davvero passato a Premium */
+      try{ if(MC.caricaProfilo) await MC.caricaProfilo(); }catch(_){}
+      if(!(MC.abbonato && MC.abbonato())){
+        if(esito){ esito.style.color = '#E8543E'; esito.innerHTML = '✕ Il codice è stato accettato ma il tuo profilo non risulta Premium. Scrivi a supporto@mentalclass.it indicando il codice: lo sistemiamo subito.'; }
+        return;
+      }
+      if(esito){ esito.style.color = 'var(--lime)'; esito.innerHTML = '✓ Premium attivo fino al <b>' + fino + '</b>. Non si rinnova da solo e non ti addebitiamo nulla.'; }
+      try{ var _inp = document.getElementById('cod-promo-input'); if(_inp){ _inp.value = ''; } }catch(_){}
       CODICE_OMAGGIO = null;
       try{ confetti(40); }catch(e){}
       chime();
@@ -7891,7 +7944,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var nome = st.piano === 'annuale' ? 'Annuale' : st.piano === 'mensile' ? 'Mensile' : 'Premium';
     var c = null;
     if(st.abbonato && st.omaggio){
-      c = { k:'Il tuo piano · Premium in omaggio', t: data ? 'Attivo fino al ' + data : 'Premium attivo',
+      c = { k:'Il tuo piano · Premium in omaggio' + (st.codiceOmaggio ? ' (codice ' + st.codiceOmaggio + ')' : ''), t: data ? 'Attivo fino al ' + data : 'Premium attivo',
             p:'Non si rinnova da solo e non ti addebitiamo nulla. Alla scadenza torni al piano Free, a meno che tu non scelga un abbonamento.',
             b:'Vedi i piani' };
     } else if(st.abbonato && st.stato === 'in_prova'){
@@ -8648,6 +8701,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var sp = c.querySelector('span'); if(sp) sp.textContent = abb ? 'PRO' : 'PASSA A PRO';
     /* app iOS senza acquisti in-app: niente inviti all'acquisto (regola Apple 3.1.1) */
     c.style.display = (!abb && document.body.classList.contains('no-acquisti')) ? 'none' : '';
+    c.style.cursor = abb ? 'default' : 'pointer';
   }
   setInterval(aggiornaChipPro, 4000); setTimeout(aggiornaChipPro, 1500);
   function pickTime(el){
@@ -8962,9 +9016,12 @@ document.addEventListener('DOMContentLoaded', function(){
         var box = card.querySelector('.fc-in'); if(!box) return;
         var t = box.querySelector('.fc-q') || box.querySelector('.fc-def'); if(!t) return;
         t.style.fontSize = '';
-        var max = card.clientHeight * 0.78; if(!max) return;
+        /* spazio vero: tolgo la barra in alto e i tasti mi piace/condividi in basso */
+        var cs = getComputedStyle(card);
+        var max = card.clientHeight - (parseFloat(cs.paddingTop) || 0) - (parseFloat(cs.paddingBottom) || 0) - 8;
+        if(!(max > 0)) return;
         var fs = parseFloat(getComputedStyle(t).fontSize) || 24, giri = 0;
-        while(box.offsetHeight > max && fs > 14 && giri < 24){ fs -= 1; t.style.fontSize = fs + 'px'; giri++; }
+        while(box.offsetHeight > max && fs > 13 && giri < 40){ fs -= 1; t.style.fontSize = fs + 'px'; giri++; }
       });
     }catch(e){}
   }
@@ -9019,7 +9076,9 @@ document.addEventListener('DOMContentLoaded', function(){
       if(state.deck==='oroscopo'){
         var em = SIGN_EMOJI[state.sign];
         var _oh = mcOroscopoHtml(OROSCOPO_INFO[state.sign], escapeHtml(OROSCOPI[state.sign]), state.sign);
-        html = _oh.sopra+'<p class="q quote">'+_oh.corpo+'</p>'+_oh.sotto;
+        html = OROSCOPI[state.sign]
+          ? _oh.sopra+'<p class="q quote">'+_oh.corpo+'</p>'+_oh.sotto
+          : _oh.sopra+'<p class="def">L\'oroscopo del tuo segno per questo mese arriva a breve.</p>';
         dots.innerHTML=''; prev.disabled=true; next.disabled=true;
         var _pm = new Date(); _pm = new Date(_pm.getFullYear(), _pm.getMonth() + 1, 1);
         quota.textContent = '1 al mese per il tuo segno · il prossimo il ' + _pm.toLocaleDateString('it-IT', { day:'numeric', month:'long' });
@@ -9869,7 +9928,7 @@ document.addEventListener('DOMContentLoaded', function(){
       c.fillText(String(meta.segno || ''), cxm, oy2); st('normal');
       oy2 += NOME + 16;
       c.fillStyle = LIME; c.font = '800 ' + (storia ? 24 : 21) + 'px Inter, Arial, sans-serif'; ls('5px');
-      c.fillText(('Oroscopo mentale · ' + mcMeseNome() + ' ' + new Date().getFullYear()).toUpperCase(), cxm, oy2); ls('0px');
+      c.fillText(('Oroscopo mentale · ' + (inf.mese || mcMeseNome())).toUpperCase(), cxm, oy2); ls('0px');
       oy2 += 26 + (storia ? 46 : 32);
 
       /* punto forte | punto debole sulla stessa riga */
@@ -11853,12 +11912,30 @@ document.addEventListener('DOMContentLoaded', function(){
         state.sign = s[0];
         applyPersonalization();
         if(state.deck==='oroscopo') renderDeck(true);
+        mcRicaricaOroscopo();
         closeSignPicker(); chime();
         toast(s[1]+' Segno aggiornato: oroscopo di '+s[0]);
       };
       g.appendChild(d);
     });
     document.getElementById('sign-bg').classList.add('show');
+  }
+  /* dopo il cambio segno: prendo l'oroscopo VERO del nuovo segno dal pannello */
+  async function mcRicaricaOroscopo(){
+    if(!(typeof COLLEGATO !== 'undefined' && COLLEGATO && MC.contenuti && MC.contenuti.oroscopoDelMese)) return;
+    var segno = state.sign;
+    try{
+      var o = await MC.contenuti.oroscopoDelMese(segno);
+      if(segno !== state.sign) return;
+      if(o){
+        var p = mcOroscopoParti(o.testo, o.extra);
+        var dm = String(o.data || '');
+        p.mese = /^\d{4}-\d{2}/.test(dm) ? MC_MESI[parseInt(dm.slice(5,7), 10) - 1] : mcMeseNome();
+        OROSCOPI[segno] = p.corpo || o.testo; OROSCOPO_INFO[segno] = p;
+      } else { OROSCOPI[segno] = ''; OROSCOPO_INFO[segno] = null; }
+      renderDeck(false);
+      try{ if(typeof programmaNotificheApp === 'function') programmaNotificheApp(); }catch(e){}
+    }catch(e){}
   }
   function closeSignPicker(){ document.getElementById('sign-bg').classList.remove('show'); }
 
@@ -12079,7 +12156,7 @@ document.addEventListener('DOMContentLoaded', function(){
           /* widget: mentalclass://frase?t=<testo>&c=1 → apre quella frase e la propone da condividere */
           if(u.indexOf('frase') > -1){
             var q = {}; (u.split('?')[1] || '').split('&').forEach(function(kv){ var p = kv.split('='); if(p[0]) q[p[0]] = decodeURIComponent((p[1] || '').replace(/\+/g,' ')); });
-            if(q.t){ mcApriDaWidget(q.t, q.a || '', q.l === '1' ? 'like' : (q.c === '1' ? 'condividi' : '')); return; }
+            if(q.t){ mcApriDaWidget(q.t, q.a || '', q.l === '1' ? 'like' : (q.c === '1' ? 'condividi' : ''), q.tp || 'frase'); return; }
           }
           if(u.indexOf('home') > -1 && typeof enterApp === 'function'){ enterApp('home'); }
         }catch(e){}
@@ -12093,7 +12170,7 @@ document.addEventListener('DOMContentLoaded', function(){
         var u = (r && r.url) || '';
         if(u.indexOf('frase') > -1){
           var q = {}; (u.split('?')[1] || '').split('&').forEach(function(kv){ var p = kv.split('='); if(p[0]) q[p[0]] = decodeURIComponent((p[1] || '').replace(/\+/g,' ')); });
-          if(q.t) mcApriDaWidget(q.t, q.a || '', q.l === '1' ? 'like' : (q.c === '1' ? 'condividi' : ''));
+          if(q.t) mcApriDaWidget(q.t, q.a || '', q.l === '1' ? 'like' : (q.c === '1' ? 'condividi' : ''), q.tp || 'frase');
         }
       }).catch(function(){});
     }

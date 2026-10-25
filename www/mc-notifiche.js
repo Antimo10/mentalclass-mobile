@@ -163,30 +163,20 @@
        - almeno 40 minuti tra una notifica e l'altra quando la fascia lo permette
        - iOS tiene circa 64 notifiche in coda: ne uso al massimo 48 per
          queste, il resto resta per riepilogo e novità */
-    riprogrammaGiorni: async function (giorni, oraInizio, oraFine) {
-      var p = plugin();
-      if (!p || !eApp()) return;
-      try {
-        var inCoda = await p.getPending();
-        var mie = (inCoda && inCoda.notifications || []).filter(function (n) { return n.id >= 1000 && n.id < 2000; });
-        if (mie.length) await p.cancel({ notifications: mie });
-      } catch (e) {}
+    /* Calcola gli orari di ogni contenuto (stessi per notifiche e widget):
+       spalmati su tutta la fascia scelta, con un piccolo scarto stabile nel
+       giorno. Restituisce anche quelli già passati di oggi. */
+    calcolaProgramma: function (giorni, oraInizio, oraFine) {
       giorni = giorni || [];
       var minInizio = minutiDa(oraInizio, 8 * 60);
       var minFine   = minutiDa(oraFine, 21 * 60);
       if (minFine <= minInizio) { minFine = minInizio + 60; }
-      var BUDGET = 48, usate = 0, nuove = [];
-      var R = partiRoma(new Date());
+      var R = partiRoma(new Date()), out = [];
       function rnd(seme) { var t = (seme + 0x6D2B79F5) >>> 0; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }
       for (var g = 0; g < giorni.length && g < 14; g++) {
         var voci = (giorni[g] || []).filter(function (v) { return v && v.body; });
         if (!voci.length) continue;
-        if (usate + voci.length > BUDGET) break;
         var giornoId = (R.y * 10000) + ((R.mo + 1) * 100) + R.d + g;
-        /* orari spalmati su TUTTA la fascia scelta: la prima vicino all'inizio,
-           l'ultima vicino alla fine, le altre a distanza regolare, con un
-           piccolo scarto casuale (stabile nel giorno) per non sembrare un
-           orologio. Mai fuori dalla fascia. */
         var n = voci.length, orari = [], durata = minFine - minInizio;
         var passo = n > 1 ? durata / (n - 1) : durata;
         var scarto = Math.min(15, passo / 4);
@@ -200,22 +190,36 @@
           .sort(function (x, y) { return x.r - y.r; }).map(function (x) { return x.v; });
         for (var j = 0; j < n; j++) {
           var h = Math.floor(orari[j] / 60), m = orari[j] % 60;
-          var quando = dataRoma(R.y, R.mo, R.d + g, h, m);
-          if (quando.getTime() < Date.now() + 60000) continue;
-          var v = ordine[j];
-          nuove.push({
-            id: 1000 + g * 10 + j,
-            title: (typeof v.title === "string") ? v.title : "MentalClass",
-            body: v.body,
-            schedule: { at: quando, allowWhileIdle: true },
-            channelId: CANALE,
-            smallIcon: "ic_stat_icon",
-            /* testo e giorno viaggiano con la notifica: al tocco l'app apre
-               proprio quel contenuto (vedi mcApriDaNotifica in index.html) */
-            extra: { tipo: v.tipo || "frase", testo: v.testo || v.body, giorno: g }
-          });
-          usate++;
+          out.push({ quando: dataRoma(R.y, R.mo, R.d + g, h, m), v: ordine[j], g: g, j: j });
         }
+      }
+      return out;
+    },
+
+    riprogrammaGiorni: async function (giorni, oraInizio, oraFine) {
+      var p = plugin();
+      if (!p || !eApp()) return;
+      try {
+        var inCoda = await p.getPending();
+        var mie = (inCoda && inCoda.notifications || []).filter(function (n) { return n.id >= 1000 && n.id < 2000; });
+        if (mie.length) await p.cancel({ notifications: mie });
+      } catch (e) {}
+      var BUDGET = 48, nuove = [];
+      var programma = MCN.calcolaProgramma(giorni, oraInizio, oraFine);
+      for (var i = 0; i < programma.length && nuove.length < BUDGET; i++) {
+        var it = programma[i], v = it.v;
+        if (it.quando.getTime() < Date.now() + 60000) continue;
+        nuove.push({
+          id: 1000 + it.g * 10 + it.j,
+          title: (typeof v.title === "string") ? v.title : "MentalClass",
+          body: v.body,
+          schedule: { at: it.quando, allowWhileIdle: true },
+          channelId: CANALE,
+          smallIcon: "ic_stat_icon",
+          /* testo e giorno viaggiano con la notifica: al tocco l'app apre
+             proprio quel contenuto (vedi mcApriDaNotifica in index.html) */
+          extra: { tipo: v.tipo || "frase", testo: v.testo || v.body, giorno: it.g }
+        });
       }
       try {
         var ancora = await p.getPending();

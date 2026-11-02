@@ -40,7 +40,8 @@ struct FraseEntry: TimelineEntry {
     let autore: String
     var tipo: String = "frase"        // frase · pensiero · dizionario · oroscopo
     var etichetta: String = ""        // es. "PENSIERO DEL GIORNO"
-    var parola: String = ""           // dizionario
+    var parola: String = ""           // dizionario: la parola · oroscopo: il segno
+    var fonetica: String = ""         // dizionario
     var forte: String = ""            // oroscopo
     var debole: String = ""
     var consiglio: String = ""
@@ -53,6 +54,7 @@ private struct FraseItem: Decodable {
     let tipo: String?
     let k: String?
     let w: String?
+    let f: String?
     let pf: String?
     let pd: String?
     let c: String?
@@ -61,7 +63,7 @@ private struct FraseItem: Decodable {
 private func mcEntry(_ it: FraseItem, _ quando: Date) -> FraseEntry {
     FraseEntry(date: quando, frase: it.q, autore: it.a ?? "MentalClass",
                tipo: it.tipo ?? "frase", etichetta: it.k ?? "",
-               parola: it.w ?? "", forte: it.pf ?? "", debole: it.pd ?? "", consiglio: it.c ?? "")
+               parola: it.w ?? "", fonetica: it.f ?? "", forte: it.pf ?? "", debole: it.pd ?? "", consiglio: it.c ?? "")
 }
 
 struct FraseProvider: TimelineProvider {
@@ -76,9 +78,9 @@ struct FraseProvider: TimelineProvider {
         }
         if let f = box?.string(forKey: MC_KEY_FRASE), !f.isEmpty {
             let a = box?.string(forKey: MC_KEY_AUTORE) ?? "MentalClass"
-            return [FraseItem(q: f, a: a, t: nil, tipo: "frase", k: nil, w: nil, pf: nil, pd: nil, c: nil)]
+            return [FraseItem(q: f, a: a, t: nil, tipo: "frase", k: nil, w: nil, f: nil, pf: nil, pd: nil, c: nil)]
         }
-        return [FraseItem(q: "Alleniamo la mente, un giorno alla volta.", a: "MentalClass", t: nil, tipo: "frase", k: nil, w: nil, pf: nil, pd: nil, c: nil)]
+        return [FraseItem(q: "Alleniamo la mente, un giorno alla volta.", a: "MentalClass", t: nil, tipo: "frase", k: nil, w: nil, f: nil, pf: nil, pd: nil, c: nil)]
     }
 
     func placeholder(in context: Context) -> FraseEntry {
@@ -156,7 +158,7 @@ func mcDataBreve(_ d: Date) -> String {
 
 /// Link che apre l'app proprio su questa frase.
 /// azione: "" = mostra la frase · "like" = la salva nei preferiti · "condividi" = apre la condivisione
-func mcLinkFrase(_ frase: String, _ autore: String = "", azione: String = "", tipo: String = "") -> URL {
+func mcLinkFrase(_ frase: String, _ autore: String = "", azione: String = "", tipo: String = "", parola: String = "", fonetica: String = "") -> URL {
     var c = URLComponents()
     c.scheme = "mentalclass"
     c.host = "frase"
@@ -165,6 +167,8 @@ func mcLinkFrase(_ frase: String, _ autore: String = "", azione: String = "", ti
     if azione == "like" { q.append(URLQueryItem(name: "l", value: "1")) }
     if azione == "condividi" { q.append(URLQueryItem(name: "c", value: "1")) }
     if !tipo.isEmpty && tipo != "frase" { q.append(URLQueryItem(name: "tp", value: tipo)) }
+    if !parola.isEmpty { q.append(URLQueryItem(name: "w", value: parola)) }
+    if !fonetica.isEmpty { q.append(URLQueryItem(name: "f", value: fonetica)) }
     c.queryItems = q
     return c.url ?? URL(string: "mentalclass://home")!
 }
@@ -236,16 +240,13 @@ struct FraseWidgetView: View {
         if !entry.etichetta.isEmpty { return entry.etichetta }
         switch entry.tipo {
         case "pensiero": return "PENSIERO DEL GIORNO"
-        case "dizionario": return "PAROLA DEL GIORNO"
+        case "dizionario": return "DIZIONARIO IMPRENDITORIALE"
         case "oroscopo": return "OROSCOPO DEL MESE"
         default: return "FRASE DEL GIORNO"
         }
     }
-    /* l'oroscopo è lungo: nei widget piccolo e medio mostro il consiglio */
-    private var testo: String {
-        if oroscopo && !grande && entry.frase.count > 170 && !entry.consiglio.isEmpty { return entry.consiglio }
-        return entry.frase
-    }
+    /* il testo del contenuto (per l oroscopo: il testo vero, dopo il nome del segno) */
+    private var testo: String { entry.frase }
     private var firma: String {
         if oroscopo || entry.tipo == "dizionario" || entry.tipo == "pensiero" { return "mentalclass.it" }
         return (entry.autore != "MentalClass" && !entry.autore.isEmpty) ? entry.autore : "mentalclass.it"
@@ -291,6 +292,15 @@ struct FraseWidgetView: View {
                     .foregroundColor(.mcCream)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
+                if !entry.fonetica.isEmpty {
+                    Text("/" + entry.fonetica + "/")
+                        .font(.system(size: piccolo ? 11 : (grande ? 15 : 12.5), weight: .medium, design: .serif))
+                        .italic()
+                        .foregroundColor(.mcLime)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .padding(.top, 1)
+                }
                 Text(testo)
                     .font(.system(size: max(11, size - 3), weight: .medium))
                     .foregroundColor(Color.mcCream.opacity(0.85))
@@ -299,21 +309,20 @@ struct FraseWidgetView: View {
                     .minimumScaleFactor(0.6)
                     .padding(.top, 4)
             } else if oroscopo {
-                // solo testo: punto forte · punto debole sulla stessa riga
-                if !piccolo && (!entry.forte.isEmpty || !entry.debole.isEmpty) {
-                    (Text("PUNTO FORTE ").font(.system(size: 8.5, weight: .heavy)).foregroundColor(.mcLime)
-                     + Text(entry.forte).font(.system(size: 11, weight: .semibold)).foregroundColor(.mcCream)
-                     + Text("   ·   PUNTO DEBOLE ").font(.system(size: 8.5, weight: .heavy)).foregroundColor(Color(red: 245/255, green: 183/255, blue: 46/255))
-                     + Text(entry.debole).font(.system(size: 11, weight: .semibold)).foregroundColor(.mcCream))
+                // solo testo: il nome del segno, poi l'oroscopo
+                if !entry.parola.isEmpty {
+                    Text(entry.parola)
+                        .font(.system(size: piccolo ? 18 : (grande ? 30 : 22), weight: .bold))
+                        .foregroundColor(.mcCream)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.6)
-                        .padding(.bottom, 6)
+                        .minimumScaleFactor(0.7)
+                        .padding(.bottom, 3)
                 }
-                (testo == entry.consiglio ? Text(testo).italic() : Text(testo))
-                    .font(.system(size: size, weight: testo == entry.consiglio ? .medium : .semibold))
-                    .foregroundColor(.mcCream)
+                Text(testo)
+                    .font(.system(size: max(11, size - 1), weight: .medium))
+                    .foregroundColor(Color.mcCream.opacity(0.92))
                     .lineSpacing(1.5)
-                    .lineLimit(grande ? 12 : (piccolo ? 6 : 4))
+                    .lineLimit(grande ? 13 : (piccolo ? 5 : 4))
                     .minimumScaleFactor(0.5)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if grande && !entry.consiglio.isEmpty {
@@ -359,10 +368,10 @@ struct FraseWidgetView: View {
                     .minimumScaleFactor(0.8)
                 Spacer(minLength: 0)
                 if !piccolo {
-                    Link(destination: mcLinkFrase(entry.frase, entry.autore, azione: "like", tipo: entry.tipo)) {
+                    Link(destination: mcLinkFrase(entry.frase, entry.autore, azione: "like", tipo: entry.tipo, parola: entry.parola, fonetica: entry.fonetica)) {
                         MCTasto(icona: "heart.fill", testo: "Salva", pieno: false)
                     }
-                    Link(destination: mcLinkFrase(entry.frase, entry.autore, azione: "condividi", tipo: entry.tipo)) {
+                    Link(destination: mcLinkFrase(entry.frase, entry.autore, azione: "condividi", tipo: entry.tipo, parola: entry.parola, fonetica: entry.fonetica)) {
                         MCTasto(icona: "square.and.arrow.up", testo: "Condividi", pieno: true)
                     }
                 }
@@ -371,7 +380,7 @@ struct FraseWidgetView: View {
         .padding(.horizontal, piccolo ? 14 : 18)
         .padding(.vertical, piccolo ? 13 : 15)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .widgetURL(mcLinkFrase(entry.frase, entry.autore, tipo: entry.tipo))
+        .widgetURL(mcLinkFrase(entry.frase, entry.autore, tipo: entry.tipo, parola: entry.parola, fonetica: entry.fonetica))
     }
 }
 
@@ -392,7 +401,7 @@ struct FraseBloccoView: View {
                 .minimumScaleFactor(0.7)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .widgetURL(mcLinkFrase(entry.frase, entry.autore, tipo: entry.tipo))
+        .widgetURL(mcLinkFrase(entry.frase, entry.autore, tipo: entry.tipo, parola: entry.parola, fonetica: entry.fonetica))
     }
 }
 

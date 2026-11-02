@@ -2580,6 +2580,28 @@ body.native #deck-feed .feed-card[data-tipo="pensieri"] .fc-q{ font-size:clamp(2
 
 /* rivista: pagina successiva in preparazione */
 #rd-viewport.rd-attesa::after{ content:""; position:absolute; right:18px; bottom:18px; width:26px; height:26px; border-radius:50%; border:3px solid rgba(241,237,226,.2); border-top-color:var(--lime); animation:vcspin .8s linear infinite; z-index:20; pointer-events:none; }
+
+/* ===== DIZIONARIO IMPRENDITORIALE: parola, fonetica, definizione ===== */
+.dz-in{ text-align:center; }
+.dz-k{ display:inline-flex; align-items:center; gap:8px; font-size:10.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--lime); margin-bottom:18px; }
+.dz-k i{ width:22px; height:22px; border-radius:7px; border:1.5px solid rgba(194,232,62,.6); display:inline-flex; align-items:center; justify-content:center; font-style:normal; font-size:11px; font-weight:900; color:var(--lime); }
+.dz-w{ font-family:'MCSans','Inter Tight',Inter,sans-serif; font-weight:700; font-size:clamp(34px,9vw,46px); letter-spacing:-.025em; line-height:1.02; color:var(--cream); }
+.dz-f{ font-family:'Playfair Display',Georgia,serif; font-style:italic; font-weight:500; font-size:clamp(16px,4.4vw,20px); color:var(--lime); margin-top:8px; }
+.dz-line{ width:46px; height:3px; border-radius:3px; background:var(--lime); margin:20px auto 18px; opacity:.85; }
+.dz-d{ font-family:'MCSans','Inter Tight',Inter,sans-serif; font-weight:500; font-size:clamp(16px,4.4vw,19px); line-height:1.5; color:var(--cream); margin:0 auto; max-width:32ch; }
+.dz-ex{ font-family:'Playfair Display',Georgia,serif; font-style:italic; font-size:15px; color:rgba(241,237,226,.72); margin:14px auto 0; max-width:32ch; }
+.deck .dz-in{ padding:6px 0 4px; }
+.deck .dz-w{ font-size:clamp(30px,3.2vw,40px) !important; }
+.deck .dz-d{ font-size:16px; max-width:52ch; }
+.deck.light .dz-w, .deck.light .dz-d, .deck.light .dz-ex, .deck.light .dz-k, .deck.light .dz-f{ color:#0f2b30 !important; }
+.deck.light .dz-line{ background:#0f2b30; }
+/* pensiero del giorno: mai in corsivo */
+.q.pz, .fc-q.pz, .pz-txt{ font-style:normal !important; }
+
+/* condivisione: il tasto mostra quando l'immagine è pronta */
+.share-btn.sb-wait{ opacity:.75; pointer-events:none; }
+.share-btn.sb-ok{ border-color:rgba(194,232,62,.8) !important; background:rgba(194,232,62,.14) !important; animation:sbPulse 1.2s ease-in-out infinite; }
+@keyframes sbPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(194,232,62,.35); } 50%{ box-shadow:0 0 0 7px rgba(194,232,62,0); } }
 </style>
 
 <style id="mc-consensi-css">
@@ -2764,7 +2786,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="onb-step" id="onb-3">
       <div class="onb-step-label">Passo 3 di 3 · La tua sveglia mentale</div>
       <div class="onb-q disp">Quando vuoi<br>le notifiche?</div>
-      <div class="onb-sub">Frasi, pensiero e parola del giorno arrivano in momenti casuali dentro la tua fascia.</div>
+      <div class="onb-sub">Frasi, pensiero e dizionario imprenditoriale arrivano in momenti casuali dentro la tua fascia.</div>
       <div class="time-row" id="onb-times">
         <div class="time-opt" data-f="07:00" data-a="12:00" onclick="pickTime(this)">Mattina<span>07:00 → 12:00</span></div>
         <div class="time-opt sel" data-f="08:00" data-a="21:00" onclick="pickTime(this)">Tutto il giorno<span>08:00 → 21:00</span></div>
@@ -4004,6 +4026,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <div class="modal-bg" id="notif-tap-bg" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="modal" style="max-width:440px;text-align:center;">
     <div class="m-head"><h3 class="disp" style="margin:0;" id="notif-tap-tit">MentalClass</h3><div class="cancel" onclick="document.getElementById('notif-tap-bg').classList.remove('show')">Chiudi ×</div></div>
+    <div id="notif-tap-dz" class="dz-in" style="display:none;margin-top:12px;"></div>
     <p class="quote" id="notif-tap-txt" style="font-size:19px;line-height:1.45;margin:10px 0 20px;"></p>
     <p id="notif-tap-aut" style="font-size:13px;font-weight:700;color:var(--lime);margin:-10px 0 18px;"></p>
     <div style="display:flex;gap:10px;">
@@ -4221,20 +4244,8 @@ document.addEventListener('DOMContentLoaded', function(){
     ex:'Esempio: ti accorgi che stai rimandando e dai un nome alla scusa che stai usando.'
   };
 
-  var OROSCOPI = {
-    'Ariete':'Questo mese ti chiede pazienza operativa: definisci il traguardo del mese e spezzalo in passi da 20 minuti.',
-    'Toro':'La tua costanza è l\'arma del mese. Proteggi una routine mattutina e lascia che i risultati si accumulino.',
-    'Gemelli':'Troppi fronti aperti disperdono energia. Questo mese chiudi un progetto prima di aprirne un altro.',
-    'Cancro':'Sotto pressione reagisci d\'istinto: questo mese annota nel diario degli obiettivi cosa ti ha fatto perdere il ritmo e il primo passo per riprenderlo.',
-    'Leone':'È il tuo mese: usa la visibilità per allenare la leadership gentile. Ascolta il doppio di quanto parli.',
-    'Vergine':'Il perfezionismo ti rallenta. Fissa uno standard "abbastanza buono" e consegna entro la scadenza.',
-    'Bilancia':'Decidere ti costa: questo mese allena la regola dei 5 minuti per le scelte reversibili.',
-    'Scorpione':'Canalizza l\'intensità in un obiettivo misurabile. La profondità è la tua leva quando ha una direzione.',
-    'Sagittario':'L\'entusiasmo apre, la disciplina chiude. Questo mese aggiungi una verifica settimanale ai tuoi piani.',
-    'Capricorno':'Stai costruendo più di quanto vedi. Concediti una pausa programmata: il recupero fa parte dell\'allenamento.',
-    'Acquario':'Le tue idee valgono se atterrano. Scegline una e trasformala in un esperimento di 30 giorni.',
-    'Pesci':'L\'intuizione va allenata come un muscolo: prima di ogni decisione importante, scrivi cosa ti dice e verifica a fine mese.'
-  };
+  /* niente testi di esempio: l'oroscopo arriva SOLO dal pannello, per il segno dell'utente */
+  var OROSCOPI = {'Ariete':'','Toro':'','Gemelli':'','Cancro':'','Leone':'','Vergine':'','Bilancia':'','Scorpione':'','Sagittario':'','Capricorno':'','Acquario':'','Pesci':''};
   var SIGN_EMOJI = {}; SIGNS.forEach(function(s){ SIGN_EMOJI[s[0]] = s[1]; });
 
   /* =====================================================
@@ -4601,6 +4612,8 @@ document.addEventListener('DOMContentLoaded', function(){
           id:   dz.id
         };
       }
+      /* l'oroscopo è SEMPRE quello del segno scelto nel profilo */
+      try{ var _pp = MC.profiloCorrente && MC.profiloCorrente(); if(_pp && _pp.segno_zodiacale) state.sign = _pp.segno_zodiacale; }catch(_){}
       if(!d.oroscopo && COLLEGATO){ OROSCOPI[state.sign] = ''; OROSCOPO_INFO[state.sign] = null; }
       if(d.oroscopo){
         var _orp = mcOroscopoParti(d.oroscopo.testo, d.oroscopo.extra);
@@ -4657,11 +4670,11 @@ document.addEventListener('DOMContentLoaded', function(){
       var v = it.v, el = { t: Math.round(it.quando.getTime() / 1000), tipo: v.tipo || 'frase' };
       if(v.tipo === 'frase'){ el.q = v.testo; el.a = v.autore || 'MentalClass'; el.k = 'FRASE DEL GIORNO'; }
       else if(v.tipo === 'pensiero'){ el.q = v.testo; el.a = 'MentalClass'; el.k = 'PENSIERO DEL GIORNO'; }
-      else if(v.tipo === 'dizionario'){ el.q = v.testo; el.w = v.parola || ''; el.a = 'MentalClass'; el.k = 'PAROLA DEL GIORNO'; }
+      else if(v.tipo === 'dizionario'){ el.q = v.testo; el.w = v.parola || ''; el.f = v.fon || ''; el.a = 'MentalClass'; el.k = 'DIZIONARIO IMPRENDITORIALE'; }
       else if(v.tipo === 'oroscopo'){
         if(!v.testo) return;                         /* niente testi di ripiego sul widget */
         var inf = v.info || {};
-        el.q = v.testo; el.a = state.sign; el.k = ('Oroscopo · ' + state.sign + ' · ' + (v.mese || '')).toUpperCase();
+        el.q = v.testo; el.a = state.sign; el.w = state.sign; el.k = ('Oroscopo · ' + (v.mese || '')).toUpperCase();
         el.pf = inf.forte || ''; el.pd = inf.debole || ''; el.c = inf.consiglio || '';
       }
       else return;
@@ -4747,7 +4760,9 @@ document.addEventListener('DOMContentLoaded', function(){
           if(pw && pw.testo){
             var parola = (pw.extra && pw.extra.parola) ? pw.extra.parola : (pw.titolo || 'Parola del giorno');
             /* sopra la parola, sotto la definizione */
-            voci.push({ tipo:'dizionario', title: parola, body: pw.testo, testo: pw.testo, parola: parola });
+            var fonN = (pw.extra && pw.extra.fonetica) ? String(pw.extra.fonetica).replace(/^\/+|\/+$/g, '').trim() : '';
+            /* sopra la parola (titolo), poi la fonetica, poi la definizione */
+            voci.push({ tipo:'dizionario', title: parola, body: (fonN ? '/' + fonN + '/\n' : '') + pw.testo, testo: pw.testo, parola: parola, fon: fonN });
           }
         }
         if(conOroscopo && dd.getDate() === 1 && state.sign){
@@ -4792,10 +4807,10 @@ document.addEventListener('DOMContentLoaded', function(){
   /* Tocco sul widget: mostra SEMPRE quella frase (anche se oggi non è nel
      feed), con i tasti Salva e Condividi. azione: '' | 'like' | 'condividi' */
   var MC_WIDGET_FRASE = null;
-  var MC_WIDGET_TITOLI = { frase:'Frase del giorno', pensiero:'Pensiero del giorno', dizionario:'Parola del giorno', oroscopo:'Il tuo oroscopo' };
+  var MC_WIDGET_TITOLI = { frase:'Frase del giorno', pensiero:'Pensiero del giorno', dizionario:'Dizionario imprenditoriale', oroscopo:'Il tuo oroscopo' };
   var MC_WIDGET_TIPI   = { frase:'frasi', pensiero:'pensieri', dizionario:'dizionario', oroscopo:'oroscopo' };
-  function mcApriDaWidget(testo, autore, azione, tipo){
-    MC_WIDGET_FRASE = { q: testo, a: autore || 'MentalClass', azione: azione || '', tipo: MC_WIDGET_TIPI[tipo] ? tipo : 'frase', da: Date.now() };
+  function mcApriDaWidget(testo, autore, azione, tipo, extra){
+    MC_WIDGET_FRASE = { q: testo, a: autore || 'MentalClass', azione: azione || '', tipo: MC_WIDGET_TIPI[tipo] ? tipo : 'frase', ex: extra || {}, da: Date.now() };
     mcMostraFraseWidget();
   }
   function mcMostraFraseWidget(){
@@ -4806,7 +4821,17 @@ document.addEventListener('DOMContentLoaded', function(){
     MC_WIDGET_FRASE = null;
     var bg = document.getElementById('notif-tap-bg'); if(!bg) return;
     document.getElementById('notif-tap-tit').textContent = MC_WIDGET_TITOLI[w.tipo] || 'Frase del giorno';
-    document.getElementById('notif-tap-txt').textContent = w.q;
+    var _tx = document.getElementById('notif-tap-txt');
+    _tx.textContent = w.q;
+    _tx.classList.toggle('pz-txt', w.tipo !== 'frase');
+    /* dizionario: parola grande, fonetica in corsivo, poi la definizione */
+    var _dz = document.getElementById('notif-tap-dz');
+    if(_dz){
+      if(w.tipo === 'dizionario' && w.ex && w.ex.w){
+        _dz.innerHTML = '<div class="dz-w">' + escapeHtml(w.ex.w) + '</div>' + (w.ex.f ? '<div class="dz-f">/' + escapeHtml(String(w.ex.f).replace(/^\/+|\/+$/g,'')) + '/</div>' : '') + '<div class="dz-line"></div>';
+        _dz.style.display = '';
+      } else { _dz.innerHTML = ''; _dz.style.display = 'none'; }
+    }
     var au2 = document.getElementById('notif-tap-aut');
     if(au2) au2.textContent = (w.tipo === 'frase' && w.a && w.a !== 'MentalClass') ? '— ' + w.a : '';
     bg.dataset.autore = w.a || 'MentalClass';
@@ -4858,7 +4883,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(feed && cerca){
       feed.querySelectorAll('.feed-card').forEach(function(c){
         if(trovata) return;
-        var tx = mcNorm((c.querySelector('.fc-q') || c.querySelector('.fc-def') || {}).textContent);
+        var tx = mcNorm((c.querySelector('.fc-q') || c.querySelector('.dz-d') || c.querySelector('.fc-def') || {}).textContent);
         if(tx && (tx === cerca || tx.indexOf(cerca) === 0 || cerca.indexOf(tx) === 0)) trovata = c;
       });
       if(!trovata && ex.tipo === 'oroscopo') trovata = feed.querySelector('.feed-card[data-tipo="oroscopo"]');
@@ -4880,6 +4905,8 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('notif-tap-tit').textContent = t.titolo;
       document.getElementById('notif-tap-txt').textContent = t.corpo;
       var _au = document.getElementById('notif-tap-aut'); if(_au) _au.textContent = '';
+      var _dz0 = document.getElementById('notif-tap-dz'); if(_dz0){ _dz0.innerHTML = ''; _dz0.style.display = 'none'; }
+      document.getElementById('notif-tap-txt').classList.toggle('pz-txt', ex.tipo !== 'frase');
       bg.dataset.autore = 'MentalClass'; bg.dataset.tipo = 'frasi'; mcAggiornaCuoreWidget();
       bg.classList.add('show');
     }
@@ -9103,7 +9130,7 @@ document.addEventListener('DOMContentLoaded', function(){
     state.deck = which;
     document.querySelectorAll('#deck-pills .pill').forEach(function(p){ p.classList.toggle('on', p.dataset.d===which); });
     if(which==='pensieri' && state.quotas.pensieri.used===0){ state.quotas.pensieri.used=1; toast('💭 Pensiero del giorno sbloccato'); }
-    if(which==='dizionario' && state.quotas.dizionario.used===0){ state.quotas.dizionario.used=1; toast('📖 Parola del giorno sbloccata'); }
+    if(which==='dizionario' && state.quotas.dizionario.used===0){ state.quotas.dizionario.used=1; toast('📖 Dizionario imprenditoriale sbloccato'); }
     if(which==='oroscopo' && state.quotas.oroscopo.used===0){ state.quotas.oroscopo.used=1; }
     renderDeck(true);
   }
@@ -9165,7 +9192,7 @@ document.addEventListener('DOMContentLoaded', function(){
       });
       document.querySelectorAll('#deck-feed .feed-card').forEach(function(card){
         var box = card.querySelector('.fc-in'); if(!box) return;
-        var t = box.querySelector('.fc-q') || box.querySelector('.fc-def'); if(!t) return;
+        var t = box.querySelector('.fc-q') || box.querySelector('.dz-d') || box.querySelector('.fc-def'); if(!t) return;
         t.style.fontSize = '';
         /* spazio vero: tolgo la barra in alto e i tasti mi piace/condividi in basso */
         var cs = getComputedStyle(card);
@@ -9213,13 +9240,13 @@ document.addEventListener('DOMContentLoaded', function(){
         document.getElementById('q-frasi').textContent = (f.max-Math.min(f.used,f.max))+'/'+f.max;
       }
       if(state.deck==='pensieri'){
-        html = '<div class="bulb">💭</div><p class="q quote">'+PENSIERO.q+'</p><div class="a">'+PENSIERO.a+'</div>';
+        html = '<div class="bulb">💭</div><p class="q quote pz">'+PENSIERO.q+'</p><div class="a">'+PENSIERO.a+'</div>';
         dots.innerHTML=''; prev.disabled=true; next.disabled=true;
         quota.textContent = '1 al giorno · il prossimo domani nella fascia '+fmtRange();
         document.getElementById('q-pensieri').textContent = (q.pensieri.max-q.pensieri.used)+'/1';
       }
       if(state.deck==='dizionario'){
-        html = '<div class="bulb">📖</div><div class="word disp">'+escapeHtml(DIZIONARIO.word)+'</div>'+(DIZIONARIO.fon ? '<div class="fon">/'+escapeHtml(DIZIONARIO.fon)+'/</div>' : '')+'<p class="def">'+escapeHtml(DIZIONARIO.def)+'</p>'+(DIZIONARIO.ex ? '<p class="ex quote">'+escapeHtml(DIZIONARIO.ex)+'</p>' : '');
+        html = '<div class="dz-in"><div class="dz-k"><i>D</i>Dizionario imprenditoriale</div>' + '<div class="dz-w">' + escapeHtml(DIZIONARIO.word) + '</div>' + (DIZIONARIO.fon ? '<div class="dz-f">/' + escapeHtml(DIZIONARIO.fon) + '/</div>' : '') + '<div class="dz-line"></div>' + '<p class="dz-d">' + escapeHtml(DIZIONARIO.def) + '</p>' + (DIZIONARIO.ex ? '<p class="dz-ex">' + escapeHtml(DIZIONARIO.ex) + '</p>' : '') + '</div>';
         dots.innerHTML=''; prev.disabled=true; next.disabled=true;
         quota.textContent = '1 parola al giorno · la prossima domani';
         document.getElementById('q-dizionario').textContent = (q.dizionario.max-q.dizionario.used)+'/1';
@@ -9261,16 +9288,11 @@ document.addEventListener('DOMContentLoaded', function(){
     /* pensiero del giorno */
     if(PENSIERO && PENSIERO.q){
       carte.push('<div class="feed-card" data-tipo="pensieri" data-i="0"><div class="fc-in">' + tag('Pensiero del giorno') +
-        '<p class="fc-q quote">' + escapeHtml(PENSIERO.q) + '</p></div></div>');
+        '<p class="fc-q quote pz">' + escapeHtml(PENSIERO.q) + '</p></div></div>');
     }
     /* parola del giorno */
     if(DIZIONARIO && DIZIONARIO.def){
-      carte.push('<div class="feed-card" data-tipo="dizionario" data-i="0"><div class="fc-in">' + tag('Parola del giorno') +
-        '<div class="fc-word disp">' + escapeHtml(DIZIONARIO.word) + '</div>' +
-        (DIZIONARIO.fon ? '<div class="fc-fon">/' + escapeHtml(DIZIONARIO.fon) + '/</div>' : '') +
-        '<p class="fc-def">' + escapeHtml(DIZIONARIO.def) + '</p>' +
-        (DIZIONARIO.ex ? '<p class="fc-ex quote">' + escapeHtml(DIZIONARIO.ex) + '</p>' : '') +
-        '</div></div>');
+      carte.push('<div class="feed-card" data-tipo="dizionario" data-i="0"><div class="fc-in dz-card">' + '<div class="dz-in"><div class="dz-k"><i>D</i>Dizionario imprenditoriale</div>' + '<div class="dz-w">' + escapeHtml(DIZIONARIO.word) + '</div>' + (DIZIONARIO.fon ? '<div class="dz-f">/' + escapeHtml(DIZIONARIO.fon) + '/</div>' : '') + '<div class="dz-line"></div>' + '<p class="dz-d">' + escapeHtml(DIZIONARIO.def) + '</p>' + (DIZIONARIO.ex ? '<p class="dz-ex">' + escapeHtml(DIZIONARIO.ex) + '</p>' : '') + '</div>' + '</div></div>');
     }
     /* oroscopo del mese */
     if(OROSCOPI[state.sign]){
@@ -9587,7 +9609,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     /* nota: gli altri tipi hanno un solo contenuto al giorno, id fissi */
     if(d==='pensieri')   return { type:'pensieri', id:'p-oggi', q:PENSIERO.q, a:PENSIERO.a };
-    if(d==='dizionario') return { type:'dizionario', id:'d-oggi', q:DIZIONARIO.word+' — '+DIZIONARIO.def, a:'Dizionario mentale' };
+    if(d==='dizionario') return { type:'dizionario', id:'d-oggi', q:DIZIONARIO.word+' — '+DIZIONARIO.def, a:'Dizionario imprenditoriale' };
     if(d==='oroscopo')   return { type:'oroscopo', id:'o-'+mcMeseNome().toLowerCase(), q:OROSCOPI[state.sign], a:SIGN_EMOJI[state.sign]+' '+state.sign+' · '+mcMeseNome() };
     return null;
   }
@@ -9791,6 +9813,7 @@ document.addEventListener('DOMContentLoaded', function(){
     return t === 'pensiero del giorno'
         || t === 'frase del giorno'
         || t === 'dizionario mentale'
+        || t === 'dizionario imprenditoriale'
         || /·\s*(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\b/.test(t)
         || /^[^a-zà-ù]*\s*(ariete|toro|gemelli|cancro|leone|vergine|bilancia|scorpione|sagittario|capricorno|acquario|pesci)\b/.test(t);
   }
@@ -9808,7 +9831,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('share-bg').classList.add('show');
     mcPreparaImmagini();
   }
-  function closeShare(){ document.getElementById('share-bg').classList.remove('show'); shareOverride = null; }
+  function closeShare(){ document.getElementById('share-bg').classList.remove('show'); shareOverride = null; mcRipristinaTastiShare(); }
   function shareTo(net){
     var testo = shareText();
     var txt = encodeURIComponent(testo);
@@ -9833,7 +9856,7 @@ document.addEventListener('DOMContentLoaded', function(){
        post, Facebook, dove vuole — con l'immagine pronta. */
     if(net==='ig-stories' || net==='ig-post' || net==='fb-stories'){
       var formato = (net==='ig-post') ? 'post' : 'story';   /* post = 1:1, storie/reel = 9:16 */
-      condividiImmagine(testo, linkApp, formato);
+      condividiImmagine(testo, linkApp, formato, net);
       return;
     }
     window.open(links[net], '_blank');
@@ -9913,17 +9936,35 @@ document.addEventListener('DOMContentLoaded', function(){
     if(w && w.blob) mcApriCondivisioneFile(w.blob, w.frase, w.testo, w.linkApp);
   };
 
-  function condividiImmagine(testo, linkApp, formato){
+  /* rimette i tasti del pannello "Condividi" come erano */
+  function mcRipristinaTastiShare(){
+    document.querySelectorAll('.share-btn[data-orig]').forEach(function(b){
+      b.innerHTML = b.getAttribute('data-orig'); b.removeAttribute('data-orig');
+      b.classList.remove('sb-wait','sb-ok');
+    });
+  }
+  function condividiImmagine(testo, linkApp, formato, net){
     var k = mcChiaveImg(formato);
     var voce = MC_IMG_CACHE[k];
     /* già pronta: un solo tocco */
-    if(voce && voce.blob){ mcApriCondivisioneFile(voce.blob, voce.frase, testo, linkApp); return; }
-    /* non ancora pronta: la finisco e chiedo un tocco su "Condividi" */
-    toast('Preparo l\'immagine…', 2500);
+    if(voce && voce.blob){ mcRipristinaTastiShare(); mcApriCondivisioneFile(voce.blob, voce.frase, testo, linkApp); return; }
+    /* non ancora pronta: lo dice il tasto stesso; appena pronta il tasto
+       si illumina e basta toccarlo di nuovo (il telefono permette di
+       aprire la condivisione solo nell'istante di un tocco) */
+    var btn = net ? document.querySelector('.share-btn[onclick="shareTo(\'' + net + '\')"]') : null;
+    if(btn && !btn.hasAttribute('data-orig')) btn.setAttribute('data-orig', btn.innerHTML);
+    if(btn){ btn.classList.remove('sb-ok'); btn.classList.add('sb-wait'); btn.innerHTML = '<span class="em">⏳</span>Preparo…<small>un attimo</small>'; }
+    else toast('Preparo l\'immagine…', 2500);
     mcPreparaImmagine(formato).then(function(blob){
       MC_IMG_IN_ATTESA = { blob:blob, frase:(MC_IMG_CACHE[k] || {}).frase || testo, testo:testo, linkApp:linkApp };
-      toast('Immagine pronta', { label:'Condividi', fn:'mcCondividiPronta' });
+      if(btn && document.getElementById('share-bg').classList.contains('show')){
+        btn.classList.remove('sb-wait'); btn.classList.add('sb-ok');
+        btn.innerHTML = '<span class="em">✅</span>Immagine pronta<small>tocca per condividere</small>';
+      } else {
+        toast('Immagine pronta', { label:'Condividi', fn:'mcCondividiPronta' });
+      }
     }).catch(function(){
+      mcRipristinaTastiShare();
       mcCopia(testo + ' ' + linkApp).then(function(ok){
         toast(ok ? '📋 Testo copiato: incollalo dove vuoi' : 'Non sono riuscito a preparare l\'immagine. Riprova tra un attimo.');
       });
@@ -9947,7 +9988,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(shareOverride) return null;
     var it = currentDeckItem();
     if(!it) return null;
-    if(it.type === 'dizionario') return { tipo:'parola', word:DIZIONARIO.word, fon:DIZIONARIO.fon || '', def:DIZIONARIO.def };
+    if(it.type === 'dizionario') return { tipo:'parola', word:DIZIONARIO.word, fon:DIZIONARIO.fon || '', def:DIZIONARIO.def, ex:DIZIONARIO.ex || '' };
     if(it.type === 'oroscopo')   return { tipo:'oroscopo', segno:state.sign, info:(OROSCOPO_INFO[state.sign] || mcOroscopoParti(OROSCOPI[state.sign], null)) };
     if(it.type === 'pensieri')   return { tipo:'pensiero' };
     return { tipo:'frase' };
@@ -10113,13 +10154,63 @@ document.addEventListener('DOMContentLoaded', function(){
         cons.r.forEach(function(rg){ c.fillText(rg, cxm, oy2); oy2 += cons.lh; });
       }
       c.textAlign = 'left';
+    } else if(meta.tipo === 'parola'){
+      /* ---------- DIZIONARIO IMPRENDITORIALE: impaginazione dedicata ---------- */
+      var zTop = TOP + 72 + (storia ? 110 : 60), zBot = FOOT_Y - (storia ? 90 : 50), zH = zBot - zTop, zW = W - 2 * P, zc = W / 2;
+      var parolaZ = String(meta.word || ''), fonZ = String(meta.fon || '').replace(/^\/+|\/+$/g, '').trim();
+      var wfsZ = storia ? 150 : 128;
+      st('semi-condensed');
+      for(; wfsZ > 60; wfsZ -= 4){ c.font = '700 ' + wfsZ + 'px MCSans, Inter, Arial, sans-serif'; if(c.measureText(parolaZ).width <= zW) break; }
+      st('normal');
+      var KZ = storia ? 44 : 36, FZ = fonZ ? (storia ? 70 : 58) : 0, LINEZ = storia ? 70 : 56;
+      var exZ = meta.ex ? adatta(String(meta.ex), 'italic 500 #px "Playfair Display", Georgia, serif', storia ? 34 : 28, 20, zW - 40, storia ? 160 : 110, 1.38) : null;
+      var fissoZ = KZ + (storia ? 60 : 44) + Math.round(wfsZ * 0.95) + FZ + LINEZ + (exZ ? 30 + exZ.r.length * exZ.lh : 0);
+      var defZ = adatta(String(meta.def || frase || ''), '500 #px MCSans, Inter, Arial, sans-serif', storia ? 44 : 38, 22, zW, Math.max(120, zH - fissoZ), 1.42);
+      var totZ = fissoZ + defZ.r.length * defZ.lh;
+      var yz = zTop + Math.max(0, (zH - totZ) / 2);
+      c.textAlign = 'center'; c.textBaseline = 'top';
+
+      /* etichetta: quadratino "D" + DIZIONARIO IMPRENDITORIALE */
+      c.font = '800 ' + (storia ? 24 : 21) + 'px Inter, Arial, sans-serif'; ls('6px');
+      var etZ = 'DIZIONARIO IMPRENDITORIALE', wEt = c.measureText(etZ).width, sq = storia ? 40 : 34;
+      var xEt = zc - (wEt + sq + 16) / 2;
+      rr(xEt, yz + (KZ - sq) / 2 - 4, sq, sq, 9); c.strokeStyle = LIME; c.lineWidth = 3; c.stroke();
+      c.fillStyle = LIME; c.font = '900 ' + Math.round(sq * 0.55) + 'px Inter, Arial, sans-serif'; ls('0px');
+      c.textBaseline = 'middle'; c.fillText('D', xEt + sq / 2, yz + KZ / 2 - 4); c.textBaseline = 'top';
+      c.font = '800 ' + (storia ? 24 : 21) + 'px Inter, Arial, sans-serif'; ls('6px'); c.textAlign = 'left';
+      c.fillText(etZ, xEt + sq + 16, yz + (KZ - (storia ? 24 : 21)) / 2 - 2); ls('0px'); c.textAlign = 'center';
+      yz += KZ + (storia ? 60 : 44);
+
+      /* la parola */
+      st('semi-condensed'); c.fillStyle = CREMA; c.font = '700 ' + wfsZ + 'px MCSans, Inter, Arial, sans-serif';
+      c.fillText(parolaZ, zc, yz); st('normal');
+      yz += Math.round(wfsZ * 0.95);
+
+      /* la fonetica, in corsivo */
+      if(fonZ){
+        c.fillStyle = LIME; c.font = 'italic 500 ' + (storia ? 50 : 42) + 'px "Playfair Display", Georgia, serif';
+        c.fillText('/' + fonZ + '/', zc, yz + 6);
+        yz += FZ;
+      }
+      /* trattino */
+      c.fillStyle = LIME; rr(zc - 40, yz + LINEZ / 2 - 3, 80, 6, 3); c.fill();
+      yz += LINEZ;
+
+      /* la definizione */
+      c.fillStyle = CREMA; c.font = '500 ' + defZ.fs + 'px MCSans, Inter, Arial, sans-serif';
+      defZ.r.forEach(function(rg){ c.fillText(rg, zc, yz); yz += defZ.lh; });
+      if(exZ){
+        yz += 30; c.fillStyle = 'rgba(241,237,226,0.75)'; c.font = 'italic 500 ' + exZ.fs + 'px "Playfair Display", Georgia, serif';
+        exZ.r.forEach(function(rg){ c.fillText(rg, zc, yz); yz += exZ.lh; });
+      }
+      c.textAlign = 'left';
     } else {
     /* ---------- CONTENUTO ---------- */
     var areaTop = TOP + 72 + (storia ? 120 : 70);
     var areaBot = FOOT_Y - (storia ? 210 : 70);
     var areaH = areaBot - areaTop, maxW = W - 2 * P;
 
-    var etichette = { frase:'Frase del giorno', pensiero:'Pensiero del giorno', parola:'Parola del giorno', oroscopo:'Oroscopo del mese' };
+    var etichette = { frase:'Frase del giorno', pensiero:'Pensiero del giorno', parola:'Dizionario imprenditoriale', oroscopo:'Oroscopo del mese' };
     var etichetta = etichette[meta.tipo] || '';
     var PILL_H = etichetta ? 50 : 0, GAP = etichetta ? 54 : 0;
 
@@ -10140,7 +10231,7 @@ document.addEventListener('DOMContentLoaded', function(){
       blocco = { wfs:wfs, parola:parola, fonH:fonH, def:defB };
       altezza = PILL_H + GAP + Math.round(wfs * 0.92) + fonH + 70 + defB.r.length * defB.lh;
     }else{
-      var serif = meta.tipo === 'pensiero' || meta.tipo === 'oroscopo';
+      var serif = false;   /* frase e pensiero: carattere dritto, mai corsivo */
       var segnoH = meta.tipo === 'oroscopo' ? 114 : 0;
       var font = serif ? 'italic 500 #px "Playfair Display", Georgia, serif' : '600 #px MCSans, Inter, Arial, sans-serif';
       if(!serif) st('semi-condensed');
@@ -10209,7 +10300,7 @@ document.addEventListener('DOMContentLoaded', function(){
     } /* fine contenuto non-oroscopo */
 
     /* ---------- STORIA: onda e invito ---------- */
-    if(storia && meta.tipo !== 'oroscopo'){
+    if(storia && meta.tipo !== 'oroscopo' && meta.tipo !== 'parola'){
       var oy = FOOT_Y - 120, bars = 40, bw = 7, gap = 9, ox = (W - (bars * bw + (bars - 1) * gap)) / 2;
       for(var b = 0; b < bars; b++){
         var h = 14 + Math.abs(Math.sin(b * 0.55) * Math.cos(b * 0.21)) * 58;
@@ -12307,7 +12398,7 @@ document.addEventListener('DOMContentLoaded', function(){
           /* widget: mentalclass://frase?t=<testo>&c=1 → apre quella frase e la propone da condividere */
           if(u.indexOf('frase') > -1){
             var q = {}; (u.split('?')[1] || '').split('&').forEach(function(kv){ var p = kv.split('='); if(p[0]) q[p[0]] = decodeURIComponent((p[1] || '').replace(/\+/g,' ')); });
-            if(q.t){ mcApriDaWidget(q.t, q.a || '', q.l === '1' ? 'like' : (q.c === '1' ? 'condividi' : ''), q.tp || 'frase'); return; }
+            if(q.t){ mcApriDaWidget(q.t, q.a || '', q.l === '1' ? 'like' : (q.c === '1' ? 'condividi' : ''), q.tp || 'frase', { w: q.w || '', f: q.f || '' }); return; }
           }
           if(u.indexOf('home') > -1 && typeof enterApp === 'function'){ enterApp('home'); }
         }catch(e){}
@@ -12321,7 +12412,7 @@ document.addEventListener('DOMContentLoaded', function(){
         var u = (r && r.url) || '';
         if(u.indexOf('frase') > -1){
           var q = {}; (u.split('?')[1] || '').split('&').forEach(function(kv){ var p = kv.split('='); if(p[0]) q[p[0]] = decodeURIComponent((p[1] || '').replace(/\+/g,' ')); });
-          if(q.t) mcApriDaWidget(q.t, q.a || '', q.l === '1' ? 'like' : (q.c === '1' ? 'condividi' : ''), q.tp || 'frase');
+          if(q.t) mcApriDaWidget(q.t, q.a || '', q.l === '1' ? 'like' : (q.c === '1' ? 'condividi' : ''), q.tp || 'frase', { w: q.w || '', f: q.f || '' });
         }
       }).catch(function(){});
     }

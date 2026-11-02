@@ -487,7 +487,10 @@ const MC = (function(){
         contenuti.archivio('dizionario').catch(() => []),
         contenuti.oroscopoDelMese(p.segno_zodiacale || null).catch(() => null)
       ]);
-      const oroscopo = oroscopoMese || oroscopoRpc;
+      /* solo l'oroscopo del MESE pubblicato nel pannello per il segno del profilo:
+         niente ripieghi su altri segni o testi di esempio */
+      const segnoProfilo = String(p.segno_zodiacale || '').toLowerCase();
+      const oroscopo = (oroscopoMese && oroscopoMese.extra && String(oroscopoMese.extra.segno || '').toLowerCase() === segnoProfilo) ? oroscopoMese : null;
       return {
         frasi, pensieri, dizionario, oroscopo, consumi, archivioFrasi, archivioPensieri, archivioDizionario,
         massimi: {

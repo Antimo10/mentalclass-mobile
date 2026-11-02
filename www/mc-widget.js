@@ -77,7 +77,7 @@
       if (!p || !eApp()) { MCW.ultimoErrore = "plugin non disponibile"; return false; }
       var lista = (voci || []).filter(function (v) { return v && v.q; }).slice(0, 160).map(function (v) {
         var o = { q: String(v.q).replace(/^["“]|["”]$/g, "").trim(), a: String(v.a || "MentalClass"), t: v.t || 0, tipo: v.tipo || "frase", k: v.k || "" };
-        if (v.w) o.w = v.w; if (v.pf) o.pf = v.pf; if (v.pd) o.pd = v.pd; if (v.c) o.c = v.c;
+        if (v.w) o.w = v.w; if (v.f) o.f = v.f; if (v.pf) o.pf = v.pf; if (v.pd) o.pd = v.pd; if (v.c) o.c = v.c;
         return o;
       });
       if (!lista.length) return false;

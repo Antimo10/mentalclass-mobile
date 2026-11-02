@@ -199,11 +199,11 @@
     riprogrammaGiorni: async function (giorni, oraInizio, oraFine) {
       var p = plugin();
       if (!p || !eApp()) return;
-      try {
-        var inCoda = await p.getPending();
-        var mie = (inCoda && inCoda.notifications || []).filter(function (n) { return n.id >= 1000 && n.id < 2000; });
-        if (mie.length) await p.cancel({ notifications: mie });
-      } catch (e) {}
+      /* PRIMA preparo tutto, POI tocco la coda delle notifiche.
+         Prima si cancellava subito e si riprogrammava dopo: se l'app veniva
+         chiusa in quell'attimo (es. aperta da una notifica e richiusa),
+         iPhone la sospendeva a metà e per il resto della giornata non
+         arrivava più nulla: per questo arrivavano solo le prime. */
       var BUDGET = 48, nuove = [];
       var programma = MCN.calcolaProgramma(giorni, oraInizio, oraFine);
       for (var i = 0; i < programma.length && nuove.length < BUDGET; i++) {
@@ -221,13 +221,29 @@
           extra: { tipo: v.tipo || "frase", testo: v.testo || v.body, giorno: it.g }
         });
       }
+      /* stessa programmazione di prima? non tocco niente */
+      var firma = nuove.map(function (n) { return n.id + '@' + n.schedule.at.getTime() + ':' + String(n.body).length; }).join('|');
+      var vecchia = null; try { vecchia = localStorage.getItem('mc_notif_firma'); } catch (e) {}
+      var nuoviId = {}; nuove.forEach(function (n) { nuoviId[String(n.id)] = 1; });
+      if (firma && firma === vecchia) {
+        try {
+          var giaInCoda = await p.getPending();
+          var presenti = (giaInCoda && giaInCoda.notifications || []).filter(function (x) { return nuoviId[String(x.id)]; }).length;
+          if (presenti >= nuove.length) return;   /* sono già tutte in coda */
+        } catch (e) {}
+      }
+      /* 1) programmo le nuove: con lo stesso numero sostituiscono le vecchie */
+      if (nuove.length) { try { await p.schedule({ notifications: nuove }); } catch (e) {} }
+      try { localStorage.setItem('mc_notif_firma', firma); } catch (e) {}
+      /* 2) solo dopo tolgo quelle rimaste in più (giorni/orari non più validi) */
       try {
-        var ancora = await p.getPending();
-        var resti = (ancora && ancora.notifications || []).filter(function (x) { return x.id >= 1000 && x.id < 2000; });
-        if (resti.length) await p.cancel({ notifications: resti });
+        var inCoda = await p.getPending();
+        var vecchie = (inCoda && inCoda.notifications || []).filter(function (x) {
+          var n = parseInt(x.id, 10);
+          return n >= 1000 && n < 2000 && !nuoviId[String(n)];
+        }).map(function (x) { return { id: parseInt(x.id, 10) }; });
+        if (vecchie.length) await p.cancel({ notifications: vecchie });
       } catch (e) {}
-      if (!nuove.length) return;
-      try { await p.schedule({ notifications: nuove }); } catch (e) {}
     },
 
     /* Spegne tutte le notifiche (se l'utente le disattiva) */

@@ -9190,6 +9190,12 @@ document.addEventListener('DOMContentLoaded', function(){
         else if(n > 210) el.classList.add('mc-t-xl');
         else if(n > 130) el.classList.add('mc-t-l');
       });
+      /* la parola del dizionario non va mai spezzata: se è lunga si rimpicciolisce */
+      document.querySelectorAll('.dz-w').forEach(function(w){
+        w.style.fontSize = ''; w.style.whiteSpace = 'nowrap';
+        var fs = parseFloat(getComputedStyle(w).fontSize) || 36, giri = 0;
+        while(w.scrollWidth > w.clientWidth + 1 && fs > 18 && giri < 30){ fs -= 1; w.style.fontSize = fs + 'px'; giri++; }
+      });
       document.querySelectorAll('#deck-feed .feed-card').forEach(function(card){
         var box = card.querySelector('.fc-in'); if(!box) return;
         var t = box.querySelector('.fc-q') || box.querySelector('.dz-d') || box.querySelector('.fc-def'); if(!t) return;

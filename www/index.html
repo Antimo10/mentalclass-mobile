@@ -3427,6 +3427,7 @@ document.addEventListener('DOMContentLoaded', function(){
             <div class="pp" id="plan-monthly-pp">€14,99<small>/mese</small></div>
             <div class="ps">Disdici quando vuoi</div>
             <p class="ft"><b>✓</b> Magazine completo, tutti gli audio e i percorsi</p>
+            <p class="ft"><b>✓</b> 3 frasi al giorno</p>
             <p class="ft"><b>✓</b> Compagno Invisibile: 3 "parla" e 3 "ascolta" al giorno</p>
             <button class="btn btn-ghost" id="plan-btn-mensile" onclick="abbonati('mensile')">Scegli Mensile</button>
           </div>
@@ -3437,6 +3438,7 @@ document.addEventListener('DOMContentLoaded', function(){
             <div class="ps" id="plan-annual-ps">Equivalgono a €4,17/mese</div>
             <p class="ft"><b>✓</b> Magazine completo, ogni numero</p>
             <p class="ft"><b>✓</b> Tutti gli audio e i percorsi</p>
+            <p class="ft"><b>✓</b> 3 frasi al giorno</p>
             <p class="ft"><b>✓</b> Compagno Invisibile: 3 "parla" e 3 "ascolta" al giorno</p>
             <p class="ft"><b>✓</b> 7 giorni di prova gratuita</p>
             <button class="btn btn-lime" id="plan-btn-annuale" onclick="abbonati('annuale')">Inizia la prova gratuita</button>
@@ -3445,7 +3447,7 @@ document.addEventListener('DOMContentLoaded', function(){
             <div class="pn">Free</div>
             <div class="pp">€0</div>
             <div class="ps">Attivo ora</div>
-            <p class="ft"><b>✓</b> Frasi, pensieri, dizionario e oroscopo: gratis per sempre</p>
+            <p class="ft"><b>✓</b> 1 frase al giorno, pensiero, dizionario e oroscopo: gratis per sempre</p>
             <p class="ft"><b>✓</b> Anteprime di riviste e audio · 1° episodio dei percorsi</p>
             <p class="ft"><b>✓</b> Compagno Invisibile: 1 "parla" e 1 "ascolta" al giorno</p>
             <button class="btn btn-ghost" id="plan-btn-free" disabled style="opacity:.5;cursor:default;">Piano attuale</button>
@@ -3841,8 +3843,8 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="lg-tab"><table>
         <thead><tr><th>Piano</th><th>Corrispettivo</th><th>Funzionalità incluse</th></tr></thead>
         <tbody>
-          <tr><td><b>Free</b></td><td>€ 0,00 (Gratuito)</td><td>Accesso a Frasi, Pensieri, Dizionario Mentale, Oroscopo, anteprime di Audio e Magazine, Diario e Obiettivi, uso limitato del Compagno Invisibile (1 "parla" e 1 "ascolta" al giorno).</td></tr>
-          <tr><td><b>Mensile</b></td><td>€ 14,99 / mese</td><td>Accesso completo ed illimitato a Magazine, Audio, Percorsi, Webinar registrati e Compagno Invisibile (3 "parla" e 3 "ascolta" al giorno). Disdetta in qualsiasi momento.</td></tr>
+          <tr><td><b>Free</b></td><td>€ 0,00 (Gratuito)</td><td>Accesso a 1 Frase al giorno, Pensieri, Dizionario Mentale, Oroscopo, anteprime di Audio e Magazine, Diario e Obiettivi, uso limitato del Compagno Invisibile (1 "parla" e 1 "ascolta" al giorno).</td></tr>
+          <tr><td><b>Mensile</b></td><td>€ 14,99 / mese</td><td>Accesso completo ed illimitato a Magazine, Audio, 3 Frasi al giorno, Percorsi, Webinar registrati e Compagno Invisibile (3 "parla" e 3 "ascolta" al giorno). Disdetta in qualsiasi momento.</td></tr>
           <tr><td><b>Annuale</b></td><td>€ 49,99 / anno<br><span class="lg-dim">(pari a € 4,17/mese)</span></td><td>Accesso illimitato a tutte le funzionalità e contenuti con 7 giorni di prova gratuita. Prezzo promozionale di lancio bloccato finché l'abbonamento resta attivo.</td></tr>
         </tbody>
       </table></div>
@@ -4562,11 +4564,11 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   function mcPensieroDelGiorno(giorno){ return mcUnoDelGiorno(PENS_ARCHIVIO, 'pensiero', giorno); }
   function mcParolaDelGiorno(giorno){ return mcUnoDelGiorno(DIZ_ARCHIVIO, 'dizionario', giorno); }
-  /* Frasi: massimo 3 al giorno per tutti (Free e abbonati), l'utente ne sceglie da 1 a 3. */
+  /* Frasi: abbonati fino a 3 al giorno (ne scelgono da 1 a 3), piano Free 1 al giorno. */
   function mcMaxFrasi(scelte){
     var prem = false; try{ prem = COLLEGATO ? MC.abbonato() : (state.plan !== 'free'); }catch(e){}
     var n = parseInt(scelte, 10); if(!n || n < 1) n = 5;
-    return Math.min(n, 3);   /* massimo 3 frasi al giorno per tutti */
+    return prem ? Math.min(n, 3) : 1;   /* abbonati: fino a 3 frasi al giorno · Free: 1 */
   }
 
   async function caricaHome(){
@@ -9228,8 +9230,8 @@ document.addEventListener('DOMContentLoaded', function(){
           var nF = state.quotas.frasi.max, premF = MCabbonato();
           html = '<div class="deck-end"><div class="em">🌱</div><h4>Hai chiuso ' + (nF === 1 ? 'la frase' : 'le ' + nF + ' frasi') + ' di oggi</h4><p>' +
             (eAppNativa() ? 'Le prossime arrivano domani, nella tua fascia ' + fmtRange() + '.' : 'Le prossime sono qui domani.') +
-            (premF ? ' Nel frattempo la mente si allena con un audio.' : ' Nel frattempo allena la mente con un audio.') + '</p>' +
-            (premF ? '<button class="btn btn-lime" style="padding:12px 22px;font-size:13px;" onclick="goScreen(\'audio\')">Passa agli audio</button>'
+            ((premF || document.body.classList.contains('no-acquisti')) ? ' Nel frattempo la mente si allena con un audio.' : ' Con l\'abbonamento ne ricevi 3 al giorno.') + '</p>' +
+            ((premF || document.body.classList.contains('no-acquisti')) ? '<button class="btn btn-lime" style="padding:12px 22px;font-size:13px;" onclick="goScreen(\'audio\')">Passa agli audio</button>'
                    : '<button class="btn btn-lime" style="padding:12px 22px;font-size:13px;" onclick="goScreen(\'plan\')">Scopri l\'abbonamento</button>') + '</div>';
           prev.disabled = false; next.disabled = true;
         } else {
@@ -9242,7 +9244,7 @@ document.addEventListener('DOMContentLoaded', function(){
           var cls = i===state.frasiIndex ? 'on' : (i < f.used ? 'used' : '');
           return '<i class="'+cls+'"></i>';
         }).join('');
-        quota.textContent = Math.min(f.used,f.max)+'/'+f.max+' frasi di oggi';
+        quota.textContent = Math.min(f.used,f.max)+'/'+f.max+(f.max === 1 ? ' frase di oggi' : ' frasi di oggi');
         document.getElementById('q-frasi').textContent = (f.max-Math.min(f.used,f.max))+'/'+f.max;
       }
       if(state.deck==='pensieri'){
@@ -9308,7 +9310,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     carte.push(cartaFine('Per oggi è tutto', 'I prossimi contenuti arrivano domani, nella tua fascia ' + fmtRange() + '.'));
 
-    if(quota) quota.textContent = quante + ' frasi di oggi';
+    if(quota) quota.textContent = quante + (quante === 1 ? ' frase di oggi' : ' frasi di oggi');
     var el = document.getElementById('q-frasi');
     if(el) el.textContent = (q.frasi.max - Math.min(q.frasi.used, q.frasi.max)) + '/' + q.frasi.max;
 
@@ -10368,7 +10370,7 @@ document.addEventListener('DOMContentLoaded', function(){
     NP_MAX.frasi = npMaxFrasi();
     if(state.notifPrefs.frasi > NP_MAX.frasi) state.notifPrefs.frasi = NP_MAX.frasi;
     var sub = document.getElementById('np-frasi-sub');
-    if(sub) sub.textContent = 'Fino a 3 al giorno';
+    if(sub) sub.textContent = NP_MAX.frasi >= 3 ? 'Fino a 3 al giorno' : (document.body.classList.contains('no-acquisti') ? '1 al giorno' : '1 al giorno · 3 con l\'abbonamento');
     var mx = document.getElementById('np-max'); if(mx) mx.textContent = NP_MAX.frasi + 2;
     ['frasi','pensieri','dizionario'].forEach(function(k){
       document.getElementById('np-'+k).textContent = state.notifPrefs[k];

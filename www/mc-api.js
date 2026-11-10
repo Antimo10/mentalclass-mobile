@@ -494,7 +494,7 @@ const MC = (function(){
       return {
         frasi, pensieri, dizionario, oroscopo, consumi, archivioFrasi, archivioPensieri, archivioDizionario,
         massimi: {
-          frasi:      p.notif_frasi ?? 5,
+          frasi:      Math.min(p.notif_frasi ?? 3, 3),
           pensieri:   p.notif_pensieri ?? 1,
           dizionario: p.notif_dizionario ?? 1
         }

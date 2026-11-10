@@ -2,7 +2,7 @@
    MentalClass · Notifiche giornaliere (solo versione app da store)
    ---------------------------------------------------------------------
    Programma sul telefono le notifiche con frasi, pensieri, dizionario e
-   oroscopo, all'orario della fascia scelta dall'utente. Funzionano anche
+   oroscopo, distribuite in modo uniforme nella fascia scelta dall'utente. Funzionano anche
    ad app chiusa, senza bisogno di un server (notifiche "locali").
 
    COME FUNZIONA
@@ -107,8 +107,8 @@
       var frasi = (contenuti && contenuti.frasi) || [];
       if (!frasi.length) return;   /* senza frasi non programmo nulla */
 
-      /* quante al giorno (impostate dall'utente, 1..5) e fascia oraria */
-      var perDay = Math.max(1, Math.min(parseInt(perGiorno, 10) || 1, 5));
+      /* quante al giorno (impostate dall'utente, 1..3) e fascia oraria */
+      var perDay = Math.max(1, Math.min(parseInt(perGiorno, 10) || 1, 3));
       var minInizio = minutiDa(oraInizio, 8 * 60);          /* default 08:00 */
       var minFine   = minutiDa(oraFine, 21 * 60);           /* default 21:00 */
       if (minFine <= minInizio) { minFine = minInizio + 60; }
@@ -126,9 +126,7 @@
       for (var g = 0; g < giorni; g++) {
         for (var k = 0; k < perDay; k++) {
           /* distribuisco gli orari nella fascia: k-esimo slot */
-          var minuto = (perDay === 1)
-            ? minInizio
-            : Math.round(minInizio + (minFine - minInizio) * (k / (perDay - 1)));
+          var minuto = Math.round(minInizio + (minFine - minInizio) * ((k + 0.5) / perDay));
           var h = Math.floor(minuto / 60), m = minuto % 60;
 
           var quando = dataRoma(R.y, R.mo, R.d + g, h, m);
@@ -177,11 +175,16 @@
         var voci = (giorni[g] || []).filter(function (v) { return v && v.body; });
         if (!voci.length) continue;
         var giornoId = (R.y * 10000) + ((R.mo + 1) * 100) + R.d + g;
+        /* DISTRIBUZIONE UNIFORME: la fascia si divide in tanti spazi uguali
+           quante sono le notifiche del giorno, e ogni notifica cade al centro
+           del suo spazio (con uno scarto di pochi minuti, stabile nel giorno).
+           Es. 08-21 con 5 notifiche: circa 09:18, 11:54, 14:30, 17:06, 19:42.
+           Es. 07-12 con 3 notifiche: circa 07:50, 09:30, 11:10. */
         var n = voci.length, orari = [], durata = minFine - minInizio;
-        var passo = n > 1 ? durata / (n - 1) : durata;
-        var scarto = Math.min(15, passo / 4);
+        var spazio = durata / n;
+        var scarto = Math.min(10, spazio / 6);
         for (var k = 0; k < n; k++) {
-          var base = n > 1 ? minInizio + k * passo : minInizio + durata * (0.25 + 0.5 * rnd(giornoId * 31));
+          var base = minInizio + spazio * (k + 0.5);
           var t = Math.round(base + (rnd(giornoId * 31 + k * 7) * 2 - 1) * scarto);
           orari.push(Math.max(minInizio, Math.min(minFine, t)));
         }

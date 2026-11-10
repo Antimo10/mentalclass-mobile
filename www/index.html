@@ -2786,7 +2786,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="onb-step" id="onb-3">
       <div class="onb-step-label">Passo 3 di 3 · La tua sveglia mentale</div>
       <div class="onb-q disp">Quando vuoi<br>le notifiche?</div>
-      <div class="onb-sub">Frasi, pensiero e dizionario imprenditoriale arrivano in momenti casuali dentro la tua fascia.</div>
+      <div class="onb-sub">Frasi, pensiero e dizionario imprenditoriale arrivano distribuiti in modo uniforme dentro la tua fascia.</div>
       <div class="time-row" id="onb-times">
         <div class="time-opt" data-f="07:00" data-a="12:00" onclick="pickTime(this)">Mattina<span>07:00 → 12:00</span></div>
         <div class="time-opt sel" data-f="08:00" data-a="21:00" onclick="pickTime(this)">Tutto il giorno<span>08:00 → 21:00</span></div>
@@ -2853,7 +2853,7 @@ document.addEventListener('DOMContentLoaded', function(){
         <p class="screen-sub" id="greet-sub">Il tuo allenamento di oggi ti aspetta.</p>
 
         <div class="pills-row" id="deck-pills">
-          <div class="pill on" data-d="frasi" onclick="deckTab('frasi')">Frasi <span class="q" id="q-frasi">5/5</span></div>
+          <div class="pill on" data-d="frasi" onclick="deckTab('frasi')">Frasi <span class="q" id="q-frasi">3/3</span></div>
           <div class="pill" data-d="pensieri" onclick="deckTab('pensieri')">Pensieri <span class="q" id="q-pensieri">1/1</span></div>
           <div class="pill" data-d="dizionario" onclick="deckTab('dizionario')">Dizionario <span class="q" id="q-dizionario">1/1</span></div>
           <div class="pill" data-d="oroscopo" onclick="deckTab('oroscopo')">Oroscopo <span class="q" id="q-oroscopo">♌</span></div>
@@ -3682,7 +3682,7 @@ document.addEventListener('DOMContentLoaded', function(){
   <div class="modal">
     <div class="m-head"><h3 class="disp" style="margin:0;">Notifiche giornaliere</h3><div class="cancel" onclick="closeNotif()">Chiudi ×</div></div>
     <div class="np-row" style="border-top:1px solid rgba(241,237,226,.09);">
-      <div class="l">Fascia oraria<span>I contenuti arrivano in momenti casuali dentro la fascia</span></div>
+      <div class="l">Fascia oraria<span>I contenuti arrivano distribuiti in modo uniforme dentro la fascia</span></div>
       <div class="range-row">
         <select id="np-from"></select>
         <span class="sep">→</span>
@@ -3690,7 +3690,7 @@ document.addEventListener('DOMContentLoaded', function(){
       </div>
     </div>
     <div class="np-row">
-      <div class="l">Frasi<span id="np-frasi-sub">Fino a 5 al giorno</span></div>
+      <div class="l">Frasi<span id="np-frasi-sub">Fino a 3 al giorno</span></div>
       <div class="stepper"><button id="np-frasi-m" onclick="npStep('frasi',-1)">−</button><span class="n" id="np-frasi">5</span><button id="np-frasi-p" onclick="npStep('frasi',1)">+</button></div>
     </div>
     <div class="np-row">
@@ -3702,7 +3702,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="stepper"><button id="np-dizionario-m" onclick="npStep('dizionario',-1)">−</button><span class="n" id="np-dizionario">1</span><button id="np-dizionario-p" onclick="npStep('dizionario',1)">+</button></div>
     </div>
     <div class="set-row" style="cursor:pointer;" onclick="toggleNotifExtra('oroscopo',this)"><div class="l">Oroscopo del mese<span>Il 1° di ogni mese, per il tuo segno</span></div><span class="np-tog" id="tog-oroscopo">On</span></div>
-    <div class="np-total">Riceverai <b id="np-tot">7</b> contenuti al giorno (massimo <span id="np-max">7</span>), in orari diversi ogni giorno dentro la fascia.</div>
+    <div class="np-total">Riceverai <b id="np-tot">5</b> contenuti al giorno (massimo <span id="np-max">5</span>), in orari diversi ogni giorno dentro la fascia.</div>
     <div class="set-row" style="cursor:pointer;" onclick="toggleNotifExtra('sfide',this)"><div class="l">Promemoria sfide<span>1 giorno prima della chiusura iscrizioni</span></div><span class="np-tog" id="tog-sfide">On</span></div>
     <div class="set-row" style="cursor:pointer;" onclick="toggleNotifExtra('riep',this)"><div class="l">Riepilogo settimanale<span>La domenica sera</span></div><span class="np-tog" id="tog-riep">On</span></div>
     <div class="set-row" style="cursor:pointer;" onclick="toggleNotifExtra('novita',this)"><div class="l">Novità in arrivo<span>Quando esce un contenuto programmato</span></div><span class="np-tog" id="tog-novita">On</span></div>
@@ -4206,11 +4206,11 @@ document.addEventListener('DOMContentLoaded', function(){
     lampoEnd:null,
     plan:'free',
     saved:{ frasi:[], pensieri:[], dizionario:[], oroscopo:[], audio:[] },
-    notifPrefs:{ frasi:5, pensieri:1, dizionario:1 },
+    notifPrefs:{ frasi:3, pensieri:1, dizionario:1 },
     savedTab:'frasi',
     playerCtx:{ type:'percorso', title:'Respirare sotto pressione', cat:'Decompressione · Ep.1' },
     quotas:{
-      frasi:{ used:0, max:5 },
+      frasi:{ used:0, max:3 },
       pensieri:{ used:0, max:1 },
       dizionario:{ used:0, max:1 },
       oroscopo:{ used:0, max:1 }
@@ -4514,10 +4514,10 @@ document.addEventListener('DOMContentLoaded', function(){
      Ogni contenuto dell'archivio esce una volta sola finché non sono
      usciti tutti gli altri; poi si ricomincia con un nuovo ordine.
      L'ordine dipende solo dalla data: è lo stesso per tutti gli utenti.
-     Le frasi "consumano" sempre 5 posizioni al giorno (il massimo degli
+     Le frasi "consumano" sempre 3 posizioni al giorno (il massimo degli
      abbonati): chi ha il piano Free vede le prime 3 di quelle 5.
      --------------------------------------------------------------- */
-  var MC_FRASI_PASSO = 5;
+  var MC_FRASI_PASSO = 3;
   function mcGiornoNum(d){ return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000); }
   function mcHash(str){ var h = 2166136261 >>> 0; str = String(str); for(var i = 0; i < str.length; i++){ h = Math.imul(h ^ str.charCodeAt(i), 16777619) >>> 0; }
     h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b) >>> 0; h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35) >>> 0; h ^= h >>> 16; return h >>> 0; }
@@ -4562,11 +4562,11 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   function mcPensieroDelGiorno(giorno){ return mcUnoDelGiorno(PENS_ARCHIVIO, 'pensiero', giorno); }
   function mcParolaDelGiorno(giorno){ return mcUnoDelGiorno(DIZ_ARCHIVIO, 'dizionario', giorno); }
-  /* Piano Free: 3 frasi al giorno. Abbonati: quante ne scelgono (1-5, di base 5). */
+  /* Frasi: massimo 3 al giorno per tutti (Free e abbonati), l'utente ne sceglie da 1 a 3. */
   function mcMaxFrasi(scelte){
     var prem = false; try{ prem = COLLEGATO ? MC.abbonato() : (state.plan !== 'free'); }catch(e){}
     var n = parseInt(scelte, 10); if(!n || n < 1) n = 5;
-    return prem ? Math.min(n, 5) : Math.min(n, 3);
+    return Math.min(n, 3);   /* massimo 3 frasi al giorno per tutti */
   }
 
   async function caricaHome(){
@@ -4735,7 +4735,7 @@ document.addEventListener('DOMContentLoaded', function(){
       var frasi = (FRASI || []).map(function(f){
         return { testo: f.q || f.testo || '', autore: (f.a && f.a !== 'MentalClass') ? f.a : '' };
       }).filter(function(f){ return f.testo; });
-      var perGiorno = Math.min((state.notifPrefs && state.notifPrefs.frasi != null) ? state.notifPrefs.frasi : 5, mcMaxFrasi(5));
+      var perGiorno = Math.min((state.notifPrefs && state.notifPrefs.frasi != null) ? state.notifPrefs.frasi : 3, mcMaxFrasi(3));
       var conPensiero = !(state.notifPrefs && state.notifPrefs.pensieri === 0);
       var conParola   = !(state.notifPrefs && state.notifPrefs.dizionario === 0);
       var conOroscopo = true;
@@ -9228,7 +9228,7 @@ document.addEventListener('DOMContentLoaded', function(){
           var nF = state.quotas.frasi.max, premF = MCabbonato();
           html = '<div class="deck-end"><div class="em">🌱</div><h4>Hai chiuso ' + (nF === 1 ? 'la frase' : 'le ' + nF + ' frasi') + ' di oggi</h4><p>' +
             (eAppNativa() ? 'Le prossime arrivano domani, nella tua fascia ' + fmtRange() + '.' : 'Le prossime sono qui domani.') +
-            (premF ? ' Nel frattempo la mente si allena con un audio.' : ' Con l\'abbonamento ne ricevi fino a 5 al giorno.') + '</p>' +
+            (premF ? ' Nel frattempo la mente si allena con un audio.' : ' Nel frattempo allena la mente con un audio.') + '</p>' +
             (premF ? '<button class="btn btn-lime" style="padding:12px 22px;font-size:13px;" onclick="goScreen(\'audio\')">Passa agli audio</button>'
                    : '<button class="btn btn-lime" style="padding:12px 22px;font-size:13px;" onclick="goScreen(\'plan\')">Scopri l\'abbonamento</button>') + '</div>';
           prev.disabled = false; next.disabled = true;
@@ -10342,10 +10342,10 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   /* =====================================================
-     V3: IMPOSTAZIONI NOTIFICHE (max 5+1+1 = 7 contenuti)
+     V3: IMPOSTAZIONI NOTIFICHE (max 3+1+1 = 5 contenuti)
   ===================================================== */
-  var NP_MAX = { frasi:5, pensieri:1, dizionario:1 };
-  function npMaxFrasi(){ return mcMaxFrasi(5); }
+  var NP_MAX = { frasi:3, pensieri:1, dizionario:1 };
+  function npMaxFrasi(){ return mcMaxFrasi(3); }
   function fmtRange(){ return state.notifFrom.slice(0,2)+'–'+state.notifTo.slice(0,2); }
   function buildHourSelects(){
     var from = document.getElementById('np-from'), to = document.getElementById('np-to');
@@ -10368,7 +10368,7 @@ document.addEventListener('DOMContentLoaded', function(){
     NP_MAX.frasi = npMaxFrasi();
     if(state.notifPrefs.frasi > NP_MAX.frasi) state.notifPrefs.frasi = NP_MAX.frasi;
     var sub = document.getElementById('np-frasi-sub');
-    if(sub) sub.textContent = NP_MAX.frasi >= 5 ? 'Fino a 5 al giorno' : 'Fino a ' + NP_MAX.frasi + ' al giorno · 5 con l\'abbonamento';
+    if(sub) sub.textContent = 'Fino a 3 al giorno';
     var mx = document.getElementById('np-max'); if(mx) mx.textContent = NP_MAX.frasi + 2;
     ['frasi','pensieri','dizionario'].forEach(function(k){
       document.getElementById('np-'+k).textContent = state.notifPrefs[k];

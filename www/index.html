@@ -2735,7 +2735,7 @@ document.addEventListener('DOMContentLoaded', function(){
   <div class="auth-card">
     <div class="x" onclick="closeAuth()">×</div>
     <span class="logo"></span>
-    <div class="ah-seg" role="tablist"><button data-t="signup" onclick="authTab(\'signup\')">Crea account</button><button data-t="login" onclick="authTab(\'login\')">Entra</button></div>
+    <div class="ah-seg" role="tablist"><button data-t="signup" onclick="authTab('signup')">Crea account</button><button data-t="login" onclick="authTab('login')">Entra</button></div>
 
     <div id="auth-login">
       <div class="auth-tag">Riprendi da dove eri.</div>
@@ -13598,6 +13598,35 @@ body.native[data-screen="home"]:not(.dock-open) .mc-home-menu{
 }
 </style>
 
+<style id="mc-marea-v31">
+/* v3.1: rifiniture di layout */
+#plan-app .screen-title h1{ font-family:'MCSans','Inter Tight',Inter,sans-serif !important; font-weight:900 !important; font-size:40px !important; letter-spacing:-.045em !important; line-height:.95 !important; text-transform:none !important; }
+#plan-app .screen-title h1::after{ content:"."; color:var(--lime); }
+@media (max-width:860px){
+  .fab{ right:20px !important; bottom:calc(env(safe-area-inset-bottom) + 92px) !important; width:56px !important; height:56px !important; }
+  body.mini-on .fab{ bottom:calc(env(safe-area-inset-bottom) + 170px) !important; }
+}
+body.native .fab{ right:20px !important; bottom:calc(env(safe-area-inset-bottom) + 92px) !important; }
+body.native.mini-on .fab{ bottom:calc(env(safe-area-inset-bottom) + 170px) !important; }
+@media (max-height:760px){
+  #auth .ah-hero{ padding-top:8px; }
+  #auth .ah-eyebrow{ margin-top:16px; }
+  #auth .ah-title{ font-size:clamp(38px,11.5vw,48px); }
+  #auth .ah-marq{ margin:16px -24px 12px; }
+  #onb .ob-head{ padding-top:12px; }
+  #onb .onb-q{ margin-top:16px !important; font-size:32px !important; }
+  #onb .onb-q::before{ font-size:50px; margin-bottom:-14px; }
+  #onb .go-grid .goal-opt{ height:128px; padding:13px !important; }
+  #onb .goal-opt .go-ic{ width:38px; height:38px; }
+  #onb .goal-opt .go-t{ font-size:15.5px; }
+  #onb .sign-opt{ height:64px; }
+  #onb .time-opt{ padding:13px 16px !important; }
+  #onb .onb-step > .btn-lime{ height:52px; }
+  .ci2-orbw{ height:220px; }
+  .ci2-orb{ width:140px; height:140px; }
+  .ci2-orbw::before, .ci2-orbw::after{ width:140px; height:140px; }
+}
+</style>
 <script id="mc-marea-v3-js">
 /* MAREA v3: comportamenti della nuova grafica (registrazione, onboarding,
    audio, magazine, supporto, diario, profilo, abbonamento, Home senza barra) */

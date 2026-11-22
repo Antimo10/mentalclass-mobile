@@ -723,6 +723,16 @@ const MC = (function(){
       return data.signedUrl;
     },
 
+    /* Narrazione audio del numero (file caricato dal pannello).
+       Solo per gli abbonati: per gli altri torna null. */
+    async linkNarrazione(numero){
+      if(!numero || !numero.audio_path || !abbonato()) return null;
+      const { data, error } = await sb.storage.from('magazine')
+        .createSignedUrl(numero.audio_path, 14400);
+      if(error) return null;
+      return data.signedUrl;
+    },
+
     async salvaLettura(numeroId, ultimaPagina){
       richiediLogin();
       const { error } = await sb.from('letture_magazine').upsert({

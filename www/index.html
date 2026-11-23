@@ -13882,6 +13882,7 @@ body.native.mini-on .fab{ bottom:calc(env(safe-area-inset-bottom) + 170px) !impo
 </script>
 
 
+
 <style id="mc-marea-v4">
 /* =========================================================
    MentalClass · strato v4
@@ -13927,7 +13928,7 @@ html.native body.native:not([data-screen="home"]):not([data-screen="reader"])::a
     transition:box-shadow .25s ease, border-color .25s ease, background .25s ease;
     border-bottom:1px solid transparent;
   }
-  #s-audio .pills-row.mc-stuck{ background:rgba(5,44,49,.94);
+  #s-audio .pills-row.mc-stuck{ background:#052c31;
     -webkit-backdrop-filter:blur(18px) saturate(140%); backdrop-filter:blur(18px) saturate(140%);
     border-bottom-color:rgba(255,255,255,.06); }
 }
@@ -13944,14 +13945,13 @@ html.native body.native:not([data-screen="home"]):not([data-screen="reader"])::a
 
 /* Scaffali: ogni categoria e' una fila di copertine da scorrere col pollice.
    Toccando una categoria in alto, la fila diventa una griglia a due colonne. */
-#s-audio{ counter-reset:mccat; }
-#s-audio .cat-block:not([data-block="percorsi"]) > .row-title::before{
-  counter-increment:mccat; content:counter(mccat, decimal-leading-zero) !important; display:inline-block !important;
-  font-family:'MCDisplay','Oswald',Impact,sans-serif; font-size:13px; font-weight:600; letter-spacing:.06em; color:var(--lime);
-  border:1px solid rgba(194,232,62,.4); border-radius:8px; padding:3px 6px 2px; margin-right:2px; transform:translateY(-3px);
-  width:auto !important; height:auto !important; background:none !important; box-shadow:none !important; position:static !important; }
-#s-audio .row-title .mc-tutti{ margin-left:auto; font-family:'Inter Tight',Inter,sans-serif; font-size:13px; font-weight:700; letter-spacing:0; color:rgba(241,237,226,.7); cursor:pointer; padding:6px 0 6px 10px; }
-#s-audio .row-title .mc-tutti::after{ content:" →"; color:var(--lime); }
+#s-audio .row-title{ align-items:center !important; width:100% !important; box-sizing:border-box; display:flex !important; }
+#s-audio .row-title::after{ order:2; }
+#s-audio .row-title .mc-tutti{ order:3; margin-left:auto; flex:none; width:34px; height:34px; border-radius:50%; display:grid; place-items:center; cursor:pointer;
+  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); color:var(--cream); transition:transform .15s ease, background .2s ease; }
+#s-audio .row-title .mc-tutti svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+#s-audio .row-title .mc-tutti:active{ transform:scale(.88); background:rgba(194,232,62,.2); }
+@media (hover:hover){ #s-audio .row-title .mc-tutti:hover{ background:var(--lime); color:#0a2e34; border-color:var(--lime); } }
 #s-audio.au-filtro .row-title .mc-tutti{ display:none; }
 
 #s-audio .au-list{ --cw:152px; display:grid !important; grid-auto-flow:column; grid-auto-columns:var(--cw); gap:14px !important;
@@ -14059,7 +14059,23 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
   #mc-fatto.on .mcf-ring .fg, #mc-fatto.on .mcf-ck svg{ animation:none !important; stroke-dashoffset:0; }
 }
 
+/* ---------- Player: dettagli ---------- */
+#player .pl-key:empty{ display:none !important; }
+#player .pl-key{ min-height:0 !important; margin-top:12px !important; }
+#player .pl-desc{ margin:12px auto 6px !important; }
+#player .free-chip{ margin-top:10px; }
+#player .p-controls .sd{ width:56px !important; height:56px !important; color:var(--cream) !important; }
+#player .p-controls .sd svg.mc15{ width:32px !important; height:32px !important; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; overflow:visible; }
+#player .p-controls .sd svg.mc15 text{ fill:currentColor; stroke:none; font-family:'Inter Tight',Inter,sans-serif; font-weight:700; font-size:8.5px; letter-spacing:-.02em; }
+#pl-dl{ width:44px; height:44px; border-radius:50%; display:grid !important; place-items:center; position:relative; }
+#pl-dl svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+#pl-dl.mc-ok{ color:var(--lime) !important; border-color:rgba(194,232,62,.45) !important; }
+#pl-dl.mc-lk::after{ content:""; position:absolute; right:3px; top:3px; width:9px; height:9px; border-radius:50%; background:var(--gold, #f5b72e); box-shadow:0 0 0 2px #031f23; }
+#pl-dl.mc-busy svg{ animation:mcDl 1s ease-in-out infinite; }
+@keyframes mcDl{ 0%,100%{ transform:translateY(-1px); opacity:.6; } 50%{ transform:translateY(2px); opacity:1; } }
+
 /* ---------- 5. Rivista ---------- */
+#rd-mode, #nr-mini, #nr-sheet{ display:none !important; }  /* ascolto della rivista: in pausa, si riattiva piu' avanti */
 #s-reader .rd{ position:relative;
   background:
     radial-gradient(90% 55% at 50% 0%, rgba(194,232,62,.07), transparent 60%),
@@ -14272,7 +14288,7 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
       var n = $$('.au-row, .a-card', b).length; if(!n) return;
       var slug = b.dataset.block;
       t.insertAdjacentHTML('beforeend', '<span class="mc-n">' + n + '</span>' +
-        (slug && slug !== 'percorsi' && n > 2 ? '<span class="mc-tutti" role="button" onclick="mcAudioTutti(\'' + slug + '\')">Tutti</span>' : ''));
+        (slug && slug !== 'percorsi' && n > 2 ? '<button class="mc-tutti" aria-label="Vedi tutti gli audio di questa categoria" onclick="mcAudioTutti(\'' + slug + '\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>' : ''));
     });
     $$('#s-audio .au-row').forEach(function(r){
       if(r.dataset.mcS) return; r.dataset.mcS = '1';
@@ -14465,7 +14481,9 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
     }
   }
   function nrHaTracce(){ var t = RD.numero && RD.numero.audio_tracce; return Array.isArray(t) && t.length > 0; }
+  var ASCOLTO_RIVISTA = false;   /* in pausa: si riattiva mettendo true */
   function nrDisponibile(){
+    if(!ASCOLTO_RIVISTA) return false;
     if(typeof RD === 'undefined' || !RD.numero) return false;
     if(nrHaTracce() || RD.numero.audio_path) return true;
     return !!(RD.pdf && 'speechSynthesis' in window);
@@ -14833,6 +14851,121 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
     if(!inReader){ nrStop(); return; }
     nrMano();
   }, 500);
+
+
+  /* =====================================================
+     PLAYER: icone ±15 secondi e salvataggio offline
+  ===================================================== */
+  function iconaSalto(avanti){
+    var arco = avanti ? 'M19.5 12a7.5 7.5 0 1 1-2.2-5.3' : 'M4.5 12a7.5 7.5 0 1 0 2.2-5.3';
+    var punta = avanti ? 'M19.6 3.4v4.2h-4.2' : 'M4.4 3.4v4.2h4.2';
+    return '<svg class="mc15" viewBox="0 0 24 24" aria-hidden="true"><path d="' + arco + '"/><path d="' + punta + '"/><text x="12" y="15.1" text-anchor="middle">15</text></svg>';
+  }
+  function sistemaPlayer(){
+    var sd = $$('#player .p-controls .sd');
+    if(sd.length >= 2 && !sd[0].dataset.mc){
+      sd[0].dataset.mc = '1'; sd[0].innerHTML = iconaSalto(false); sd[0].setAttribute('role', 'button');
+      sd[1].dataset.mc = '1'; sd[1].innerHTML = iconaSalto(true); sd[1].setAttribute('role', 'button');
+    }
+    var dl = $('#pl-dl');
+    if(dl && !dl.dataset.mc){ dl.dataset.mc = '1'; dl.setAttribute('role', 'button'); dl.setAttribute('aria-label', 'Salva per ascoltare offline'); }
+    if(dl) dl.classList.toggle('mc-lk', !abbonato());
+  }
+  var DL_ICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19.5h14"/></svg>';
+  var DL_OK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+  /* Archivio offline nel telefono (IndexedDB): funziona anche nell'app iOS,
+     dove la memoria usata prima (Cache Storage) non e' disponibile. */
+  var DBN = 'mentalclass-offline', DBS = 'audio';
+  function idb(){
+    return new Promise(function(ok, ko){
+      try{
+        var r = indexedDB.open(DBN, 1);
+        r.onupgradeneeded = function(){ r.result.createObjectStore(DBS); };
+        r.onsuccess = function(){ ok(r.result); };
+        r.onerror = function(){ ko(r.error); };
+      }catch(e){ ko(e); }
+    });
+  }
+  function idbOp(modo, fn){
+    return idb().then(function(db){ return new Promise(function(ok, ko){
+      var tx = db.transaction(DBS, modo), st = tx.objectStore(DBS), req = fn(st);
+      tx.oncomplete = function(){ ok(req && req.result); db.close(); };
+      tx.onerror = function(){ ko(tx.error); db.close(); };
+    }); });
+  }
+  function offGet(id){ return idbOp('readonly', function(st){ return st.get(String(id)); }).catch(function(){ return null; }); }
+  function offPut(id, val){ return idbOp('readwrite', function(st){ return st.put(val, String(id)); }); }
+  function offDel(id){ return idbOp('readwrite', function(st){ return st.delete(String(id)); }); }
+
+  window.offlineDisponibile = async function(){ return typeof indexedDB !== 'undefined'; };
+  window.eOffline = async function(id){
+    if(!id) return false;
+    var v = await offGet(id); if(v && v.dati) return true;
+    try{ if(window.caches){ var c = await caches.open('mentalclass-offline-v1'); if(await c.match('mc-audio/' + id)) return true; } }catch(e){}
+    return false;
+  };
+  window.sorgenteAudio = async function(id, urlRete){
+    try{
+      var v = await offGet(id);
+      if(v && v.dati) return URL.createObjectURL(new Blob([v.dati], { type:v.tipo || 'audio/mpeg' }));
+      if(window.caches){ var c = await caches.open('mentalclass-offline-v1'); var r = await c.match('mc-audio/' + id); if(r) return URL.createObjectURL(await r.blob()); }
+    }catch(e){}
+    return urlRete;
+  };
+  window.aggiornaIconaOffline = function(salvato){
+    var b = $('#pl-dl'); if(!b) return;
+    b.innerHTML = salvato ? DL_OK : DL_ICO;
+    b.classList.toggle('mc-ok', !!salvato);
+    b.style.color = '';
+    b.title = salvato ? 'Disponibile offline · tocca per rimuovere' : 'Salva per ascoltare offline';
+    sistemaPlayer();
+  };
+  var dlInCorso = false;
+  window.dlAudio = async function(){
+    var ctx = state.playerCtx || {};
+    var a = ctx.id && window.AUDIO_DB ? AUDIO_DB[ctx.id] : null;
+    if(!abbonato()){
+      try{ toast('Il salvataggio offline è incluso nell\'abbonamento'); }catch(e){}
+      try{ closePlayer(); goScreen('plan'); }catch(e){}
+      return;
+    }
+    if(a && a.scaricabile === false){ try{ toast('Questo audio non è disponibile offline'); }catch(e){} return; }
+    if(typeof indexedDB === 'undefined'){ try{ toast('Questo dispositivo non permette il salvataggio offline'); }catch(e){} return; }
+    var el = document.getElementById('audio-vero');
+    if(!ctx.id || !el || !el.src){ try{ toast('Apri un audio per salvarlo'); }catch(e){} return; }
+    if(dlInCorso) return;
+    if(await eOffline(ctx.id)){
+      try{
+        await offDel(ctx.id);
+        try{ if(window.caches){ var c1 = await caches.open('mentalclass-offline-v1'); await c1.delete('mc-audio/' + ctx.id); } }catch(e){}
+        aggiornaIconaOffline(false); toast('Rimosso dagli audio offline');
+      }catch(e){ try{ toast('Non riesco a rimuoverlo'); }catch(x){} }
+      return;
+    }
+    var b = $('#pl-dl'); dlInCorso = true; if(b) b.classList.add('mc-busy');
+    try{ toast('Salvataggio in corso…'); }catch(e){}
+    try{
+      var src = el.src;
+      if(/^blob:/.test(src) && a && a.audio_url) src = a.audio_url;
+      var r = await fetch(src);
+      if(!r.ok) throw new Error('rete ' + r.status);
+      var dati = await r.arrayBuffer();
+      await offPut(ctx.id, { dati:dati, tipo:r.headers.get('Content-Type') || 'audio/mpeg', titolo:(state.playerCtx.title || '').replace(/<[^>]+>/g, ' '), salvato:new Date().toISOString() });
+      aggiornaIconaOffline(true);
+      toast('✓ Salvato: lo ascolti anche senza connessione');
+    }catch(e){
+      console.warn('offline:', e && e.message);
+      try{ toast('Salvataggio non riuscito: controlla la connessione e riprova'); }catch(x){}
+    }finally{ dlInCorso = false; if(b) b.classList.remove('mc-busy'); }
+  };
+  /* il player si sistema ogni volta che si apre */
+  (function(){
+    var pl = document.getElementById('player'); if(!pl) return;
+    new MutationObserver(function(){ if(pl.classList.contains('show')) sistemaPlayer(); }).observe(pl, { attributes:true, attributeFilter:['class'] });
+    sistemaPlayer();
+    var dl = $('#pl-dl'); if(dl && /⇩|✓/.test(dl.textContent)) aggiornaIconaOffline(/✓/.test(dl.textContent));
+  })();
 
   /* =====================================================
      Avvio

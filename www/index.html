@@ -13881,6 +13881,7 @@ body.native.mini-on .fab{ bottom:calc(env(safe-area-inset-bottom) + 170px) !impo
 })();
 </script>
 
+
 <style id="mc-marea-v4">
 /* =========================================================
    MentalClass · strato v4
@@ -13896,19 +13897,23 @@ body.native.mini-on .fab{ bottom:calc(env(safe-area-inset-bottom) + 170px) !impo
    esatto e sfuma verso il turchese: la fascia non si distingue piu'.
    Il contenuto che scorre verso l'alto svanisce in una dissolvenza
    invece di essere tagliato di netto. */
-html.native body.native:not([data-screen="home"]) #app{
+body.native:not([data-screen="home"]) #app, html.native body.native:not([data-screen="home"]) #app{
+  /* i primi 120px sono dello stesso identico colore della barra di stato:
+     nessuna luce o sfumatura tocca il bordo alto */
   background:
-    radial-gradient(520px 380px at 94% 16%, rgba(194,232,62,.11), transparent 62%),
-    radial-gradient(560px 560px at -14% 34%, rgba(20,150,160,.26), transparent 62%),
+    radial-gradient(520px 420px at 96% 46%, rgba(194,232,62,.08), transparent 62%),
+    radial-gradient(600px 560px at -18% 62%, rgba(20,150,160,.22), transparent 62%),
     radial-gradient(760px 520px at 55% 112%, rgba(39,120,128,.40), transparent 66%),
-    linear-gradient(180deg, #052c31 0px, #06363d 90px, #063f47 230px, #053a41 52%, #04292e 100%) !important;
+    linear-gradient(180deg, #052c31 0px, #052c31 120px, #063a42 420px, #053a41 62%, #04292e 100%) !important;
 }
-body.native:not([data-screen="home"]):not([data-screen="reader"])::after{
-  content:""; position:fixed; left:0; right:0; top:0; height:30px; z-index:95; pointer-events:none;
-  background:linear-gradient(180deg, #052c31 0%, rgba(5,44,49,.88) 38%, rgba(5,44,49,0) 100%);
-}
+html.native body.native:not([data-screen="home"]):not([data-screen="reader"])::after{ content:none !important; display:none !important; }
 @media (max-width:900px){
-  body.native:not([data-screen="home"]):not([data-screen="reader"]) .main{ padding-top:34px !important; }
+  body.native:not([data-screen="home"]):not([data-screen="reader"]) .main{
+    padding-top:30px !important;
+    /* il contenuto che sale sfuma nel colore della barra, senza fasce */
+    -webkit-mask-image:linear-gradient(180deg, transparent 0, #000 22px);
+            mask-image:linear-gradient(180deg, transparent 0, #000 22px);
+  }
 }
 
 /* ---------- 2. Audio ---------- */
@@ -13916,23 +13921,73 @@ body.native:not([data-screen="home"]):not([data-screen="reader"])::after{
 @media (max-width:900px){
   #s-audio .pills-row{
     position:sticky; top:0; z-index:40;
-    margin:12px -18px 0 !important; padding:14px 18px 12px !important;
+    margin:6px calc(-1 * var(--mc-bleed, 18px)) 0 !important; padding:22px var(--mc-bleed, 18px) 12px !important;
+    scroll-padding-inline:var(--mc-bleed, 18px);
     background:transparent;
     transition:box-shadow .25s ease, border-color .25s ease, background .25s ease;
     border-bottom:1px solid transparent;
   }
-  #s-audio .pills-row.mc-stuck{ background:linear-gradient(180deg, rgba(5,44,49,.96), rgba(5,48,54,.82));
+  #s-audio .pills-row.mc-stuck{ background:rgba(5,44,49,.94);
     -webkit-backdrop-filter:blur(18px) saturate(140%); backdrop-filter:blur(18px) saturate(140%);
-    box-shadow:0 14px 26px -20px rgba(0,0,0,.75); border-bottom-color:rgba(255,255,255,.07); }
+    border-bottom-color:rgba(255,255,255,.06); }
 }
 #s-audio .pills-row .pill{ transition:background .2s ease, color .2s ease, transform .15s ease, box-shadow .2s ease; }
 #s-audio .pills-row .pill:active{ transform:scale(.95); }
+#s-audio .pills-row .pill, #s-audio .pills-row .pill.on, #s-audio .pills-row .pill:hover{ box-shadow:none !important; filter:none !important; text-shadow:none !important; }
+#s-audio .pills-row .pill.on{ background:var(--lime) !important; color:#0a2e34 !important; border-color:var(--lime) !important; }
 
 #s-audio .a-card .art span{ font-size:21px !important; line-height:1.06 !important; overflow-wrap:break-word; -webkit-hyphens:auto; hyphens:auto; }
 #s-audio .row-title{ display:flex; align-items:baseline; gap:10px; margin-top:28px !important; }
 #s-audio .row-title .mc-n{ font-family:'Inter Tight',Inter,sans-serif; font-size:12px; font-weight:700; letter-spacing:0; color:rgba(241,237,226,.42); }
 #s-audio .cat-block + .cat-block{ border-top:1px solid rgba(255,255,255,.06); margin-top:22px; }
 #s-audio .sottocat-tit{ font-size:11px !important; font-weight:800 !important; letter-spacing:.14em !important; text-transform:uppercase; color:rgba(194,232,62,.78) !important; margin:18px 0 8px !important; }
+
+/* Scaffali: ogni categoria e' una fila di copertine da scorrere col pollice.
+   Toccando una categoria in alto, la fila diventa una griglia a due colonne. */
+#s-audio{ counter-reset:mccat; }
+#s-audio .cat-block:not([data-block="percorsi"]) > .row-title::before{
+  counter-increment:mccat; content:counter(mccat, decimal-leading-zero) !important; display:inline-block !important;
+  font-family:'MCDisplay','Oswald',Impact,sans-serif; font-size:13px; font-weight:600; letter-spacing:.06em; color:var(--lime);
+  border:1px solid rgba(194,232,62,.4); border-radius:8px; padding:3px 6px 2px; margin-right:2px; transform:translateY(-3px);
+  width:auto !important; height:auto !important; background:none !important; box-shadow:none !important; position:static !important; }
+#s-audio .row-title .mc-tutti{ margin-left:auto; font-family:'Inter Tight',Inter,sans-serif; font-size:13px; font-weight:700; letter-spacing:0; color:rgba(241,237,226,.7); cursor:pointer; padding:6px 0 6px 10px; }
+#s-audio .row-title .mc-tutti::after{ content:" →"; color:var(--lime); }
+#s-audio.au-filtro .row-title .mc-tutti{ display:none; }
+
+#s-audio .au-list{ --cw:152px; display:grid !important; grid-auto-flow:column; grid-auto-columns:var(--cw); gap:14px !important;
+  overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scroll-padding:0 18px; -webkit-overflow-scrolling:touch;
+  margin:0 calc(-1 * var(--mc-bleed, 18px)); padding:4px var(--mc-bleed, 18px) 10px; scroll-padding:0 var(--mc-bleed, 18px); scrollbar-width:none; }
+#s-audio .au-list::-webkit-scrollbar{ display:none; }
+#s-audio .au-row{ position:relative; display:flex !important; flex-direction:column !important; align-items:stretch !important; gap:0 !important;
+  padding:0 !important; border:0 !important; background:transparent !important; box-shadow:none !important; border-radius:0 !important;
+  scroll-snap-align:start; min-width:0; }
+#s-audio .au-row:active{ transform:scale(.97); background:transparent !important; }
+#s-audio .au-cov{ width:100% !important; height:auto !important; aspect-ratio:1/1; border-radius:24px !important;
+  box-shadow:0 18px 34px -20px rgba(0,0,0,.85), inset 0 0 0 1px rgba(255,255,255,.10) !important; }
+#s-audio .au-cov::after{ content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), transparent 30%, transparent 60%, rgba(3,24,28,.55)); }
+#s-audio .au-cov i{ left:10px !important; bottom:10px !important; z-index:1; padding:4px 8px; border-radius:100px; font-size:11px !important;
+  background:rgba(3,24,28,.5); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); text-shadow:none !important; letter-spacing:.02em; }
+#s-audio .au-info{ padding:10px 2px 0; }
+#s-audio .au-t{ font-family:'Inter Tight',Inter,sans-serif; font-size:14.5px !important; line-height:1.28 !important; letter-spacing:-.01em; min-height:2.56em; }
+#s-audio .au-m{ margin-top:5px !important; font-size:11.5px !important; gap:4px 6px !important; flex-wrap:wrap !important; line-height:1.3; }
+#s-audio .au-m .au-ok{ display:none; }
+#s-audio .au-fav{ position:absolute !important; top:8px; right:8px; z-index:2; width:32px; height:32px; padding:0 !important; display:grid; place-items:center;
+  border-radius:50%; font-size:15px !important; color:var(--cream) !important; background:rgba(3,24,28,.42); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+#s-audio .au-fav.on{ color:var(--lime) !important; }
+#s-audio .au-play{ position:absolute !important; top:calc(var(--cw) - 52px); right:10px; z-index:2; width:42px !important; height:42px !important;
+  background:var(--lime) !important; color:#0a2e34 !important; border:0 !important; box-shadow:0 10px 22px -10px rgba(0,0,0,.8) !important; }
+#s-audio .au-row.mc-fatto .au-cov{ opacity:.82; }
+#s-audio .au-row.mc-fatto .au-cov::before{ content:"✓"; position:absolute; top:10px; left:10px; z-index:2; width:24px; height:24px; border-radius:50%; display:grid; place-items:center;
+  background:var(--lime); color:#0a2e34; font-size:13px; font-weight:900; }
+#s-audio .au-row.mc-corso .au-cov{ box-shadow:0 18px 34px -20px rgba(0,0,0,.85), inset 0 -3px 0 var(--lime), inset 0 0 0 1px rgba(255,255,255,.10) !important; }
+/* categoria scelta: griglia a due colonne */
+#s-audio.au-filtro .au-list{ --cw:calc((100vw - 2 * var(--mc-bleed, 18px) - 14px) / 2); grid-auto-flow:row; grid-template-columns:repeat(2, minmax(0,1fr)); grid-auto-columns:auto;
+  overflow:visible; margin:0; padding:4px 0 6px; row-gap:20px !important; }
+@media (min-width:901px){
+  #s-audio .au-list{ --cw:190px; margin:0; padding:4px 0 10px; }
+  #s-audio.au-filtro .au-list{ --cw:190px; grid-template-columns:repeat(auto-fill, var(--cw)); }
+}
 
 /* Adesso per te */
 #au-ora{ margin-top:14px; }
@@ -14018,11 +14073,6 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
 #s-reader .rd-ic{ display:inline-grid; place-items:center; border-radius:13px !important; background:rgba(255,255,255,.07) !important; border:1px solid rgba(255,255,255,.08); transition:background .2s ease, transform .15s ease; }
 #s-reader .rd-ic:active{ transform:scale(.92); }
 #s-reader .rd-ic svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
-#s-reader .rd-ic.nr-ic{ width:auto !important; padding:0 13px 0 11px; gap:7px; grid-auto-flow:column; font:inherit; font-size:13px; font-weight:800; color:#0a2e34 !important;
-  background:var(--lime-grad, var(--lime)) !important; border-color:transparent; box-shadow:0 8px 20px -10px rgba(194,232,62,.8); }
-#s-reader .rd-ic.nr-ic svg{ stroke:#0a2e34; }
-#s-reader .rd-ic.nr-ic.lk{ background:rgba(255,255,255,.08) !important; color:var(--cream) !important; box-shadow:none; border-color:rgba(194,232,62,.35); }
-#s-reader .rd-ic.nr-ic.lk svg{ stroke:var(--lime); }
 #s-reader .rd-page{ box-shadow:0 34px 70px -28px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.05) !important; }
 #s-reader .rd-spread.singola .rd-page::before{ content:""; position:absolute; top:0; bottom:0; left:0; width:18px; z-index:2; pointer-events:none;
   background:linear-gradient(90deg, rgba(0,0,0,.22), rgba(0,0,0,0)); }
@@ -14050,34 +14100,89 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
   #s-reader .rd-arrow{ opacity:.0 !important; pointer-events:none; }
 }
 
-/* barra di ascolto */
-#rd-nar{ position:absolute; left:10px; right:10px; bottom:calc(var(--rdb, 70px) + 10px); z-index:9; display:none;
-  border-radius:22px; padding:10px 12px 12px; overflow:hidden;
-  background:linear-gradient(140deg, rgba(14,70,78,.92), rgba(6,40,45,.94));
-  border:1px solid rgba(194,232,62,.22);
-  -webkit-backdrop-filter:blur(22px) saturate(150%); backdrop-filter:blur(22px) saturate(150%);
-  box-shadow:0 22px 44px -22px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.08);
-  animation:nrIn .35s cubic-bezier(.2,.8,.2,1) both; }
-#rd-nar.on{ display:block; }
-@keyframes nrIn{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
-#rd-nar .nr-pr{ position:absolute; left:0; top:0; height:3px; width:0; background:var(--lime); box-shadow:0 0 10px rgba(194,232,62,.6); transition:width .4s linear; }
-#rd-nar .nr-row{ display:flex; align-items:center; gap:10px; }
-#rd-nar .nr-tx{ flex:1; min-width:0; }
-#rd-nar .nr-e{ display:flex; align-items:center; gap:7px; font-size:10.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--lime); }
-#rd-nar .nr-eq{ display:inline-flex; gap:2px; align-items:flex-end; height:11px; }
-#rd-nar .nr-eq i{ width:2.5px; height:4px; border-radius:2px; background:var(--lime); }
-#rd-nar.play .nr-eq i{ animation:nrEq .9s ease-in-out infinite; }
-#rd-nar.play .nr-eq i:nth-child(2){ animation-delay:.2s; } #rd-nar.play .nr-eq i:nth-child(3){ animation-delay:.4s; }
-@keyframes nrEq{ 0%,100%{ height:3px; } 50%{ height:11px; } }
-#rd-nar .nr-t{ margin-top:3px; font-size:13.5px; font-weight:700; color:var(--cream); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-#rd-nar .nr-b{ flex:none; width:38px; height:38px; border-radius:50%; border:0; display:grid; place-items:center; background:rgba(255,255,255,.08); color:var(--cream); cursor:pointer; font:inherit; transition:transform .15s ease; }
-#rd-nar .nr-b:active{ transform:scale(.9); }
-#rd-nar .nr-b svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-#rd-nar .nr-pp{ width:50px; height:50px; background:var(--lime-grad, var(--lime)); box-shadow:0 10px 24px -10px rgba(194,232,62,.8); }
-#rd-nar .nr-pp svg{ width:20px; height:20px; fill:#0a2e34; stroke:none; }
-#rd-nar .nr-sp{ width:auto; padding:0 11px; border-radius:100px; font-size:12px; font-weight:800; font-variant-numeric:tabular-nums; }
-#rd-nar .nr-x{ width:30px; height:30px; background:transparent; color:rgba(241,237,226,.55); }
-#rd-nar .nr-ctl{ display:flex; align-items:center; justify-content:center; gap:14px; margin-top:10px; }
+/* Leggi / Ascolta: interruttore in alto, come nelle app delle grandi testate */
+#s-reader .rd-mode{ position:relative; display:inline-flex; padding:3px; border-radius:100px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.10); margin-right:4px; }
+#s-reader .rd-mode button{ all:unset; position:relative; z-index:1; box-sizing:border-box; height:32px; padding:0 13px; border-radius:100px; display:inline-flex; align-items:center; gap:6px;
+  font-size:12.5px; font-weight:800; color:rgba(241,237,226,.72); cursor:pointer; transition:color .25s ease; }
+#s-reader .rd-mode button svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+#s-reader .rd-mode button.on{ color:#0a2e34; }
+#s-reader .rd-mode i{ position:absolute; z-index:0; top:3px; bottom:3px; left:3px; width:calc(50% - 3px); border-radius:100px; background:var(--cream); transition:transform .35s cubic-bezier(.2,.8,.2,1), width .35s ease; }
+#s-reader .rd-mode.asc i{ transform:translateX(100%); background:var(--lime); }
+#s-reader .rd-mode.lk button[data-m="ascolta"] svg{ stroke:var(--lime); }
+
+/* mini player: sostituisce la barra in basso mentre ascolti e leggi */
+#nr-mini{ position:absolute; left:10px; right:10px; bottom:calc(10px + env(safe-area-inset-bottom)); z-index:9; display:none; align-items:center; gap:12px;
+  height:64px; padding:0 8px 0 8px; border-radius:20px; overflow:hidden; cursor:pointer;
+  background:rgba(10,58,65,.86); border:1px solid rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(24px) saturate(160%); backdrop-filter:blur(24px) saturate(160%);
+  box-shadow:0 20px 40px -20px rgba(0,0,0,.9); animation:nrUp .4s cubic-bezier(.2,.8,.2,1) both; }
+#nr-mini.on{ display:flex; }
+#rd.nr-on .rd-bottom{ visibility:hidden; }
+@keyframes nrUp{ from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:none; } }
+#nr-mini .nm-cov{ flex:none; width:46px; height:46px; border-radius:12px; background:#0b3a41 center/cover no-repeat; box-shadow:0 6px 14px -6px rgba(0,0,0,.7); }
+#nr-mini .nm-tx{ flex:1; min-width:0; display:flex; flex-direction:column; }
+#nr-mini .nm-t{ font-size:14px; font-weight:700; color:var(--cream); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#nr-mini .nm-s{ margin-top:2px; font-size:11.5px; color:rgba(241,237,226,.55); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#nr-mini button{ all:unset; flex:none; width:42px; height:42px; border-radius:50%; display:grid; place-items:center; cursor:pointer; color:var(--cream); }
+#nr-mini button svg{ width:20px; height:20px; fill:currentColor; }
+#nr-mini .nm-x svg{ fill:none; stroke:rgba(241,237,226,.5); stroke-width:2; stroke-linecap:round; width:16px; height:16px; }
+#nr-mini .nm-pr{ position:absolute; left:0; bottom:0; height:2px; width:0; background:var(--lime); transition:width .5s linear; }
+
+/* player completo */
+#nr-sheet{ position:absolute; inset:0; z-index:20; display:none; overflow:hidden; background:#031b1f; }
+#nr-sheet.on{ display:block; animation:nrSheet .45s cubic-bezier(.2,.85,.2,1) both; }
+@keyframes nrSheet{ from{ transform:translateY(100%); } to{ transform:none; } }
+#nr-sheet .ns-bg{ position:absolute; inset:-60px; background:#0b3a41 center/cover no-repeat; filter:blur(50px) saturate(130%); opacity:.55; transform:scale(1.2); }
+#nr-sheet .ns-bg::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(3,27,31,.35), rgba(3,27,31,.85) 60%, #031b1f); }
+#nr-sheet .ns-in{ position:relative; height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:calc(12px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom)); max-width:520px; margin:0 auto; box-sizing:border-box; }
+#nr-sheet .ns-top{ display:flex; align-items:center; gap:10px; }
+#nr-sheet .ns-ic{ all:unset; width:40px; height:40px; border-radius:50%; display:grid; place-items:center; background:rgba(255,255,255,.08); cursor:pointer; color:var(--cream); }
+#nr-sheet .ns-ic svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+#nr-sheet .ns-lab{ flex:1; text-align:center; min-width:0; }
+#nr-sheet .ns-lab b{ display:block; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--lime); }
+#nr-sheet .ns-lab span{ display:block; margin-top:2px; font-size:12.5px; color:rgba(241,237,226,.65); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#nr-sheet .ns-art{ display:flex; justify-content:center; margin:26px 0 24px; }
+#nr-sheet .ns-cov{ width:min(58vw, 250px); aspect-ratio:1/1.33; border-radius:10px 16px 16px 10px; background:#0b3a41 center/cover no-repeat;
+  box-shadow:0 40px 70px -30px rgba(0,0,0,.95), inset 6px 0 10px -6px rgba(0,0,0,.6); transition:transform .5s cubic-bezier(.2,.8,.2,1); transform:scale(.94); }
+#nr-sheet.play .ns-cov{ transform:none; }
+#nr-sheet .ns-e{ font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--lime); }
+#nr-sheet .ns-t{ margin-top:6px; font-family:'MCSans','Inter Tight',Inter,sans-serif; font-size:24px; font-weight:800; line-height:1.15; letter-spacing:-.02em; color:var(--cream); }
+#nr-sheet .ns-s{ margin-top:4px; font-size:13.5px; color:rgba(241,237,226,.6); }
+#nr-sheet .ns-bar{ position:relative; height:24px; margin-top:20px; cursor:pointer; }
+#nr-sheet .ns-bar::before{ content:""; position:absolute; left:0; right:0; top:10px; height:4px; border-radius:4px; background:rgba(255,255,255,.16); }
+#nr-sheet .ns-bar i{ position:absolute; left:0; top:10px; height:4px; width:0; border-radius:4px; background:var(--cream); }
+#nr-sheet .ns-bar b{ position:absolute; top:5px; width:14px; height:14px; margin-left:-7px; border-radius:50%; background:var(--cream); box-shadow:0 2px 8px rgba(0,0,0,.5); }
+#nr-sheet .ns-time{ display:flex; justify-content:space-between; font-size:11.5px; font-weight:600; color:rgba(241,237,226,.5); font-variant-numeric:tabular-nums; }
+#nr-sheet .ns-ctl{ display:flex; align-items:center; justify-content:space-between; margin:18px 4px 6px; }
+#nr-sheet .ns-b{ all:unset; width:48px; height:48px; border-radius:50%; display:grid; place-items:center; cursor:pointer; color:var(--cream); transition:transform .15s ease; }
+#nr-sheet .ns-b:active, #nr-sheet .ns-pp:active{ transform:scale(.9); }
+#nr-sheet .ns-b svg{ width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+#nr-sheet .ns-b:first-child svg, #nr-sheet .ns-b:last-child svg{ fill:currentColor; width:20px; height:20px; stroke-width:2; }
+#nr-sheet .ns-15 svg{ width:30px; height:30px; }
+#nr-sheet .ns-pp{ all:unset; width:76px; height:76px; border-radius:50%; display:grid; place-items:center; cursor:pointer; background:var(--cream); color:#062a2f; box-shadow:0 18px 40px -16px rgba(0,0,0,.9); transition:transform .15s ease; }
+#nr-sheet .ns-pp svg{ width:28px; height:28px; fill:currentColor; }
+#nr-sheet.no-cap .ns-b:first-child, #nr-sheet.no-cap .ns-b:last-child{ opacity:.35; }
+#nr-sheet .ns-opt{ display:flex; justify-content:space-around; margin-top:18px; padding:12px 0; border-top:1px solid rgba(255,255,255,.08); border-bottom:1px solid rgba(255,255,255,.08); }
+#nr-sheet .ns-opt button{ all:unset; display:flex; flex-direction:column; align-items:center; gap:5px; min-width:84px; cursor:pointer; font-size:11.5px; font-weight:600; color:rgba(241,237,226,.62); }
+#nr-sheet .ns-opt button b{ height:22px; font-size:16px; font-weight:800; color:var(--cream); font-variant-numeric:tabular-nums; }
+#nr-sheet .ns-opt button svg{ width:22px; height:22px; fill:none; stroke:var(--cream); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+#nr-sheet .ns-opt button.on, #nr-sheet .ns-opt button.on svg{ color:var(--lime); stroke:var(--lime); }
+#nr-sheet .ns-caps{ margin-top:22px; }
+#nr-sheet.no-cap .ns-caps{ display:none; }
+#nr-sheet .nc-h{ font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:rgba(241,237,226,.5); margin-bottom:8px; }
+#nr-sheet .nc{ all:unset; box-sizing:border-box; width:100%; display:flex; align-items:center; gap:14px; padding:12px 4px; border-bottom:1px solid rgba(255,255,255,.06); cursor:pointer; }
+#nr-sheet .nc-n{ font-family:'MCDisplay','Oswald',Impact,sans-serif; font-size:15px; color:rgba(241,237,226,.4); width:24px; }
+#nr-sheet .nc-tx{ flex:1; min-width:0; }
+#nr-sheet .nc-tx b{ display:block; font-size:14.5px; font-weight:700; color:var(--cream); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#nr-sheet .nc-tx span{ display:block; margin-top:2px; font-size:12px; color:rgba(241,237,226,.5); }
+#nr-sheet .nc.on .nc-n, #nr-sheet .nc.on .nc-tx b{ color:var(--lime); }
+#nr-sheet .nc-eq{ display:none; gap:2px; align-items:flex-end; height:14px; }
+#nr-sheet .nc.on .nc-eq{ display:inline-flex; }
+#nr-sheet .nc-eq i{ width:3px; height:4px; border-radius:2px; background:var(--lime); }
+#nr-sheet.play .nc.on .nc-eq i{ animation:nrEq .9s ease-in-out infinite; }
+#nr-sheet.play .nc.on .nc-eq i:nth-child(2){ animation-delay:.2s; } #nr-sheet.play .nc.on .nc-eq i:nth-child(3){ animation-delay:.4s; }
+@keyframes nrEq{ 0%,100%{ height:4px; } 50%{ height:14px; } }
+@media (prefers-reduced-motion:reduce){ #nr-sheet.on, #nr-mini.on{ animation:none; } }
 
 /* invito per chi non e' abbonato */
 #nr-lock{ position:absolute; inset:0; z-index:12; display:none; align-items:flex-end; justify-content:center; padding:16px; background:rgba(2,18,21,.55); }
@@ -14115,6 +14220,10 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
     indietro:'<svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>',
     sole:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
     mira:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>',
+    giu:'<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
+    libro:'<svg viewBox="0 0 24 24"><path d="M3 5.5C5.5 4 8.5 4 12 6c3.5-2 6.5-2 9-.5V19c-2.5-1.5-5.5-1.5-9 .5-3.5-2-6.5-2-9-.5z"/><path d="M12 6v13.5"/></svg>',
+    r15:'<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4h4"/><text x="12" y="15.5" text-anchor="middle" font-size="7.5" font-weight="700" fill="currentColor" stroke="none" font-family="Inter,sans-serif">15</text></svg>',
+    a15:'<svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v4h-4"/><text x="12" y="15.5" text-anchor="middle" font-size="7.5" font-weight="700" fill="currentColor" stroke="none" font-family="Inter,sans-serif">15</text></svg>',
     luna:'<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>'
   };
 
@@ -14161,18 +14270,43 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
     $$('#s-audio .cat-block').forEach(function(b){
       var t = $('.row-title', b); if(!t || $('.mc-n', t)) return;
       var n = $$('.au-row, .a-card', b).length; if(!n) return;
-      t.insertAdjacentHTML('beforeend', '<span class="mc-n">' + n + '</span>');
+      var slug = b.dataset.block;
+      t.insertAdjacentHTML('beforeend', '<span class="mc-n">' + n + '</span>' +
+        (slug && slug !== 'percorsi' && n > 2 ? '<span class="mc-tutti" role="button" onclick="mcAudioTutti(\'' + slug + '\')">Tutti</span>' : ''));
+    });
+    $$('#s-audio .au-row').forEach(function(r){
+      if(r.dataset.mcS) return; r.dataset.mcS = '1';
+      var ok = $('.au-ok', r), tx = ok ? ok.textContent : '';
+      if(/Ascoltato/.test(tx)) r.classList.add('mc-fatto'); else if(/corso/.test(tx)) r.classList.add('mc-corso');
     });
   }
+  window.mcAudioTutti = function(slug){
+    var p = document.querySelector('#audio-pills .pill[data-cat="' + slug + '"]');
+    if(!p) return;
+    try{ audioCat(p, slug); }catch(e){}
+    try{ p.scrollIntoView({ inline:'center', block:'nearest', behavior:'smooth' }); }catch(e){}
+    var m = $('.main'), s = $('#s-audio');
+    if(m && s) m.scrollTo({ top:Math.max(0, $('#audio-pills').offsetTop - 10), behavior:'smooth' });
+  };
   /* ombra sotto le categorie quando restano agganciate in alto */
   function agganciaPills(){
     var row = $('#audio-pills'), main = $('.main');
     if(!row || !main || row.dataset.mcSt) return;
     row.dataset.mcSt = '1';
-    main.addEventListener('scroll', function(){
-      var r = row.getBoundingClientRect(), m = main.getBoundingClientRect();
-      row.classList.toggle('mc-stuck', r.top <= m.top + 1 && main.scrollTop > 40);
-    }, { passive:true });
+    var su = function(){
+      if(document.body.getAttribute('data-screen') !== 'audio') return;
+      var sa = $('#s-audio');
+      if(sa && window.innerWidth <= 900){
+        var b = Math.round(sa.getBoundingClientRect().left + parseFloat(getComputedStyle(sa).paddingLeft || 0));
+        if(b > 0 && b < 60 && sa.style.getPropertyValue('--mc-bleed') !== b + 'px') sa.style.setProperty('--mc-bleed', b + 'px');
+      }
+      var sent = document.getElementById('au-sent');
+      if(!sent){ row.insertAdjacentHTML('beforebegin', '<i id="au-sent" aria-hidden="true" style="display:block;height:0;margin:0;padding:0"></i>'); sent = document.getElementById('au-sent'); }
+      row.classList.toggle('mc-stuck', row.getBoundingClientRect().top - sent.getBoundingClientRect().top > 14);
+    };
+    document.addEventListener('scroll', su, { capture:true, passive:true });
+    setInterval(su, 800);
+    window.addEventListener('resize', su);
   }
   var osA = null;
   function osservaAudio(){
@@ -14260,11 +14394,20 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
   }, true);
 
   /* =====================================================
-     RIVISTA · aspetto e ASCOLTO (solo abbonati)
+     RIVISTA · aspetto, LEGGI / ASCOLTA (ascolto solo abbonati)
+     Modi di ascolto, in ordine di qualita':
+     1. tracce  — un file per articolo/capitolo con la pagina di inizio:
+                  la rivista gira da sola e, se giri tu, l'audio ti segue
+     2. mp3     — un unico file: si ascolta, senza seguire le pagine
+     3. voce    — la voce del telefono legge il testo del PDF
   ===================================================== */
+  var NR = { on:false, aperto:false, modo:null, playing:false, rate:1, tracce:[], ti:0, audio:null,
+             chunks:[], idx:0, pagina:0, coda:[], token:0, voce:null, girando:false, auto:0, manoA:0, timer:null, timerFine:0, timerCap:false, ultimaPag:0 };
+  var VEL = [1, 1.25, 1.5, 0.8];
+
   function rdIcone(){
-    var top = $('#s-reader .rd-top'); if(!top || top.dataset.v4) return;
-    top.dataset.v4 = '1';
+    var top = $('#s-reader .rd-top'); if(!top || top.dataset.v5) return;
+    top.dataset.v5 = '1';
     var back = $('.rd-back', top); if(back) back.innerHTML = SVG.indietro + '<span>Riviste</span>';
     var idx = $('#rd-ic-idx'); if(idx){ idx.innerHTML = SVG.indice; idx.setAttribute('aria-label', 'Indice delle pagine'); }
     $$('.rd-tools .rd-ic', top).forEach(function(b){
@@ -14274,36 +14417,65 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
     });
     var fs = $('#rd-ic-fs'); if(fs){ fs.innerHTML = SVG.fs; fs.setAttribute('aria-label', 'Schermo intero'); }
     var tools = $('.rd-tools', top);
-    if(tools && !$('#rd-ic-nr')) tools.insertAdjacentHTML('afterbegin', '<button class="rd-ic nr-ic" id="rd-ic-nr" onclick="mcNarra()" aria-label="Ascolta la rivista" style="display:none">' + SVG.cuffie + '<span>Ascolta</span></button>');
+    if(tools && !$('#rd-mode')) tools.insertAdjacentHTML('afterbegin',
+      '<div class="rd-mode" id="rd-mode" role="tablist" aria-label="Modalità" style="display:none">' +
+        '<button class="on" data-m="leggi" onclick="mcNarra(\'leggi\')">Leggi</button>' +
+        '<button data-m="ascolta" onclick="mcNarra()">' + SVG.cuffie + 'Ascolta</button><i></i></div>');
     var rd = $('#rd');
-    if(rd && !$('#rd-nar')){
+    if(rd && !$('#nr-sheet')){
       rd.insertAdjacentHTML('beforeend',
-        '<div id="rd-nar" role="region" aria-label="Ascolto della rivista"><i class="nr-pr" id="nr-pr"></i>' +
-          '<div class="nr-row"><div class="nr-tx"><div class="nr-e"><span class="nr-eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="nr-modo">Ascolto</span></div><div class="nr-t" id="nr-t"></div></div>' +
-          '<button class="nr-b nr-x" onclick="mcNarra(\'chiudi\')" aria-label="Chiudi l\'ascolto">' + SVG.x + '</button></div>' +
-          '<div class="nr-ctl"><button class="nr-b" id="nr-prev" onclick="mcNarra(\'prev\')" aria-label="Indietro">' + SVG.prev + '</button>' +
-          '<button class="nr-b nr-pp" id="nr-pp" onclick="mcNarra(\'pp\')" aria-label="Play o pausa">' + SVG.pause + '</button>' +
-          '<button class="nr-b" id="nr-next" onclick="mcNarra(\'next\')" aria-label="Avanti">' + SVG.next + '</button>' +
-          '<button class="nr-b nr-sp" id="nr-sp" onclick="mcNarra(\'vel\')" aria-label="Velocità">1x</button></div>' +
+        /* mini player: resta in basso mentre leggi */
+        '<div id="nr-mini" role="button" aria-label="Apri il player" onclick="mcNarra(\'apri\')">' +
+          '<span class="nm-cov" id="nm-cov"></span>' +
+          '<span class="nm-tx"><span class="nm-t" id="nm-t">Ascolto</span><span class="nm-s" id="nm-s"></span></span>' +
+          '<button class="nm-pp" id="nm-pp" onclick="event.stopPropagation();mcNarra(\'pp\')" aria-label="Play o pausa">' + SVG.pause + '</button>' +
+          '<button class="nm-x" onclick="event.stopPropagation();mcNarra(\'chiudi\')" aria-label="Chiudi l\'ascolto">' + SVG.x + '</button>' +
+          '<i class="nm-pr" id="nm-pr"></i></div>' +
+        /* player completo */
+        '<div id="nr-sheet" role="dialog" aria-label="Ascolta il Magazine">' +
+          '<div class="ns-bg" id="ns-bg"></div>' +
+          '<div class="ns-in">' +
+            '<div class="ns-top"><button class="ns-ic" onclick="mcNarra(\'riduci\')" aria-label="Riduci">' + SVG.giu + '</button>' +
+              '<div class="ns-lab"><b>MentalClass Magazine</b><span id="ns-num"></span></div>' +
+              '<button class="ns-ic" onclick="mcNarra(\'chiudi\')" aria-label="Chiudi">' + SVG.x + '</button></div>' +
+            '<div class="ns-art"><div class="ns-cov" id="ns-cov"></div></div>' +
+            '<div class="ns-meta"><div class="ns-e" id="ns-e">Capitolo 1</div><div class="ns-t" id="ns-t"></div><div class="ns-s" id="ns-s"></div></div>' +
+            '<div class="ns-bar" id="ns-bar" onclick="mcNarraSeek(event)"><i id="ns-fill"></i><b id="ns-dot"></b></div>' +
+            '<div class="ns-time"><span id="ns-a">0:00</span><span id="ns-b"></span></div>' +
+            '<div class="ns-ctl">' +
+              '<button class="ns-b" onclick="mcNarra(\'capPrev\')" aria-label="Capitolo precedente">' + SVG.prev + '</button>' +
+              '<button class="ns-b ns-15" onclick="mcNarra(\'meno15\')" aria-label="Indietro 15 secondi">' + SVG.r15 + '</button>' +
+              '<button class="ns-pp" id="ns-pp" onclick="mcNarra(\'pp\')" aria-label="Play o pausa">' + SVG.pause + '</button>' +
+              '<button class="ns-b ns-15" onclick="mcNarra(\'piu15\')" aria-label="Avanti 15 secondi">' + SVG.a15 + '</button>' +
+              '<button class="ns-b" onclick="mcNarra(\'capNext\')" aria-label="Capitolo successivo">' + SVG.next + '</button>' +
+            '</div>' +
+            '<div class="ns-opt">' +
+              '<button id="ns-vel" onclick="mcNarra(\'vel\')"><b>1x</b><span>Velocità</span></button>' +
+              '<button id="ns-tim" onclick="mcNarra(\'timer\')">' + SVG.luna + '<span id="ns-tim-l">Timer</span></button>' +
+              '<button onclick="mcNarra(\'riduci\')">' + SVG.libro + '<span>Leggi insieme</span></button>' +
+            '</div>' +
+            '<div class="ns-caps" id="ns-caps"></div>' +
+          '</div>' +
         '</div>' +
+        /* invito per chi non e' abbonato */
         '<div id="nr-lock" onclick="if(event.target===this)this.classList.remove(\'on\')"><div class="nl-in"><div class="nl-ic">' + SVG.cuffie + '</div>' +
           '<h4>Ascolta il Magazine</h4><p>Con l\'abbonamento ogni numero si può anche ascoltare: in auto, in palestra, mentre cammini.</p>' +
           '<button class="p" onclick="document.getElementById(\'nr-lock\').classList.remove(\'on\');goScreen(\'plan\')">Scopri l\'abbonamento</button>' +
           '<button class="s" onclick="document.getElementById(\'nr-lock\').classList.remove(\'on\')">Non ora</button></div></div>');
     }
   }
+  function nrHaTracce(){ var t = RD.numero && RD.numero.audio_tracce; return Array.isArray(t) && t.length > 0; }
   function nrDisponibile(){
     if(typeof RD === 'undefined' || !RD.numero) return false;
-    if(RD.numero.audio_path) return true;
+    if(nrHaTracce() || RD.numero.audio_path) return true;
     return !!(RD.pdf && 'speechSynthesis' in window);
   }
   function rdMeta(){
     try{
       var lbl = $('#rd-tot'); if(!lbl || typeof RD === 'undefined' || !RD.tot) return;
       var resto = Math.max(0, RD.tot - RD.corrente);
-      var min = Math.round(resto * 1.3);
+      var txt = resto ? (' · ≈ ' + Math.max(1, Math.round(resto * 1.3)) + ' min alla fine') : ' · ultima pagina';
       var r = $('#nr-rest');
-      var txt = resto ? (' · ≈ ' + Math.max(1, min) + ' min alla fine') : ' · ultima pagina';
       if(!r){ lbl.insertAdjacentHTML('beforeend', '<span class="nr-rest" id="nr-rest"></span>'); r = $('#nr-rest'); }
       if(r.textContent !== txt) r.textContent = txt;
     }catch(e){}
@@ -14311,21 +14483,18 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
   function rdAggiorna(){
     if(document.body.getAttribute('data-screen') !== 'reader') return;
     rdIcone();
-    var b = $('#rd-ic-nr');
-    if(b){
+    var m = $('#rd-mode');
+    if(m){
       var ok = nrDisponibile();
-      b.style.display = ok ? '' : 'none';
-      b.classList.toggle('lk', ok && !abbonato());
+      m.style.display = ok ? '' : 'none';
+      m.classList.toggle('lk', ok && !abbonato());
+      m.classList.toggle('asc', NR.on);
+      $$('button', m).forEach(function(b){ b.classList.toggle('on', (b.dataset.m === 'ascolta') === NR.on); });
     }
-    var bot = $('#s-reader .rd-bottom');
-    if(bot) $('#rd').style.setProperty('--rdb', (bot.offsetHeight + 10) + 'px');
     rdMeta();
   }
 
-  /* ---------- motore di ascolto ---------- */
-  var NR = { on:false, modo:null, playing:false, rate:1, chunks:[], idx:0, pagina:0, coda:[], token:0, audio:null, voce:null, girando:false };
-  var VEL = [1, 1.25, 1.5, 0.85];
-
+  /* ---------- testo del PDF per la voce del telefono ---------- */
   function nrVoce(){
     if(!('speechSynthesis' in window)) return null;
     var vs = speechSynthesis.getVoices().filter(function(v){ return /^it/i.test(v.lang); });
@@ -14336,22 +14505,14 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
     return nomi[0] || vs[0];
   }
   if('speechSynthesis' in window){ try{ speechSynthesis.onvoiceschanged = function(){ NR.voce = nrVoce(); }; NR.voce = nrVoce(); }catch(e){} }
-
   async function nrTesto(n){
     if(!RD.pdf) return '';
     try{
       var pg = await RD.pdf.getPage(n);
       var tc = await pg.getTextContent();
       var out = '';
-      tc.items.forEach(function(it){
-        var s = it.str || '';
-        out += s;
-        if(it.hasEOL) out += '\n'; else if(s && !/\s$/.test(s)) out += ' ';
-      });
-      return out.replace(/(\p{L})-\s*\n\s*(\p{L})/gu, '$1$2')
-                .replace(/\s*\n\s*/g, ' ')
-                .replace(/\s+([,.;:!?])/g, '$1')
-                .replace(/\s{2,}/g, ' ').trim();
+      tc.items.forEach(function(it){ var s = it.str || ''; out += s; if(it.hasEOL) out += '\n'; else if(s && !/\s$/.test(s)) out += ' '; });
+      return out.replace(/(\p{L})-\s*\n\s*(\p{L})/gu, '$1$2').replace(/\s*\n\s*/g, ' ').replace(/\s+([,.;:!?])/g, '$1').replace(/\s{2,}/g, ' ').trim();
     }catch(e){ return ''; }
   }
   function nrSpezza(t){
@@ -14370,33 +14531,135 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
     if(cur) out.push(cur);
     return out.filter(function(x){ return /\p{L}/u.test(x); });
   }
-  function nrUI(){
-    var bar = $('#rd-nar'); if(!bar) return;
-    bar.classList.toggle('on', NR.on);
-    bar.classList.toggle('play', NR.playing);
-    var pp = $('#nr-pp'); if(pp) pp.innerHTML = NR.playing ? SVG.pause : SVG.play;
-    var sp = $('#nr-sp'); if(sp) sp.textContent = String(NR.rate).replace('.', ',') + 'x';
-    var m = $('#nr-modo'); if(m) m.textContent = NR.modo === 'mp3' ? 'Voce narrante' : 'Lettura ad alta voce';
-    var t = $('#nr-t');
-    if(t){
-      if(NR.modo === 'mp3' && NR.audio){
-        var d = NR.audio.duration, c = NR.audio.currentTime || 0;
-        t.textContent = (RD.numero && RD.numero.titolo ? RD.numero.titolo : 'MentalClass Magazine') + (isFinite(d) && d ? ' · ' + fmtT(c) + ' / ' + fmtT(d) : '');
-      } else {
-        t.textContent = 'Pagina ' + (NR.pagina || RD.corrente) + ' di ' + RD.tot + (NR.vuota ? ' · solo immagini' : '');
-      }
-    }
-    var pr = $('#nr-pr');
-    if(pr){
-      var v = 0;
-      if(NR.modo === 'mp3' && NR.audio && NR.audio.duration) v = NR.audio.currentTime / NR.audio.duration;
-      else if(NR.chunks.length) v = NR.idx / NR.chunks.length;
-      pr.style.width = Math.round(v * 100) + '%';
-    }
-    var b = $('#rd-ic-nr'); if(b) b.style.visibility = NR.on ? 'hidden' : '';
-  }
-  function fmtT(s){ s = Math.max(0, Math.floor(s || 0)); var h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); }
 
+  /* ---------- interfaccia ---------- */
+  function fmtT(s){ s = Math.max(0, Math.floor(s || 0)); var h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); }
+  function nrCop(){ return (RD.numero && (RD.numero.copertina_url || '')) || ''; }
+  function nrTraccia(){ return NR.tracce[NR.ti] || null; }
+  function nrPagineTraccia(i){
+    var t = NR.tracce[i]; if(!t) return [1, 1];
+    var da = t.pagina || 1, a = (NR.tracce[i + 1] ? (NR.tracce[i + 1].pagina || da + 1) - 1 : RD.tot);
+    return [da, Math.max(da, a)];
+  }
+  function nrUI(){
+    var mini = $('#nr-mini'), sh = $('#nr-sheet'); if(!mini) return;
+    mini.classList.toggle('on', NR.on && !NR.aperto);
+    sh.classList.toggle('on', NR.on && NR.aperto);
+    $('#rd').classList.toggle('nr-on', NR.on && !NR.aperto);
+    [mini, sh].forEach(function(x){ x.classList.toggle('play', NR.playing); });
+    var icona = NR.playing ? SVG.pause : SVG.play;
+    if($('#nm-pp').innerHTML !== icona){ $('#nm-pp').innerHTML = icona; $('#ns-pp').innerHTML = icona; }
+    var cop = nrCop();
+    var cs = cop ? 'url("' + cop + '")' : '';
+    if($('#nm-cov').dataset.c !== cs){ $('#nm-cov').dataset.c = cs; ['#nm-cov', '#ns-cov', '#ns-bg'].forEach(function(s){ $(s).style.backgroundImage = cs; }); }
+    $('#ns-num').textContent = RD.numero ? [RD.numero.numero, RD.numero.titolo].filter(Boolean).join(' · ') : '';
+    var titolo = '', sotto = '', eye = '', c = 0, d = 0;
+    if(NR.modo === 'tracce'){
+      var t = nrTraccia() || {}, pp = nrPagineTraccia(NR.ti);
+      titolo = t.titolo || ('Capitolo ' + (NR.ti + 1));
+      eye = 'Capitolo ' + (NR.ti + 1) + ' di ' + NR.tracce.length;
+      sotto = pp[0] === pp[1] ? 'Pagina ' + pp[0] : 'Pagine ' + pp[0] + '–' + pp[1];
+    } else if(NR.modo === 'mp3'){
+      titolo = (RD.numero && RD.numero.titolo) || 'Il numero completo'; eye = 'Voce narrante'; sotto = 'Numero intero';
+    } else {
+      titolo = 'Pagina ' + (NR.pagina || RD.corrente) + ' di ' + RD.tot; eye = 'Lettura ad alta voce'; sotto = NR.vuota ? 'Pagina di sole immagini' : 'Voce del telefono';
+    }
+    if(NR.modo !== 'voce' && NR.audio){ c = NR.audio.currentTime || 0; d = NR.audio.duration || 0; }
+    var v = NR.modo === 'voce' ? (NR.chunks.length ? NR.idx / NR.chunks.length : 0) : (d ? c / d : 0);
+    $('#nm-t').textContent = titolo; $('#nm-s').textContent = eye + (NR.modo === 'voce' ? '' : ' · ' + sotto);
+    $('#ns-e').textContent = eye; $('#ns-t').textContent = titolo; $('#ns-s').textContent = sotto;
+    $('#nm-pr').style.width = (v * 100).toFixed(1) + '%';
+    $('#ns-fill').style.width = (v * 100).toFixed(1) + '%'; $('#ns-dot').style.left = (v * 100).toFixed(1) + '%';
+    $('#ns-a').textContent = NR.modo === 'voce' ? 'Frase ' + Math.min(NR.idx + 1, Math.max(1, NR.chunks.length)) : fmtT(c);
+    $('#ns-b').textContent = NR.modo === 'voce' ? 'di ' + Math.max(1, NR.chunks.length) : (d && isFinite(d) ? '-' + fmtT(d - c) : '');
+    $('#ns-vel b').textContent = String(NR.rate).replace('.', ',') + 'x';
+    var tl = $('#ns-tim-l');
+    if(tl){ tl.textContent = NR.timerCap ? 'Fine capitolo' : (NR.timerFine ? Math.max(1, Math.ceil((NR.timerFine - Date.now()) / 60000)) + ' min' : 'Timer'); $('#ns-tim').classList.toggle('on', !!(NR.timerCap || NR.timerFine)); }
+    sh.classList.toggle('no-cap', NR.modo !== 'tracce');
+    if(NR.modo === 'tracce'){
+      var caps = $('#ns-caps');
+      if(caps.dataset.n !== String(NR.tracce.length) + '-' + (RD.numero && RD.numero.id)){
+        caps.dataset.n = String(NR.tracce.length) + '-' + (RD.numero && RD.numero.id);
+        caps.innerHTML = '<div class="nc-h">Capitoli</div>' + NR.tracce.map(function(t, i){
+          var pp = nrPagineTraccia(i);
+          return '<button class="nc" data-i="' + i + '" onclick="mcNarra(\'cap\',' + i + ')"><span class="nc-n">' + String(i + 1).padStart(2, '0') + '</span>' +
+            '<span class="nc-tx"><b>' + esc(t.titolo || ('Capitolo ' + (i + 1))) + '</b><span>pag. ' + pp[0] + (t.durata ? ' · ' + Math.max(1, Math.round(t.durata / 60)) + ' min' : '') + '</span></span>' +
+            '<span class="nc-eq" aria-hidden="true"><i></i><i></i><i></i></span></button>';
+        }).join('');
+      }
+      $$('.nc', caps).forEach(function(b){ b.classList.toggle('on', +b.dataset.i === NR.ti); });
+    }
+    rdAggiorna();
+  }
+
+  /* ---------- audio (tracce o file unico) ---------- */
+  function nrAudio(){
+    if(NR.audio) return NR.audio;
+    var a = NR.audio = new Audio(); a.preload = 'auto';
+    a.addEventListener('timeupdate', function(){ nrSegui(); nrUI(); });
+    a.addEventListener('loadedmetadata', nrUI);
+    a.addEventListener('play', function(){ if(NR.modo !== 'voce'){ NR.playing = true; nrUI(); } });
+    a.addEventListener('pause', function(){ if(NR.modo !== 'voce'){ NR.playing = false; nrUI(); } });
+    a.addEventListener('ended', function(){
+      if(NR.modo === 'tracce' && NR.ti < NR.tracce.length - 1 && !NR.timerCap){ nrTracciaVai(NR.ti + 1, 0, true); return; }
+      if(NR.timerCap){ NR.timerCap = false; }
+      NR.playing = false; nrUI();
+    });
+    return a;
+  }
+  function nrTracciaVai(i, frac, suona, noPagina){
+    var t = NR.tracce[i]; if(!t || !t.url) return;
+    var a = nrAudio();
+    NR.ti = i;
+    if(a.dataset.u !== t.url){ a.src = t.url; a.dataset.u = t.url; }
+    a.playbackRate = NR.rate;
+    var vai = function(){ try{ a.currentTime = frac && a.duration ? frac * a.duration : 0; }catch(e){} };
+    if(a.readyState >= 1) vai(); else a.addEventListener('loadedmetadata', vai, { once:true });
+    if(suona){ a.play().catch(function(){ NR.playing = false; nrUI(); }); }
+    if(!noPagina) nrPagina(nrPagineTraccia(i)[0], true);
+    nrUI();
+  }
+  /* hai girato tu la pagina? allora l'ascolto ti segue */
+  function nrMano(){
+    if(!NR.on || NR.girando || !RD.corrente) return false;
+    var cambiata = RD.corrente !== NR.ultimaPag && RD.corrente !== NR.auto && !RD.staGirando;
+    NR.ultimaPag = RD.corrente;
+    if(RD.corrente === NR.auto) NR.auto = 0;
+    if(!cambiata) return false;
+    if(NR.modo === 'tracce'){
+      NR.manoA = Date.now();
+      var i = 0; NR.tracce.forEach(function(t, k){ if((t.pagina || 1) <= RD.corrente) i = k; });
+      var pp = nrPagineTraccia(i), n = pp[1] - pp[0] + 1;
+      var a = nrAudio();
+      if(i !== NR.ti){ nrTracciaVai(i, (RD.corrente - pp[0]) / n, NR.playing, true); }
+      else if(a.duration){ a.currentTime = (RD.corrente - pp[0]) / n * a.duration; }
+      nrSessione();
+    } else if(NR.modo === 'voce' && !nrPaginaVisibile(NR.pagina)){
+      nrTaci();
+      if(NR.playing) nrDaQui(NR.token); else nrCarica(RD.corrente);
+    }
+    return true;
+  }
+  /* la pagina segue l'audio, distribuendo il capitolo sulle sue pagine */
+  function nrSegui(){
+    if(NR.modo !== 'tracce' || !NR.audio || !NR.audio.duration) return;
+    if(nrMano()) return;
+    if(Date.now() - NR.manoA < 6000) return;          /* hai appena girato tu: ti lascio leggere */
+    var pp = nrPagineTraccia(NR.ti), n = pp[1] - pp[0] + 1;
+    var p = pp[0] + Math.min(n - 1, Math.floor(NR.audio.currentTime / NR.audio.duration * n));
+    nrPagina(p, false);
+  }
+  function nrPagina(p, subito){
+    if(!p || p === RD.corrente || RD.staGirando || RD.inAttesa) return;
+    try{ if(nrPaginaVisibile(p)) return; }catch(e){}
+    NR.auto = p;
+    if(p === RD.corrente + 1 && !subito){ try{ rdVai(1); }catch(e){} }
+    else { try{ rdApri(p); }catch(e){} }
+    NR.ultimaPag = RD.corrente;
+  }
+  function nrPaginaVisibile(p){ try{ return rdPagineDi(RD.corrente).indexOf(p) >= 0; }catch(e){ return p === RD.corrente; } }
+
+  /* ---------- voce del telefono ---------- */
   function nrTaci(){ NR.token++; try{ speechSynthesis.cancel(); }catch(e){} }
   function nrParla(){
     if(!NR.playing || NR.modo !== 'voce') return;
@@ -14411,135 +14674,155 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
       var er = ev && ev.error;
       if(er === 'interrupted' || er === 'canceled') return;
       NR.errori = (NR.errori || 0) + 1;
-      if(er === 'not-allowed' || NR.errori >= 2){
-        fatto = true; NR.playing = false; NR.errori = 0; nrUI();
-        try{ toast('La voce del telefono non risponde: tocca ▶ per riprovare'); }catch(e){}
-        return;
-      }
+      if(er === 'not-allowed' || NR.errori >= 2){ fatto = true; NR.playing = false; NR.errori = 0; nrUI(); try{ toast('La voce del telefono non risponde: tocca ▶ per riprovare'); }catch(e){} return; }
       poi();
     };
     try{ speechSynthesis.speak(u); }catch(e){ poi(); }
   }
   async function nrCarica(n){
     NR.pagina = n;
-    var t = await nrTesto(n);
-    NR.chunks = nrSpezza(t); NR.idx = 0; NR.vuota = !NR.chunks.length;
+    NR.chunks = nrSpezza(await nrTesto(n)); NR.idx = 0; NR.vuota = !NR.chunks.length;
     nrUI();
   }
-  function nrPagineVisibili(){ try{ return rdPagineDi(RD.corrente); }catch(e){ return [RD.corrente]; } }
   async function nrAvanti(tok){
-    /* resta un'altra pagina visibile (due pagine affiancate)? */
     if(NR.coda.length){
       await nrCarica(NR.coda.shift());
       if(tok !== NR.token) return;
-      if(NR.vuota){ setTimeout(function(){ if(tok === NR.token) nrParla(); }, 900); } else nrParla();
+      if(NR.vuota) setTimeout(function(){ if(tok === NR.token) nrParla(); }, 900); else nrParla();
       return;
     }
-    if(RD.corrente >= RD.tot){ NR.playing = false; nrUI(); var t = $('#nr-t'); if(t) t.textContent = 'Fine del numero'; return; }
-    var prima = RD.corrente;
+    if(NR.timerCap){ NR.timerCap = false; NR.playing = false; nrUI(); return; }
+    if(RD.corrente >= RD.tot){ NR.playing = false; nrUI(); return; }
+    var prima = RD.corrente, tentativi = 0;
     NR.girando = true;
-    var tentativi = 0;
     (function prova(){
-      if(tok !== NR.token) { NR.girando = false; return; }
-      if(RD.corrente === prima){ if(!RD.staGirando && !RD.inAttesa) try{ rdVai(1); }catch(e){} }
-      if(RD.corrente !== prima && !RD.staGirando && !RD.inAttesa){
-        NR.girando = false;
-        nrDaQui(tok);
-        return;
-      }
+      if(tok !== NR.token){ NR.girando = false; return; }
+      if(RD.corrente === prima && !RD.staGirando && !RD.inAttesa){ NR.auto = prima + 1; try{ rdVai(1); }catch(e){} }
+      if(RD.corrente !== prima && !RD.staGirando && !RD.inAttesa){ NR.girando = false; NR.ultimaPag = RD.corrente; nrDaQui(tok); return; }
       if(++tentativi > 60){ NR.girando = false; NR.playing = false; nrUI(); return; }
       setTimeout(prova, 180);
     })();
   }
   async function nrDaQui(tok){
-    var vis = nrPagineVisibili();
+    var vis; try{ vis = rdPagineDi(RD.corrente); }catch(e){ vis = [RD.corrente]; }
     NR.coda = vis.slice(1);
     await nrCarica(vis[0]);
     if(tok !== undefined && tok !== NR.token) return;
     var mio = NR.token;
-    if(NR.vuota){ setTimeout(function(){ if(mio === NR.token) nrParla(); }, 1400); } else nrParla();
+    if(NR.vuota) setTimeout(function(){ if(mio === NR.token) nrParla(); }, 1400); else nrParla();
   }
 
-  async function nrAvvia(){
-    NR.on = true; NR.playing = true;
-    msAttivo = 'rivista';
+  /* ---------- avvio e stop ---------- */
+  function nrSessione(){
     var titolo = 'MentalClass Magazine' + (RD.numero && RD.numero.titolo ? ' · ' + RD.numero.titolo : '');
+    var art = nrCop() ? [{ src:nrCop(), sizes:'600x800', type:'image/jpeg' }] : [];
+    if(!('mediaSession' in navigator)) return;
+    try{
+      navigator.mediaSession.metadata = new MediaMetadata({ title:(NR.modo === 'tracce' && nrTraccia() && nrTraccia().titolo) || titolo, artist:'MentalClass Magazine', album:titolo, artwork:art });
+      var h = {
+        play:function(){ if(!NR.playing) mcNarra('pp'); }, pause:function(){ if(NR.playing) mcNarra('pp'); },
+        seekbackward:function(){ mcNarra('meno15'); }, seekforward:function(){ mcNarra('piu15'); },
+        previoustrack:function(){ mcNarra('capPrev'); }, nexttrack:function(){ mcNarra('capNext'); }
+      };
+      Object.keys(h).forEach(function(k){ try{ navigator.mediaSession.setActionHandler(k, h[k]); }catch(e){} });
+    }catch(e){}
+  }
+  async function nrAvvia(){
+    NR.on = true; NR.aperto = true; NR.playing = true; NR.ultimaPag = RD.corrente;
     try{ var pl = document.getElementById('audio-vero'); if(pl && !pl.paused) togglePlay(); }catch(e){}
-    if(RD.numero.audio_path){
-      NR.modo = 'mp3'; nrUI();
-      var url = null;
-      try{ if(MC.magazine.linkNarrazione) url = await MC.magazine.linkNarrazione(RD.numero); }catch(e){}
-      if(!url){
-        if(RD.pdf && 'speechSynthesis' in window){ NR.modo = 'voce'; }
-        else { NR.on = false; NR.playing = false; nrUI(); try{ toast('Narrazione non disponibile in questo momento'); }catch(e){} return; }
-      } else {
-        if(!NR.audio){
-          NR.audio = new Audio(); NR.audio.preload = 'auto';
-          NR.audio.addEventListener('timeupdate', nrUI);
-          NR.audio.addEventListener('loadedmetadata', nrUI);
-          NR.audio.addEventListener('ended', function(){ NR.playing = false; nrUI(); });
-          NR.audio.addEventListener('pause', function(){ if(NR.modo === 'mp3'){ NR.playing = false; nrUI(); } });
-          NR.audio.addEventListener('play', function(){ if(NR.modo === 'mp3'){ NR.playing = true; nrUI(); } });
-        }
-        if(NR.audio.dataset.n !== String(RD.numero.id)){ NR.audio.src = url; NR.audio.dataset.n = String(RD.numero.id); }
-        NR.audio.playbackRate = NR.rate;
-        try{ await NR.audio.play(); }catch(e){ NR.playing = false; }
-        msImposta(titolo, 'MentalClass', {
-          play:function(){ NR.audio.play(); }, pause:function(){ NR.audio.pause(); },
-          seekbackward:function(){ NR.audio.currentTime = Math.max(0, NR.audio.currentTime - 15); },
-          seekforward:function(){ NR.audio.currentTime = NR.audio.currentTime + 15; }
-        });
-        nrUI(); return;
+    var n = RD.numero;
+    if(nrHaTracce()){
+      NR.modo = 'tracce'; nrUI();
+      var lista = null;
+      try{ if(MC.magazine.linkTracce) lista = await MC.magazine.linkTracce(n); }catch(e){}
+      if(lista && lista.length){
+        NR.tracce = lista.slice().sort(function(a, b){ return (a.pagina || 0) - (b.pagina || 0); });
+        /* parto dal capitolo della pagina che stai leggendo */
+        var i = 0; NR.tracce.forEach(function(t, k){ if((t.pagina || 1) <= RD.corrente) i = k; });
+        nrTracciaVai(i, 0, true); nrSessione(); return;
       }
     }
-    NR.modo = 'voce';
-    if(!NR.voce) NR.voce = nrVoce();
-    nrTaci();
-    msImposta(titolo, 'MentalClass', {
-      play:function(){ if(!NR.playing) mcNarra('pp'); }, pause:function(){ if(NR.playing) mcNarra('pp'); },
-      nexttrack:function(){ mcNarra('next'); }, previoustrack:function(){ mcNarra('prev'); }
-    });
-    nrUI();
-    await nrDaQui(NR.token);
+    if(n.audio_path){
+      var url = null;
+      try{ if(MC.magazine.linkNarrazione) url = await MC.magazine.linkNarrazione(n); }catch(e){}
+      if(url){
+        NR.modo = 'mp3'; var a = nrAudio();
+        if(a.dataset.u !== url){ a.src = url; a.dataset.u = url; }
+        a.playbackRate = NR.rate;
+        a.play().catch(function(){ NR.playing = false; nrUI(); });
+        nrSessione(); nrUI(); return;
+      }
+    }
+    if(RD.pdf && 'speechSynthesis' in window){
+      NR.modo = 'voce'; if(!NR.voce) NR.voce = nrVoce();
+      nrTaci(); nrSessione(); nrUI();
+      await nrDaQui(NR.token); return;
+    }
+    NR.on = false; NR.playing = false; nrUI();
+    try{ toast('Ascolto non disponibile in questo momento'); }catch(e){}
   }
   function nrStop(){
     nrTaci();
     if(NR.audio){ try{ NR.audio.pause(); }catch(e){} }
-    NR.on = false; NR.playing = false; NR.coda = []; NR.chunks = []; NR.girando = false;
+    clearTimeout(NR.timer); NR.timer = null; NR.timerFine = 0; NR.timerCap = false;
+    NR.on = false; NR.aperto = false; NR.playing = false; NR.coda = []; NR.chunks = []; NR.girando = false;
     nrUI();
   }
-
-  window.mcNarra = function(az){
+  window.mcNarraSeek = function(ev){
+    var b = $('#ns-bar'), r = b.getBoundingClientRect(), f = Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width));
+    if(NR.modo === 'voce'){ nrTaci(); NR.idx = Math.floor(f * NR.chunks.length); NR.playing = true; nrParla(); nrUI(); return; }
+    if(NR.audio && NR.audio.duration){ NR.audio.currentTime = f * NR.audio.duration; NR.manoA = 0; }
+  };
+  window.mcNarra = function(az, arg){
     if(!az){
       if(!nrDisponibile()) return;
       if(!abbonato()){ var l = $('#nr-lock'); if(l) l.classList.add('on'); return; }
+      if(NR.on){ NR.aperto = true; nrUI(); return; }
       nrAvvia(); return;
     }
+    if(az === 'leggi'){ if(NR.on){ NR.aperto = false; nrUI(); } return; }
+    if(az === 'apri'){ NR.aperto = true; nrUI(); return; }
+    if(az === 'riduci'){ NR.aperto = false; nrUI(); return; }
     if(az === 'chiudi'){ nrStop(); return; }
     if(az === 'vel'){
       NR.rate = VEL[(VEL.indexOf(NR.rate) + 1) % VEL.length];
-      if(NR.modo === 'mp3' && NR.audio) NR.audio.playbackRate = NR.rate;
-      else if(NR.playing){ nrTaci(); nrParla(); }
+      if(NR.audio) NR.audio.playbackRate = NR.rate;
+      if(NR.modo === 'voce' && NR.playing){ nrTaci(); nrParla(); }
       nrUI(); return;
     }
-    if(NR.modo === 'mp3' && NR.audio){
-      if(az === 'pp'){ if(NR.audio.paused) NR.audio.play(); else NR.audio.pause(); }
-      if(az === 'prev') NR.audio.currentTime = Math.max(0, NR.audio.currentTime - 15);
-      if(az === 'next') NR.audio.currentTime = NR.audio.currentTime + 15;
+    if(az === 'timer'){
+      /* spento → 15 → 30 → fine capitolo → spento */
+      clearTimeout(NR.timer); NR.timer = null;
+      if(!NR.timerFine && !NR.timerCap){ NR.timerFine = Date.now() + 15 * 60000; }
+      else if(NR.timerFine && NR.timerFine - Date.now() <= 15 * 60000){ NR.timerFine = Date.now() + 30 * 60000; }
+      else if(NR.timerFine){ NR.timerFine = 0; NR.timerCap = true; }
+      else { NR.timerCap = false; }
+      if(NR.timerFine){ NR.timer = setTimeout(function(){ NR.timerFine = 0; if(NR.playing) mcNarra('pp'); nrUI(); }, NR.timerFine - Date.now()); }
+      try{ toast(NR.timerCap ? 'Si ferma alla fine del capitolo' : (NR.timerFine ? 'Si ferma tra ' + Math.round((NR.timerFine - Date.now()) / 60000) + ' minuti' : 'Timer spento')); }catch(e){}
       nrUI(); return;
     }
-    if(az === 'pp'){
-      if(NR.playing){ NR.playing = false; nrTaci(); }
-      else { NR.playing = true; if(!NR.chunks.length && !NR.vuota) nrDaQui(NR.token); else nrParla(); }
+    if(NR.modo === 'voce'){
+      if(az === 'pp'){
+        if(NR.playing){ NR.playing = false; nrTaci(); }
+        else { NR.playing = true; if(!NR.chunks.length && !NR.vuota) nrDaQui(NR.token); else nrParla(); }
+      }
+      if(az === 'meno15' || az === 'capPrev'){ nrTaci(); NR.idx = Math.max(0, NR.idx - (az === 'capPrev' ? 99 : 1)); NR.playing = true; nrParla(); }
+      if(az === 'piu15'){ nrTaci(); NR.idx = Math.min(NR.chunks.length, NR.idx + 1); NR.playing = true; nrParla(); }
+      if(az === 'capNext'){ nrTaci(); NR.idx = NR.chunks.length; NR.playing = true; nrParla(); }
       nrUI(); return;
     }
-    if(az === 'prev' || az === 'next'){
-      /* entro la pagina: frase precedente o successiva */
-      nrTaci();
-      if(az === 'prev') NR.idx = Math.max(0, NR.idx - 1);
-      else NR.idx = Math.min(NR.chunks.length, NR.idx + 1);
-      NR.playing = true; nrUI(); nrParla();
+    var a = NR.audio; if(!a) return;
+    if(az === 'pp'){ if(a.paused) a.play().catch(function(){}); else a.pause(); }
+    if(az === 'meno15') a.currentTime = Math.max(0, a.currentTime - 15);
+    if(az === 'piu15') a.currentTime = Math.min((a.duration || 1e9) - 0.5, a.currentTime + 15);
+    if(NR.modo === 'tracce'){
+      if(az === 'capPrev'){ if(a.currentTime > 4 || NR.ti === 0) a.currentTime = 0; else nrTracciaVai(NR.ti - 1, 0, true); }
+      if(az === 'capNext' && NR.ti < NR.tracce.length - 1) nrTracciaVai(NR.ti + 1, 0, true);
+      if(az === 'cap'){ nrTracciaVai(arg, 0, true); NR.aperto = false; }
+      if(az === 'meno15' || az === 'piu15' || az === 'capPrev'){ NR.manoA = 0; }
+      nrSessione();
     }
+    nrUI();
   };
 
   /* controllo continuo: pagina girata a mano, uscita dalla rivista */
@@ -14548,10 +14831,7 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
     if(inReader) rdAggiorna();
     if(!NR.on) return;
     if(!inReader){ nrStop(); return; }
-    if(NR.modo === 'voce' && !NR.girando && RD.corrente && nrPagineVisibili().indexOf(NR.pagina) < 0){
-      nrTaci();
-      if(NR.playing) nrDaQui(NR.token); else nrCarica(RD.corrente);
-    }
+    nrMano();
   }, 500);
 
   /* =====================================================

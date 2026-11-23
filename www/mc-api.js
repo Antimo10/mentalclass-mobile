@@ -733,6 +733,17 @@ const MC = (function(){
       return data.signedUrl;
     },
 
+    /* Narrazione divisa in capitoli: [{path, pagina, titolo, durata}]
+       -> stessi dati con il link firmato. Solo abbonati. */
+    async linkTracce(numero){
+      const t = numero && Array.isArray(numero.audio_tracce) ? numero.audio_tracce : [];
+      if(!t.length || !abbonato()) return null;
+      const { data, error } = await sb.storage.from('magazine')
+        .createSignedUrls(t.map(x => x.path), 14400);
+      if(error || !data) return null;
+      return t.map((x, i) => Object.assign({}, x, { url: data[i] && data[i].signedUrl })).filter(x => x.url);
+    },
+
     async salvaLettura(numeroId, ultimaPagina){
       richiediLogin();
       const { error } = await sb.from('letture_magazine').upsert({

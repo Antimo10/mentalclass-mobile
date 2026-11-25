@@ -7,9 +7,9 @@
    Sono chiavi pubbliche: possono stare nel codice.
    ===================================================================== */
 (function(){
-  var CHIAVE_IOS     = '';   // inizia con appl_
+  var CHIAVE_IOS     = 'appl_HgEenTknhyoTCFByeDLfvvKfZmC';   // chiave pubblica iOS di RevenueCat
   var CHIAVE_ANDROID = '';   // inizia con goog_
-  var ENTITLEMENT    = 'premium';
+  var ENTITLEMENT    = 'mentalclass_pro';   /* identificativo dell'entitlement su RevenueCat */
 
   var pronto = false, utenteCollegato = null, offerte = null;
 
@@ -69,9 +69,14 @@
     }catch(e){ console.warn('Offerte:', e && e.message); return null; }
   }
 
+  /* Premium attivo: l'entitlement MentalClass, oppure qualsiasi entitlement attivo
+     (cosi' un cambio di nome su RevenueCat non blocca chi ha pagato) */
   function attivo(info){
-    try{ return !!(info && info.entitlements && info.entitlements.active && info.entitlements.active[ENTITLEMENT]); }
-    catch(e){ return false; }
+    try{
+      var att = info && info.entitlements && info.entitlements.active;
+      if(!att) return false;
+      return !!(att[ENTITLEMENT] || att.premium || Object.keys(att).length > 0);
+    }catch(e){ return false; }
   }
 
   /* Acquisto: true = Premium attivo, false = annullato dalla persona */

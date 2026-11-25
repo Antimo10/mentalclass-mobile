@@ -6069,7 +6069,7 @@ document.addEventListener('DOMContentLoaded', function(){
                    (b && RD.pagine[b-1] && RD.pagine[b-1].bloccata);
 
     /* con il PDF ridotto: arrivato all'ultima pagina, invito ad abbonarsi */
-    if(!bloccata && RD.soloAnteprima && !MCabbonato() && RD.corrente >= RD.tot) bloccata = true;
+    if(!bloccata && RD.soloAnteprima && !MCabbonato() && RD.oltreAnteprima) bloccata = true;
     var lock = document.getElementById('rd-lock');
     lock.classList.toggle('show', !!bloccata);
     if(bloccata){
@@ -8342,7 +8342,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function iapPronti(){ return !!(window.MCI && MCI.disponibile()); }
   function acquistiIAP(){ return eAppNativa() && MC_ACQUISTI_APP === 'iap' && iapPronti(); }
   /* senza chiavi, per sicurezza l'app non mostra pulsanti di acquisto */
-  function acquistiNascosti(){ return eAppNativa() && (MC_ACQUISTI_APP === 'nessuno' || (MC_ACQUISTI_APP === 'iap' && !iapPronti())); }
+  function acquistiNascosti(){ return eAppNativa() && MC_ACQUISTI_APP === 'nessuno'; }
   function acquistiConLink(){ return eAppNativa() && MC_ACQUISTI_APP === 'link'; }
   function apriAbbonamentoSulSito(){
     try{ var w = window.open(MC_SITO_ABBONAMENTO, '_blank'); if(!w) window.location.href = MC_SITO_ABBONAMENTO; }
@@ -8526,6 +8526,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(acquistiNascosti()){ toast('In questa app non è possibile acquistare abbonamenti.'); return; }
     if(acquistiConLink()){ apriAbbonamentoSulSito(); return; }
     if(acquistiIAP()){ return acquistaInApp(codice); }
+    if(eAppNativa() && MC_ACQUISTI_APP === 'iap'){ toast('Gli abbonamenti nell\'app si stanno attivando: riprova tra qualche minuto.'); return; }
     if(!COLLEGATO){ toast('Il pagamento si attiva con il backend collegato'); return; }
     if(!MC.utenteCorrente()){ toast('Accedi per abbonarti'); return; }
     var btn = document.getElementById('plan-btn-' + codice);
@@ -12460,7 +12461,7 @@ document.addEventListener('DOMContentLoaded', function(){
   /* init */
   applyPersonalization();
   if(eAppNativa()) document.body.classList.add('native');
-  if(acquistiIAP()){
+  if(acquistiIAP() || (eAppNativa() && MC_ACQUISTI_APP === 'iap')){
     document.body.classList.add('acquisti-app');
     try{ if(window.Capacitor.getPlatform() === 'android') document.querySelectorAll('.iap-store').forEach(function(e){ e.textContent = 'Google Play'; }); }catch(e){}
   }
@@ -13887,6 +13888,7 @@ body.native.mini-on .fab{ bottom:calc(env(safe-area-inset-bottom) + 170px) !impo
 
 
 
+
 <style id="mc-marea-v4">
 /* =========================================================
    MentalClass · strato v4
@@ -14117,6 +14119,7 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
 .mc-sconto .ms-cta:active{ transform:scale(.97); }
 .mc-sconto .ms-cta:focus-visible{ outline:2px solid var(--cream); outline-offset:3px; }
 .mc-sconto .ms-n{ margin-top:10px; font-size:11.5px; color:rgba(241,237,226,.55); }
+#s-plan .price-grid.pl-v3 .p-card .pp{ display:flex !important; align-items:baseline; flex-wrap:wrap; gap:2px 8px; }
 #s-plan .mc-anc{ display:flex; flex-direction:column; gap:3px; margin:-6px 0 14px; }
 #s-plan .mc-anc .ma-x{ font-size:12.5px; color:rgba(241,237,226,.55); }
 #s-plan .mc-anc .ma-y{ font-size:13.5px; color:var(--cream); }
@@ -15321,7 +15324,9 @@ body.mini-on .pc-cta{ bottom:calc(env(safe-area-inset-bottom) + 170px); }
     return p;
   }
   function eWeb(){ try{ return !eAppNativa(); }catch(e){ return true; } }
-  function acqIAP(){ try{ return !!acquistiIAP(); }catch(e){ return false; } }
+  /* app iPhone con abbonamenti Apple: la pagina abbonamento e l'invito si mostrano sempre;
+     l'acquisto vero parte quando RevenueCat e' pronto */
+  function acqIAP(){ try{ return !!acquistiIAP() || (eAppNativa() && window.MC_ACQUISTI_APP === 'iap'); }catch(e){ return false; } }
   function puoComprare(){ return eWeb() || acqIAP(); }
 
   /* ricordo i dettagli dell'ultimo codice verificato (durata, scadenza) */
@@ -15492,6 +15497,32 @@ body.mini-on .pc-cta{ bottom:calc(env(safe-area-inset-bottom) + 170px); }
     };
   })();
   setInterval(function(){ if(document.body.getAttribute('data-screen') === 'plan') codiceApp(); }, 800);
+
+
+  /* ===== Rivista: l'anteprima finisce → il blocco e l'invito salgono da soli ===== */
+  (function(){
+    var o = window.rdVai; if(typeof o !== 'function') return;
+    window.rdVai = function(dir){
+      try{
+        if(dir > 0 && RD.soloAnteprima && !abbonato() && RD.corrente >= RD.tot){
+          RD.oltreAnteprima = true;
+          try{ rdBloccoAnteprima(RD.corrente); }catch(e){ var l = document.getElementById('rd-lock'); if(l) l.classList.add('show'); }
+          return;
+        }
+      }catch(e){}
+      return o.apply(this, arguments);
+    };
+    var lock = document.getElementById('rd-lock'), visto = {};
+    if(lock) new MutationObserver(function(){
+      if(!lock.classList.contains('show') || abbonato()) return;
+      var k = (window.RD && RD.numero && RD.numero.id) || 'x';
+      if(visto[k]) return; visto[k] = 1;
+      setTimeout(function(){ mcUpsell('magazine'); }, 450);
+    }).observe(lock, { attributes:true, attributeFilter:['class'] });
+    /* tornando indietro dall'ultima pagina il blocco si toglie */
+    var bk = window.rdVai;
+    window.rdVai = function(dir){ if(dir < 0 && window.RD && RD.oltreAnteprima){ RD.oltreAnteprima = false; var l = document.getElementById('rd-lock'); if(l) l.classList.remove('show'); return; } return bk.apply(this, arguments); };
+  })();
 
   /* =====================================================
      PLAYER: icone ±15 secondi e salvataggio offline

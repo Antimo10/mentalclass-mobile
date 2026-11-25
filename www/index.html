@@ -2824,7 +2824,7 @@ document.addEventListener('DOMContentLoaded', function(){
   <div class="app-shell">
 
     <aside class="side">
-      <span class="logo" style="cursor:pointer;" onclick="backToLanding()"></span>
+      <span class="logo" style="cursor:pointer;" onclick="goScreen('home')" role="button" aria-label="Vai alla Home"></span>
       <nav class="navi">
         <button data-s="home" class="on" onclick="goScreen('home')"><svg viewBox="0 0 24 24"><path d="M4 11L12 4l8 7M6 10v9h12v-9"/></svg>Home</button>
         <button data-s="audio" onclick="goScreen('audio')"><svg viewBox="0 0 24 24"><path d="M9 18V6l11-2v12M9 18a3 3 0 11-3-3M20 16a3 3 0 11-3-3"/></svg>Audio</button>
@@ -3219,7 +3219,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 <div class="rd-lock-em">📖</div>
                 <h4>L'anteprima finisce qui</h4>
                 <p id="rd-lock-txt">Il numero prosegue con articoli, interviste e rubriche. L'abbonamento apre tutta MentalClass.</p>
-                <button class="btn btn-lime" onclick="goScreen('plan')">Continua a leggere</button>
+                <button class="btn btn-lime" onclick="mcUpsell('magazine')">Continua a leggere</button>
                 <div class="rd-lock-back" onclick="rdVai(-1)">‹ Torna indietro</div>
               </div>
             </div>
@@ -5529,7 +5529,7 @@ document.addEventListener('DOMContentLoaded', function(){
         continue;
       }
 
-      var chiuso = !a.gratuito && !abbonato;
+      var chiuso = !abbonato && a.ordine !== 1;
       var st = prog[a.id];
       var stato = st && st.completato ? '✓ completato'
                 : (st && st.posizione_sec > 5 ? 'ripreso a ' + fmt(st.posizione_sec) : '');
@@ -5537,11 +5537,11 @@ document.addEventListener('DOMContentLoaded', function(){
       var sotto = [a.sottotitolo || a.descrizione || '', min, stato].filter(Boolean).join(' · ');
 
       html += '<div class="ep-row' + (chiuso ? ' locked' : '') + '" onclick="' +
-          (chiuso ? "goScreen('plan')" : "apriAudioVero('" + a.id + "')") + '">' +
+          (chiuso ? "mcUpsell('percorso')" : "apriAudioVero('" + a.id + "')") + '">' +
         '<div class="num">' + gg + '</div>' +
-        '<div class="pb ' + (chiuso ? 'lock">🔒' : 'play">▶') + '</div>' +
+        '<div class="pb ' + (chiuso ? 'lock">' : 'play">▶') + '</div>' +
         '<div class="tt"><b>' + escapeHtml(a.titolo) + '</b><span>' + escapeHtml(sotto) + '</span></div>' +
-        (a.gratuito ? '<span class="badge-free">Gratis</span>' : '') +
+        ((!abbonato && a.ordine === 1) ? '<span class="badge-free">Gratis</span>' : '') +
         '<span class="fav" onclick="event.stopPropagation();preferitoAudio(this,\'' + a.id + '\')">♡</span>' +
       '</div>';
     }
@@ -5577,8 +5577,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     if(MCabbonato()) return { accesso:'tutto' };
     if(a){
-      if(a.gratuito) return { accesso:'tutto' };
       if(a.percorso_id) return (a.ordine === 1) ? { accesso:'tutto' } : { accesso:'niente' };
+      if(a.gratuito) return { accesso:'tutto' };
       return { accesso:'parziale', quota: ANTEPRIMA_QUOTA };
     }
     var ctx = state.playerCtx || {};
@@ -8752,8 +8752,13 @@ document.addEventListener('DOMContentLoaded', function(){
     var _vecchiaFascia = state.notifFrom + '-' + state.notifTo;
     if(p.notif_da) state.notifFrom = String(p.notif_da).slice(0,5);
     if(p.notif_a)  state.notifTo   = String(p.notif_a).slice(0,5);
-    if(p.notif_frasi) state.notifPrefs.frasi = p.notif_frasi;
+    var _vecchiePref = JSON.stringify(state.notifPrefs) + '|' + (window._mcPianoNotif || '');
+    if(p.notif_frasi != null) state.notifPrefs.frasi = p.notif_frasi;
+    if(p.notif_pensieri != null) state.notifPrefs.pensieri = p.notif_pensieri;
+    if(p.notif_dizionario != null) state.notifPrefs.dizionario = p.notif_dizionario;
+    window._mcPianoNotif = state.plan;
     if(typeof p.suoni === 'boolean') state.sounds = p.suoni;
+    if(eAppNativa() && _vecchiePref !== JSON.stringify(state.notifPrefs) + '|' + state.plan && typeof programmaNotificheApp === 'function') programmaNotificheApp();
     /* l'orario vero arriva dopo la prima programmazione: se e' diverso, riprogrammo */
     state.notifProfiloLetto = true;
     if(eAppNativa() && (state.notifFrom + '-' + state.notifTo) !== _vecchiaFascia && typeof programmaNotificheApp === 'function') programmaNotificheApp();
@@ -9310,7 +9315,7 @@ document.addEventListener('DOMContentLoaded', function(){
             (eAppNativa() ? 'Le prossime arrivano domani, nella tua fascia ' + fmtRange() + '.' : 'Le prossime sono qui domani.') +
             ((premF || document.body.classList.contains('no-acquisti')) ? ' Nel frattempo la mente si allena con un audio.' : ' Con l\'abbonamento ne ricevi 3 al giorno.') + '</p>' +
             ((premF || document.body.classList.contains('no-acquisti')) ? '<button class="btn btn-lime" style="padding:12px 22px;font-size:13px;" onclick="goScreen(\'audio\')">Passa agli audio</button>'
-                   : '<button class="btn btn-lime" style="padding:12px 22px;font-size:13px;" onclick="goScreen(\'plan\')">Scopri l\'abbonamento</button>') + '</div>';
+                   : '<button class="btn btn-lime" style="padding:12px 22px;font-size:13px;" onclick="mcUpsell(\'frasi\')">Scopri l\'abbonamento</button>') + '</div>';
           prev.disabled = false; next.disabled = true;
         } else {
           var fr = FRASI[state.frasiIndex];
@@ -9847,7 +9852,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(COLLEGATO && MC.utenteCorrente()) disegnaPreferiti(t);
     else renderSaved();
   }
-  function esc(s){ return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+  function esc(s){ return String(s == null ? '' : s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/\r?\n/g,' '); }
   function renderSaved(){
     refreshSavedCounts();
     var t = state.savedTab;
@@ -10778,7 +10783,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var p = FEED_POSTS.find(function(x){ return x.id===id; });
     if(!p) return;
     if(state.plan==='free'){
-      if(!p.mine){ toast('🔒 Con il Free rispondi solo nella tua conversazione'); goScreen('plan'); return; }
+      if(!p.mine){ mcUpsell('feed'); return; }
       if(state.myComments[id]){ toast('Con il Free puoi rispondere una sola volta'); return; }
     }
     toast('🎤 Registra: solo voce, max 30s');
@@ -10791,7 +10796,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   /* webinar registrato (gate premium) */
   function playWebinar(titolo, durata){
-    if(state.plan==='free'){ toast('🔒 I webinar registrati sono per gli abbonati'); goScreen('plan'); return; }
+    if(state.plan==='free'){ mcUpsell('webinar'); return; }
     openPlayer('single', titolo, 'Webinar · '+durata);
   }
   var PULSANTE_AUDIO_ATTIVO = null;   /* il pulsante ▶ che sta suonando ora */
@@ -11455,10 +11460,8 @@ document.addEventListener('DOMContentLoaded', function(){
   function openCompagno(mode){
     if(mode==='parla'){
       if(compQuota.parla<=0){
-        toast(state.plan==='free'
-          ? 'Con il Free hai 1 "parla" al giorno. Passa ad Annuale per averne 3.'
-          : 'Limite giornaliero: 3 "parla". Domani si ricomincia.');
-        if(state.plan==='free') goScreen('plan');
+        if(state.plan==='free'){ mcUpsell('compagno'); }
+        else toast('Limite giornaliero: 3 "parla". Domani si ricomincia.');
         return;
       }
       /* prima si registra il PRIMO audio che darà il via alla conversazione */
@@ -11517,10 +11520,8 @@ document.addEventListener('DOMContentLoaded', function(){
   var VOCE_SCELTA_STANZA = null;
   function scegliVoceRispondi(stanzaId){
     if(compQuota.ascolta<=0){
-      toast(state.plan==='free'
-        ? 'Con il Free hai 1 "ascolta" al giorno. Passa ad Annuale per averne 3.'
-        : 'Limite giornaliero: 3 "ascolta". Domani si ricomincia.');
-      if(state.plan==='free') goScreen('plan');
+      if(state.plan==='free'){ mcUpsell('compagno'); }
+      else toast('Limite giornaliero: 3 "ascolta". Domani si ricomincia.');
       return;
     }
     VOCE_SCELTA_STANZA = stanzaId;
@@ -13883,6 +13884,7 @@ body.native.mini-on .fab{ bottom:calc(env(safe-area-inset-bottom) + 170px) !impo
 
 
 
+
 <style id="mc-marea-v4">
 /* =========================================================
    MentalClass · strato v4
@@ -14073,6 +14075,68 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
 #pl-dl.mc-lk::after{ content:""; position:absolute; right:3px; top:3px; width:9px; height:9px; border-radius:50%; background:var(--gold, #f5b72e); box-shadow:0 0 0 2px #031f23; }
 #pl-dl.mc-busy svg{ animation:mcDl 1s ease-in-out infinite; }
 @keyframes mcDl{ 0%,100%{ transform:translateY(-1px); opacity:.6; } 50%{ transform:translateY(2px); opacity:1; } }
+
+/* ---------- Supporto: respiro in alto ---------- */
+#s-supporto .ci2{ margin-top:16px !important; }
+
+/* ---------- Abbonamento nell'app senza acquisti ---------- */
+#plan-app .pane{ border-radius:24px !important; padding:22px !important;
+  background:radial-gradient(120% 90% at 100% 0%, rgba(194,232,62,.14), transparent 55%), linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.03)) !important;
+  border:1px solid rgba(255,255,255,.13) !important; }
+#plan-app #plan-app-tx{ font-size:18px !important; font-weight:700; letter-spacing:-.01em; }
+.pa-inc{ max-width:560px; margin:6px auto 16px; padding:6px 18px; border-radius:24px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.10); }
+.pa-inc h3{ margin:14px 0 4px; font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--lime); }
+.pa-inc .r{ display:flex; align-items:center; gap:14px; padding:13px 0; border-bottom:1px solid rgba(255,255,255,.07); }
+.pa-inc .r:last-child{ border-bottom:0; }
+.pa-inc .i{ flex:none; width:40px; height:40px; border-radius:13px; display:grid; place-items:center; background:rgba(194,232,62,.12); color:var(--lime); }
+.pa-inc .i svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.pa-inc b{ display:block; font-size:14.5px; color:var(--cream); }
+.pa-inc span{ display:block; margin-top:2px; font-size:12.5px; color:rgba(241,237,226,.6); line-height:1.4; }
+
+/* ---------- Invito al Premium ---------- */
+#mc-ups{ position:fixed; inset:0; z-index:10060; display:none; align-items:flex-end; justify-content:center; background:rgba(2,16,19,.62);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+#mc-ups.on{ display:flex; animation:upsBg .25s ease both; }
+@keyframes upsBg{ from{ opacity:0; } to{ opacity:1; } }
+#mc-ups .ups-in{ position:relative; width:100%; max-width:480px; box-sizing:border-box; text-align:center;
+  padding:14px 24px calc(22px + env(safe-area-inset-bottom)); border-radius:30px 30px 0 0;
+  background:radial-gradient(120% 70% at 50% 0%, rgba(194,232,62,.16), transparent 60%), linear-gradient(180deg, #0b4048, #052c31);
+  border:1px solid rgba(255,255,255,.12); border-bottom:0; box-shadow:0 -30px 60px -30px rgba(0,0,0,.9);
+  animation:upsUp .45s cubic-bezier(.2,.85,.2,1) both; }
+@keyframes upsUp{ from{ transform:translateY(100%); } to{ transform:none; } }
+@media (min-width:700px){ #mc-ups{ align-items:center; } #mc-ups .ups-in{ border-radius:30px; border-bottom:1px solid rgba(255,255,255,.12); padding-bottom:24px; } }
+#mc-ups .ups-grab{ display:block; width:40px; height:4px; border-radius:4px; background:rgba(255,255,255,.22); margin:0 auto 18px; }
+#mc-ups .ups-ic{ width:62px; height:62px; margin:0 auto 14px; border-radius:20px; display:grid; place-items:center; color:var(--lime);
+  background:rgba(194,232,62,.12); border:1px solid rgba(194,232,62,.35); box-shadow:0 0 40px -10px rgba(194,232,62,.5); }
+#mc-ups .ups-ic svg{ width:28px; height:28px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+#mc-ups .ups-e{ font-size:11px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--lime); }
+#mc-ups .ups-t{ margin:8px 0 6px; font-family:'MCSans','Inter Tight',Inter,sans-serif; font-weight:800; font-size:25px; line-height:1.12; letter-spacing:-.025em; color:var(--cream); text-wrap:balance; }
+#mc-ups .ups-s{ margin:0 auto; max-width:34ch; font-size:14px; line-height:1.5; color:rgba(241,237,226,.7); }
+#mc-ups .ups-l{ list-style:none; margin:18px auto 0; padding:0; max-width:300px; text-align:left; display:grid; gap:9px; }
+#mc-ups .ups-l li{ position:relative; padding-left:28px; font-size:13.5px; font-weight:600; color:var(--cream); }
+#mc-ups .ups-l li::before{ content:""; position:absolute; left:0; top:1px; width:18px; height:18px; border-radius:50%; background:var(--lime);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12'/%3E%3C/svg%3E") center/contain no-repeat; }
+#mc-ups .ups-l li::after{ content:""; position:absolute; left:5px; top:6px; width:7px; height:4px; border-left:2px solid #0a2e34; border-bottom:2px solid #0a2e34; transform:rotate(-45deg); }
+#mc-ups .ups-p{ margin:18px auto 0; padding:12px 14px; max-width:320px; border-radius:16px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); }
+#mc-ups .ups-p .pw-price{ display:flex; align-items:baseline; justify-content:center; gap:4px; color:var(--cream); }
+#mc-ups .ups-p .pw-price b{ font-size:24px; font-weight:800; }
+#mc-ups .ups-p .pw-price span{ font-size:13px; color:rgba(241,237,226,.65); }
+#mc-ups .ups-p .pw-note{ margin-top:2px; font-size:12px; color:rgba(241,237,226,.65); }
+#mc-ups .ups-p .pw-note b{ color:var(--lime); }
+#mc-ups button{ all:unset; box-sizing:border-box; display:block; width:100%; text-align:center; cursor:pointer; }
+#mc-ups .ups-cta{ margin-top:18px; height:54px; line-height:54px; border-radius:100px; font-weight:800; font-size:15.5px; color:#0a2e34;
+  background:linear-gradient(180deg,#dcf768,#b2db36); box-shadow:0 14px 30px -12px rgba(194,232,62,.75); transition:transform .15s ease; }
+#mc-ups .ups-cta:active{ transform:scale(.97); }
+#mc-ups .ups-no{ margin-top:8px; height:44px; line-height:44px; font-weight:700; font-size:14px; color:rgba(241,237,226,.6); }
+#mc-ups .ups-cta:focus-visible, #mc-ups .ups-no:focus-visible{ outline:2px solid var(--lime); outline-offset:3px; }
+@media (prefers-reduced-motion:reduce){ #mc-ups.on, #mc-ups .ups-in{ animation:none; } }
+#np-frasi-p.mc-lk{ position:relative; opacity:1 !important; }
+#np-frasi-p.mc-lk::after{ content:""; position:absolute; right:-3px; top:-3px; width:9px; height:9px; border-radius:50%; background:var(--gold, #f5b72e); }
+/* lucchetti dei percorsi */
+.ep-row.locked .pb.lock{ font-size:0 !important; }
+/* copertina senza colore di sfondo (scelta "Nessuno" nel pannello) */
+.art-n, .au-cov.art-n, .art.art-n{ background-color:transparent !important; background-image:none; }
+.art-n:not([style*="background-image"]){ background:transparent !important; }
 
 /* ---------- 5. Rivista ---------- */
 #rd-mode, #nr-mini, #nr-sheet{ display:none !important; }  /* ascolto della rivista: in pausa, si riattiva piu' avanti */
@@ -14364,10 +14428,14 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
     $('#mcf-s').textContent = tit || 'Un passo in più sul tuo obiettivo.';
     var st = streakOggi(), sb = $('#mcf-st');
     if(st){ sb.innerHTML = '<b>' + st + '</b> ' + (st === 1 ? 'giorno di fila' : 'giorni di fila'); sb.style.display = ''; } else { sb.style.display = 'none'; }
+    var bp = $('#mc-fatto .mcf-bt .p'), ac = (window.state && state.audioCorrente) || {};
+    if(!abbonato() && ac.percorso_id && ac.ordine === 1){ bp.textContent = 'Continua con il giorno 2'; bp.setAttribute('onclick', "mcFatto('premium')"); }
+    else { bp.textContent = 'Annota la lezione nel diario'; bp.setAttribute('onclick', "mcFatto('diario')"); }
     o.classList.remove('on'); void o.offsetWidth; o.classList.add('on');
   }
   window.mcFatto = function(dove){
     var o = $('#mc-fatto'); if(o) o.classList.remove('on');
+    if(dove === 'premium'){ try{ closePlayer(); }catch(e){} setTimeout(function(){ mcUpsell('percorso'); }, 200); return; }
     if(dove === 'diario'){
       try{ closePlayer(); }catch(e){}
       try{ goScreen('diario'); }catch(e){}
@@ -14853,6 +14921,137 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
   }, 500);
 
 
+
+  /* =====================================================
+     INVITO AL PREMIUM: un solo foglio per tutti i limiti del Free
+  ===================================================== */
+  var UPS = {
+    anteprima: { ic:'play',   t:'Hai ascoltato l\'anteprima', s:'Il resto dell\'audio è per gli abbonati. Riparti esattamente da qui.' },
+    percorso:  { ic:'step',   t:'Il percorso continua nel Premium', s:'Il primo giorno è gratis. Dal secondo giorno ti alleni con il percorso completo.' },
+    notifiche: { ic:'bell',   t:'Più frasi ogni giorno', s:'Con il Premium ricevi fino a 3 frasi al giorno, nella fascia oraria che scegli.' },
+    offline:   { ic:'down',   t:'Ascolta anche senza rete', s:'Con il Premium salvi gli audio sul telefono e li ascolti ovunque.' },
+    frasi:     { ic:'quote',  t:'Hai chiuso la frase di oggi', s:'Con il Premium ne ricevi 3 al giorno.' },
+    compagno:  { ic:'mic',    t:'Hai usato lo scambio di oggi', s:'Con il Premium hai 3 scambi al giorno con il tuo Compagno Invisibile.' },
+    magazine:  { ic:'book',   t:'Leggi il numero completo', s:'Il Magazine intero è incluso nell\'abbonamento, ogni numero.' },
+    feed:      { ic:'mic',    t:'Rispondi a tutti', s:'Con il Premium partecipi a ogni conversazione, non solo alla tua.' },
+    webinar:   { ic:'play',   t:'Webinar registrati', s:'Rivedi ogni webinar quando vuoi con il Premium.' },
+    generico:  { ic:'star',   t:'Sblocca tutta MentalClass', s:'Allenati senza limiti con il Premium.' }
+  };
+  var UPS_IC = {
+    play:'<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>',
+    step:'<path d="M4 19h4v-4h4v-4h4V7h4"/>',
+    bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+    down:'<path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19.5h14"/>',
+    quote:'<path d="M7 7h4v4c0 3-2 5-4 6M15 7h4v4c0 3-2 5-4 6"/>',
+    mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+    book:'<path d="M3 5.5C5.5 4 8.5 4 12 6c3.5-2 6.5-2 9-.5V19c-2.5-1.5-5.5-1.5-9 .5-3.5-2-6.5-2-9-.5z"/><path d="M12 6v13.5"/>',
+    star:'<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>'
+  };
+  function acqNascosti(){ try{ return !!acquistiNascosti(); }catch(e){ return false; } }
+  function acqLink(){ try{ return !!acquistiConLink(); }catch(e){ return false; } }
+  window.mcUpsell = function(motivo){
+    if(abbonato()) return;
+    var m = UPS[motivo] || UPS.generico;
+    var o = $('#mc-ups');
+    if(!o){
+      document.body.insertAdjacentHTML('beforeend',
+        '<div id="mc-ups" role="dialog" aria-modal="true" aria-labelledby="ups-t" onclick="if(event.target===this)mcUpsellChiudi()">' +
+          '<div class="ups-in"><i class="ups-grab" aria-hidden="true"></i>' +
+            '<div class="ups-ic" id="ups-ic"><svg viewBox="0 0 24 24" aria-hidden="true"></svg></div>' +
+            '<div class="ups-e">MentalClass Premium</div>' +
+            '<h3 class="ups-t" id="ups-t"></h3><p class="ups-s" id="ups-s"></p>' +
+            '<ul class="ups-l" id="ups-l"><li>Tutti gli audio e i percorsi completi</li><li>Il Magazine, ogni numero</li><li>Ascolto offline e 3 frasi al giorno</li></ul>' +
+            '<div class="ups-p" id="ups-p"></div>' +
+            '<button class="ups-cta" id="ups-cta"></button>' +
+            '<button class="ups-no" onclick="mcUpsellChiudi()">Non ora</button>' +
+          '</div></div>');
+      o = $('#mc-ups');
+    }
+    $('#ups-ic svg').innerHTML = UPS_IC[m.ic] || UPS_IC.star;
+    $('#ups-t').textContent = m.t;
+    var cta = $('#ups-cta'), prezzo = $('#ups-p'), lista = $('#ups-l');
+    if(acqNascosti()){
+      $('#ups-s').textContent = 'È riservato agli abbonati MentalClass. Se sei già abbonato, accedi con il tuo account e si sblocca da solo.';
+      lista.style.display = 'none'; prezzo.innerHTML = ''; prezzo.style.display = 'none';
+      cta.textContent = 'Ho capito'; cta.onclick = function(){ mcUpsellChiudi(); };
+      $('#mc-ups .ups-no').style.display = 'none';
+    } else {
+      $('#ups-s').textContent = m.s;
+      lista.style.display = '';
+      $('#mc-ups .ups-no').style.display = '';
+      var off = $('#pl-paywall .pw-offer');
+      prezzo.innerHTML = off ? off.innerHTML : '';
+      prezzo.style.display = off ? '' : 'none';
+      if(acqLink()){
+        cta.textContent = 'Abbonati su mentalclass.it';
+        cta.onclick = function(){ mcUpsellChiudi(); try{ apriAbbonamentoSulSito(); }catch(e){} };
+      } else {
+        var testo = ($('#pw-cta-btn') && $('#pw-cta-btn').textContent.trim()) || 'Prova gratis 7 giorni';
+        cta.textContent = /Abbonati su/.test(testo) ? 'Prova gratis 7 giorni' : testo;
+        cta.onclick = function(){
+          mcUpsellChiudi();
+          try{ if(document.getElementById('player').classList.contains('show')) closePlayer(); }catch(e){}
+          try{ closeNotif(); }catch(e){}
+          goScreen('plan');
+        };
+      }
+    }
+    o.classList.remove('on'); void o.offsetWidth; o.classList.add('on');
+    document.body.classList.add('ups-aperto');
+    try{ if(window.MCA) MCA.evento('invito premium', { motivo:motivo || 'generico' }); }catch(e){}
+  };
+  window.mcUpsellChiudi = function(){
+    var o = $('#mc-ups'); if(o) o.classList.remove('on');
+    document.body.classList.remove('ups-aperto');
+  };
+
+  /* percorso: il pulsante "Sblocca il percorso completo" porta all'invito e sparisce per gli abbonati */
+  (function(){
+    var orig = window.disegnaPercorso;
+    if(typeof orig !== 'function') return;
+    window.disegnaPercorso = function(){
+      var r = orig.apply(this, arguments);
+      $$('#s-percorso button').forEach(function(b){
+        if(/Sblocca il percorso/.test(b.textContent)){
+          b.setAttribute('onclick', "mcUpsell('percorso')");
+          b.style.display = abbonato() ? 'none' : '';
+        }
+      });
+      return r;
+    };
+  })();
+
+  /* fine anteprima o contenuto chiuso nel player: il foglio sale da solo */
+  (function(){
+    var orig = window.mostraPaywall;
+    if(typeof orig !== 'function') return;
+    window.mostraPaywall = function(){
+      var r; try{ r = orig.apply(this, arguments); }catch(e){}
+      var a = (window.state && state.audioCorrente) || {};
+      setTimeout(function(){ mcUpsell(a.percorso_id ? 'percorso' : 'anteprima'); }, 250);
+      return r;
+    };
+  })();
+
+  /* notifiche: il "+" delle frasi resta attivo per i Free e apre l'invito */
+  (function(){
+    var origStep = window.npStep, origRef = window.npRefresh;
+    if(typeof origStep !== 'function' || typeof origRef !== 'function') return;
+    function limitato(){ try{ return !abbonato() && typeof NP_MAX !== 'undefined' && NP_MAX.frasi < 3; }catch(e){ return false; } }
+    window.npRefresh = function(){
+      var r = origRef.apply(this, arguments);
+      var b = document.getElementById('np-frasi-p'), v = parseInt((document.getElementById('np-frasi') || {}).textContent, 10);
+      if(b && limitato() && v >= NP_MAX.frasi){ b.disabled = false; b.classList.add('mc-lk'); b.setAttribute('aria-label', 'Più frasi con il Premium'); }
+      else if(b){ b.classList.remove('mc-lk'); }
+      return r;
+    };
+    window.npStep = function(k, dir){
+      var v = parseInt((document.getElementById('np-' + k) || {}).textContent, 10);
+      if(k === 'frasi' && dir > 0 && limitato() && v >= NP_MAX.frasi){ mcUpsell('notifiche'); return; }
+      return origStep.apply(this, arguments);
+    };
+  })();
+
   /* =====================================================
      PLAYER: icone ±15 secondi e salvataggio offline
   ===================================================== */
@@ -14925,11 +15124,7 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
   window.dlAudio = async function(){
     var ctx = state.playerCtx || {};
     var a = ctx.id && window.AUDIO_DB ? AUDIO_DB[ctx.id] : null;
-    if(!abbonato()){
-      try{ toast('Il salvataggio offline è incluso nell\'abbonamento'); }catch(e){}
-      try{ closePlayer(); goScreen('plan'); }catch(e){}
-      return;
-    }
+    if(!abbonato()){ mcUpsell('offline'); return; }
     if(a && a.scaricabile === false){ try{ toast('Questo audio non è disponibile offline'); }catch(e){} return; }
     if(typeof indexedDB === 'undefined'){ try{ toast('Questo dispositivo non permette il salvataggio offline'); }catch(e){} return; }
     var el = document.getElementById('audio-vero');
@@ -14970,7 +15165,19 @@ body:not([data-screen="home"]) .btn:active{ transform:scale(.97); }
   /* =====================================================
      Avvio
   ===================================================== */
-  function avvio(){ osservaAudio(); }
+  function pianoApp(){
+    var pa = $('#plan-app'), pane = pa && $('.pane', pa);
+    if(!pane || $('.pa-inc', pa)) return;
+    var R = function(ic, t, s){ return '<div class="r"><span class="i"><svg viewBox="0 0 24 24" aria-hidden="true">' + (UPS_IC[ic] || '') + '</svg></span><div><b>' + t + '</b><span>' + s + '</span></div></div>'; };
+    pane.insertAdjacentHTML('afterend', '<div class="pa-inc"><h3>Cosa include il Premium</h3>' +
+      R('play', 'Tutti gli audio completi', 'Nessuna anteprima: ogni audio dall\'inizio alla fine.') +
+      R('step', 'Percorsi interi', 'Ogni giorno del percorso, non solo il primo.') +
+      R('book', 'Il Magazine', 'Ogni numero da sfogliare per intero.') +
+      R('down', 'Ascolto offline', 'Salvi gli audio sul telefono e li ascolti senza rete.') +
+      R('bell', 'Fino a 3 frasi al giorno', 'Nella fascia oraria che scegli tu.') +
+      R('mic', 'Più scambi con il Compagno', '3 al giorno invece di 1.') + '</div>');
+  }
+  function avvio(){ osservaAudio(); try{ pianoApp(); }catch(e){} }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', avvio); else avvio();
 })();
 </script>

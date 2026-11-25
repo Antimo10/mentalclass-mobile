@@ -572,13 +572,13 @@ const MC = (function(){
     regola(audioRiga){
       if(!audioRiga) return { accesso:'niente' };
       if(abbonato())          return { accesso:'tutto' };
-      if(audioRiga.gratuito)  return { accesso:'tutto' };
-
+      /* percorsi: gratis solo il giorno 1, qualunque cosa dica la spunta "gratis" */
       if(audioRiga.percorso_id){
         return (audioRiga.ordine === 1)
           ? { accesso:'tutto' }
           : { accesso:'niente' };
       }
+      if(audioRiga.gratuito)  return { accesso:'tutto' };
       return { accesso:'parziale', quota: QUOTA_ANTEPRIMA };
     },
 

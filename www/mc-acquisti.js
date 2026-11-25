@@ -113,6 +113,15 @@
     try{ var w = window.open(url, '_blank'); if(!w) window.location.href = url; }catch(e){ window.location.href = url; }
   }
 
+  /* Codici promozionali di Apple (creati in App Store Connect → Codici offerta) */
+  async function riscattaCodice(){
+    var P = plugin();
+    if(!P || !pronto) throw new Error('Acquisti non disponibili in questo momento.');
+    if(piattaforma() !== 'ios' || !P.presentCodeRedemptionSheet) throw new Error('Disponibile su iPhone.');
+    await P.presentCodeRedemptionSheet();
+    return true;
+  }
+
   window.MCI = { avvia: avvia, esci: esci, disponibile: disponibile, piani: piani,
-                 compra: compra, ripristina: ripristina, gestisci: gestisci };
+                 compra: compra, ripristina: ripristina, gestisci: gestisci, riscattaCodice: riscattaCodice };
 })();

@@ -26,6 +26,7 @@
 		"SplashScreenPlugin",
 		"PushNotificationsPlugin",
 		"LocalNotificationsPlugin",
-		"WidgetBridgePlugin"
+		"WidgetBridgePlugin",
+		"PurchasesPlugin"
 	]
 }

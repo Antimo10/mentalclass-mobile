@@ -237,6 +237,9 @@ const MC = (function(){
 
   /* ---------- è abbonato? ---------- */
   function abbonato(){
+    /* nell'app: se Apple/RevenueCat confermano il Premium, vale subito,
+       anche se il profilo sul server si aggiorna qualche secondo dopo */
+    try{ if(window.MCI && window.MCI.premiumLocale && window.MCI.premiumLocale()) return true; }catch(e){}
     if(!profilo) return false;
     const attivo = profilo.stato_abbonamento === 'attivo' || profilo.stato_abbonamento === 'in_prova';
     if(!attivo) return false;

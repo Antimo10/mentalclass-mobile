@@ -12,6 +12,28 @@
   var ENTITLEMENT    = 'mentalclass_pro';   /* identificativo dell'entitlement su RevenueCat */
 
   var pronto = false, utenteCollegato = null, offerte = null;
+  var premiumStore = false;   /* Premium confermato da Apple/RevenueCat su questo telefono */
+
+  /* Chiede al server di leggere lo stato da RevenueCat e aggiornare il profilo */
+  async function sincronizza(){
+    try{
+      var sb = window.MC && MC.client && MC.client();
+      if(!sb || !sb.functions) return null;
+      var r = await sb.functions.invoke('sincronizza-abbonamento', { body: {} });
+      try{ if(window.MC && MC.caricaProfilo) await MC.caricaProfilo(); }catch(e){}
+      return r && r.data;
+    }catch(e){ console.warn('Sincronizzazione abbonamento:', e && e.message); return null; }
+  }
+  function aggiornaSchermate(){
+    try{ if(typeof window.applicaProfilo === 'function') window.applicaProfilo(); }catch(e){}
+  }
+  function premiumLocale(){ return premiumStore && !!utenteCollegato; }
+  async function leggiStato(){
+    var P = plugin();
+    if(!P || !pronto) return false;
+    try{ var r = await P.getCustomerInfo(); premiumStore = attivo(r && r.customerInfo); }catch(e){}
+    return premiumStore;
+  }
 
   function plugin(){
     var C = window.Capacitor;
@@ -30,13 +52,16 @@
     var P = plugin();
     if(!P || !chiave() || !userId) return false;
     try{
+      var nuovo = false;
       if(!pronto){
         await P.configure({ apiKey: chiave(), appUserID: userId });
-        pronto = true; utenteCollegato = userId;
+        pronto = true; utenteCollegato = userId; nuovo = true;
       } else if(utenteCollegato !== userId){
         await P.logIn({ appUserID: userId });
-        utenteCollegato = userId;
+        utenteCollegato = userId; nuovo = true;
       }
+      /* solo al primo collegamento: leggo lo stato dallo store e allineo il profilo */
+      if(nuovo) leggiStato().then(function(ok){ if(ok) sincronizza().then(aggiornaSchermate); });
       return true;
     }catch(e){ console.warn('Acquisti:', e && e.message); return false; }
   }
@@ -45,7 +70,7 @@
     var P = plugin();
     if(!P || !pronto) return;
     try{ await P.logOut(); }catch(e){}
-    utenteCollegato = null;
+    utenteCollegato = null; premiumStore = false;
   }
 
   function disponibile(){ return !!plugin() && !!chiave(); }
@@ -60,9 +85,10 @@
       if(!cur || !cur.availablePackages) return null;
       var out = { mensile:null, annuale:null };
       cur.availablePackages.forEach(function(p){
-        var tipo = String(p.packageType || p.identifier || '').toUpperCase();
-        if(tipo.indexOf('ANNUAL') !== -1) out.annuale = p;
-        else if(tipo.indexOf('MONTHLY') !== -1) out.mensile = p;
+        /* riconosco il piano dal tipo di pacchetto, dal suo nome o dal prodotto Apple */
+        var tipo = [p.packageType, p.identifier, p.product && p.product.identifier].join(' ').toUpperCase();
+        if(/ANNUAL|ANNUALE|YEAR/.test(tipo)) out.annuale = out.annuale || p;
+        else if(/MONTHLY|MENSILE|MONTH/.test(tipo)) out.mensile = out.mensile || p;
       });
       offerte = out;
       return out;
@@ -88,7 +114,9 @@
     if(!pk) throw new Error('Questo piano non è disponibile in questo momento.');
     try{
       var r = await P.purchasePackage({ aPackage: pk });
-      return attivo(r && r.customerInfo);
+      premiumStore = attivo(r && r.customerInfo);
+      if(premiumStore) await sincronizza();
+      return premiumStore;
     }catch(e){
       if(e && (e.userCancelled || (e.data && e.data.userCancelled) || String(e.code) === '1' || /cancel/i.test(String(e.message || '')))) return false;
       throw new Error((e && e.message) || 'Acquisto non riuscito.');
@@ -100,7 +128,9 @@
     var P = plugin();
     if(!P || !pronto) throw new Error('Acquisti non disponibili in questo momento.');
     var r = await P.restorePurchases();
-    return attivo(r && r.customerInfo);
+    premiumStore = attivo(r && r.customerInfo);
+    await sincronizza();
+    return premiumStore;
   }
 
   /* Pagina dello store per gestire o disdire l'abbonamento */
@@ -128,5 +158,6 @@
   }
 
   window.MCI = { avvia: avvia, esci: esci, disponibile: disponibile, piani: piani,
-                 compra: compra, ripristina: ripristina, gestisci: gestisci, riscattaCodice: riscattaCodice };
+                 compra: compra, ripristina: ripristina, gestisci: gestisci, riscattaCodice: riscattaCodice,
+                 sincronizza: sincronizza, premiumLocale: premiumLocale };
 })();

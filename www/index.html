@@ -3621,7 +3621,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <div class="modal-bg" id="obj-bg" onclick="if(event.target===this)closeObj()">
   <div class="modal">
     <h3 class="disp">Nuovo obiettivo</h3>
-    <div class="field"><label>Il tuo obiettivo</label><input id="ob-titolo" placeholder="Es. Meditare 10 min al giorno"></div>
+    <div class="field"><label>Il tuo obiettivo</label><input id="ob-titolo" placeholder="Es. Correre 3 volte a settimana"></div>
     <div class="field"><label>Entro quando</label><input id="ob-data" type="date"></div>
     <button class="btn btn-lime" style="width:100%;" onclick="creaObiettivo()">Crea obiettivo</button>
     <button class="btn btn-ghost" style="width:100%;margin-top:10px;border:none;" onclick="closeObj()">Annulla</button>
@@ -15650,6 +15650,306 @@ body.mini-on .pc-cta{ bottom:calc(env(safe-area-inset-bottom) + 170px); }
       R('mic', 'Più scambi con il Compagno', '3 al giorno invece di 1.') + '</div>');
   }
   function avvio(){ osservaAudio(); try{ pianoApp(); }catch(e){} }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', avvio); else avvio();
+})();
+</script>
+
+<style id="mc-v5">
+/* ===== MentalClass v5 · obiettivi, home, chip PRO ===== */
+
+/* chip PRO: si mostra solo quando lo stato dell'abbonamento è noto */
+#mc-pro-chip:not(.mc-chip-ok){ visibility:hidden !important; }
+
+/* home: riga cuore/condividi centrata (il blocco quota vuoto spostava tutto a destra) */
+.deck-foot > div:first-child:not(:has(.deck-quota:not([style*="none"]))){ display:none !important; }
+body.native #s-home .deck-foot{ justify-content:center !important; }
+
+/* ---------- elenco obiettivi ---------- */
+#view-obiettivi .mco-sum{ display:flex; gap:8px; margin:-2px 0 14px; flex-wrap:wrap; }
+#view-obiettivi .mco-sum span{ font-size:12px; font-weight:600; color:var(--tx-mut); padding:6px 11px; border-radius:999px;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.07); }
+#view-obiettivi .mco-sum b{ color:var(--cream); font-weight:800; }
+#view-obiettivi .mco-sub{ font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--tx-dim); margin:22px 2px 10px; }
+
+.mco-card{ display:grid !important; grid-template-columns:30px 1fr 32px; align-items:start; column-gap:14px;
+  padding:16px 14px 16px 16px !important; margin:0 0 10px !important; border-radius:20px !important;
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.025)) !important;
+  border:1px solid rgba(255,255,255,.08) !important; box-shadow:none !important; min-height:0 !important; }
+.mco-card .mco-chk{ width:28px; height:28px; border-radius:50%; border:2px solid rgba(241,237,226,.32); background:transparent;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; margin-top:1px; transition:transform .15s, background .2s, border-color .2s; }
+.mco-card .mco-chk svg{ width:14px; height:14px; stroke:#0a2e34; stroke-width:3.2; fill:none; opacity:0; }
+.mco-card .mco-chk:active{ transform:scale(.9); }
+.mco-card .mco-body{ min-width:0; }
+.mco-card .mco-t{ font-size:15.5px; font-weight:650; line-height:1.38; color:var(--cream); word-wrap:break-word; overflow-wrap:anywhere; }
+.mco-card .mco-meta{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:9px; }
+.mco-card .mco-pill{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--tx-mut);
+  padding:5px 10px; border-radius:999px; background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.06); }
+.mco-card .mco-pill svg{ width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:2; }
+.mco-card .mco-left{ font-size:11.5px; font-weight:700; color:var(--lime); }
+.mco-card .mco-left.late{ color:var(--gold,#e5b54a); }
+.mco-card .mco-del{ width:32px; height:32px; border-radius:50%; border:0; background:transparent; color:var(--tx-dim);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; margin-top:-3px; }
+.mco-card .mco-del svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; }
+.mco-card .mco-del:active{ background:rgba(255,255,255,.06); }
+.mco-card.fatto{ background:rgba(255,255,255,.025) !important; }
+.mco-card.fatto .mco-chk{ background:var(--lime); border-color:var(--lime); }
+.mco-card.fatto .mco-chk svg{ opacity:1; }
+.mco-card.fatto .mco-t{ color:var(--tx-mut); text-decoration:line-through; text-decoration-color:rgba(241,237,226,.35); }
+
+.mco-vuoto{ text-align:center; padding:34px 22px 26px !important; border-radius:22px !important; }
+.mco-vuoto .mco-ic{ width:56px; height:56px; border-radius:50%; margin:0 auto 14px; display:flex; align-items:center; justify-content:center;
+  background:rgba(194,232,62,.12); border:1px solid rgba(194,232,62,.28); }
+.mco-vuoto .mco-ic svg{ width:26px; height:26px; stroke:var(--lime); fill:none; stroke-width:2; }
+.mco-vuoto h4{ font-size:17px; font-weight:800; margin:0 0 6px; color:var(--cream); }
+.mco-vuoto p{ font-size:13px; line-height:1.55; color:var(--tx-dim); margin:0 auto 18px; max-width:270px; }
+.mco-vuoto .btn{ padding:12px 22px !important; font-size:13.5px !important; }
+
+.mco-skel{ height:78px; border-radius:20px; margin-bottom:10px; background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.08),rgba(255,255,255,.04));
+  background-size:200% 100%; animation:mcoSk 1.4s linear infinite; }
+@keyframes mcoSk{ to{ background-position:-200% 0; } }
+
+/* ---------- foglio "Nuovo obiettivo" ---------- */
+#obj-bg .modal.mco-sheet{ max-width:460px; padding:22px 22px 20px !important; border-radius:28px !important; text-align:left; }
+.mco-sheet .mco-grab{ display:none; width:38px; height:5px; border-radius:3px; background:rgba(255,255,255,.18); margin:-8px auto 14px; }
+.mco-sheet .mco-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:18px; }
+.mco-sheet .mco-eye{ font-size:10.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--lime); margin-bottom:6px; }
+.mco-sheet h3{ font-size:26px !important; line-height:1.05 !important; margin:0 !important; letter-spacing:-.02em; }
+.mco-sheet .mco-x{ width:36px; height:36px; flex-shrink:0; border-radius:50%; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05);
+  color:var(--cream); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+.mco-sheet .mco-x svg{ width:15px; height:15px; stroke:currentColor; stroke-width:2.2; fill:none; }
+.mco-sheet .mco-lab{ display:flex; justify-content:space-between; align-items:baseline; font-size:11px; font-weight:800; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--tx-mut); margin:0 2px 8px; }
+.mco-sheet .mco-lab small{ font-size:11px; letter-spacing:0; text-transform:none; font-weight:600; color:var(--tx-dim); }
+.mco-sheet textarea{ width:100%; box-sizing:border-box; min-height:96px; max-height:180px; resize:none; display:block;
+  padding:15px 16px; border-radius:18px; border:1px solid rgba(255,255,255,.1); background:rgba(0,0,0,.28);
+  color:var(--cream); font:inherit; font-size:17px; font-weight:600; line-height:1.42; outline:none; transition:border-color .2s, background .2s; }
+.mco-sheet textarea::placeholder{ color:rgba(241,237,226,.32); font-weight:500; }
+.mco-sheet textarea:focus{ border-color:rgba(194,232,62,.55); background:rgba(0,0,0,.36); }
+.mco-sheet .mco-hint{ font-size:12px; color:var(--tx-dim); line-height:1.5; margin:8px 2px 20px; }
+.mco-sheet .mco-chips{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.mco-sheet .mco-chip{ padding:12px 10px; border-radius:14px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04);
+  color:var(--cream); font:inherit; font-size:13.5px; font-weight:700; cursor:pointer; text-align:center; transition:all .15s; }
+.mco-sheet .mco-chip.on{ background:var(--lime); border-color:var(--lime); color:#0a2e34; }
+.mco-sheet .mco-chip:active{ transform:scale(.97); }
+.mco-sheet .mco-date{ display:none; margin-top:10px; }
+.mco-sheet .mco-date.show{ display:block; }
+.mco-sheet .mco-date input{ width:100%; box-sizing:border-box; height:50px; padding:0 16px; border-radius:14px; border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.28); color:var(--cream); font:inherit; font-size:15px; font-weight:600; color-scheme:dark; -webkit-appearance:none; appearance:none; }
+.mco-sheet .mco-when{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--tx-mut); margin:14px 2px 0; min-height:18px; }
+.mco-sheet .mco-when svg{ width:14px; height:14px; stroke:var(--lime); fill:none; stroke-width:2; flex-shrink:0; }
+.mco-sheet .mco-when b{ color:var(--cream); }
+.mco-sheet .mco-go{ width:100%; margin-top:22px; }
+.mco-sheet .mco-go[disabled]{ opacity:.45; pointer-events:none; }
+.mco-sheet .mco-annulla{ display:block; width:100%; margin-top:6px; padding:12px; border:0; background:transparent; color:var(--tx-mut);
+  font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+
+/* telefono: foglio dal basso */
+@media (max-width:640px){
+  #obj-bg.show{ align-items:flex-end !important; padding:0 !important; }
+  #obj-bg .modal.mco-sheet{ width:100% !important; max-width:none !important; margin:0 !important;
+    border-radius:28px 28px 0 0 !important; padding:22px 20px calc(env(safe-area-inset-bottom) + 16px) !important;
+    animation:mcoUp .32s cubic-bezier(.2,.8,.2,1); max-height:92dvh; overflow-y:auto; }
+  .mco-sheet .mco-grab{ display:block; }
+}
+@keyframes mcoUp{ from{ transform:translateY(40px); opacity:0; } to{ transform:none; opacity:1; } }
+</style>
+<script id="mc-v5-js">
+/* ===== MentalClass v5 · obiettivi, home, chip PRO ===== */
+(function(){
+  var $ = function(s, r){ return (r || document).querySelector(s); };
+  var MESI = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+  function iso(d){ return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function daIso(s){ var p = String(s).slice(0, 10).split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function oggi(){ var d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+  function dataLunga(s){ var d = daIso(s); return d.getDate() + ' ' + MESI[d.getMonth()] + (d.getFullYear() !== new Date().getFullYear() ? ' ' + d.getFullYear() : ''); }
+  function dataBreve(s){ var d = daIso(s); return d.getDate() + ' ' + MESI[d.getMonth()].slice(0, 3); }
+  var IC_CAL = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
+  var IC_OK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var IC_DEL = '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+  var IC_TGT = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg>';
+  var IC_X = '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+  /* ---------- pulsante + : nella scheda Obiettivi crea un obiettivo, nel Diario una pagina ---------- */
+  window.mcFab = function(){
+    var vo = document.getElementById('view-obiettivi');
+    if(vo && vo.style.display !== 'none' && vo.style.display !== '') return window.openObj();
+    var so = document.getElementById('seg-obiettivi');
+    if(so && so.classList.contains('on')) return window.openObj();
+    if(typeof window.nuovaPagina === 'function') return window.nuovaPagina();
+    if(typeof window.openEditor === 'function') return window.openEditor();
+  };
+
+  /* ---------- foglio "Nuovo obiettivo" ---------- */
+  var scelta = 'mese';
+  function scadenzaScelta(){
+    var d = oggi();
+    if(scelta === 'settimana'){ d.setDate(d.getDate() + 7); return iso(d); }
+    if(scelta === 'mese'){ d.setMonth(d.getMonth() + 1); return iso(d); }
+    if(scelta === 'trimestre'){ d.setMonth(d.getMonth() + 3); return iso(d); }
+    if(scelta === 'data'){ var v = ($('#ob-data') || {}).value; return v || null; }
+    return null;
+  }
+  function aggiornaQuando(){
+    var w = $('#mco-when'); if(!w) return;
+    var s = scadenzaScelta();
+    w.innerHTML = s ? IC_CAL + '<span>Traguardo: <b>' + dataLunga(s) + '</b></span>'
+                    : (scelta === 'data' ? '<span>Scegli il giorno qui sopra</span>' : '');
+  }
+  function aggiornaTesto(){
+    var t = $('#ob-titolo'), n = $('#mco-n'), go = $('#mco-go'); if(!t) return;
+    t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight + 2, 180) + 'px';
+    if(n) n.textContent = t.value.length + '/120';
+    if(go) go.disabled = !t.value.trim();
+  }
+  window.mcObScegli = function(v){
+    scelta = v;
+    document.querySelectorAll('#obj-bg .mco-chip').forEach(function(c){ c.classList.toggle('on', c.dataset.v === v); });
+    var dt = $('#mco-date'); if(dt) dt.classList.toggle('show', v === 'data');
+    if(v === 'data'){ var i = $('#ob-data'); if(i){ if(!i.value){ var d = oggi(); d.setDate(d.getDate() + 14); i.value = iso(d); } i.min = iso(oggi()); } }
+    aggiornaQuando();
+  };
+  function costruisciFoglio(){
+    var bg = document.getElementById('obj-bg'); if(!bg) return;
+    var m = bg.querySelector('.modal'); if(!m || m.classList.contains('mco-sheet')) return;
+    m.classList.add('mco-sheet');
+    m.innerHTML =
+      '<div class="mco-grab"></div>' +
+      '<div class="mco-head"><div><div class="mco-eye">Diario degli obiettivi</div><h3 class="disp">Nuovo obiettivo</h3></div>' +
+        '<button type="button" class="mco-x" aria-label="Chiudi" onclick="closeObj()">' + IC_X + '</button></div>' +
+      '<div class="mco-lab"><span>Cosa vuoi raggiungere</span><small id="mco-n">0/120</small></div>' +
+      '<textarea id="ob-titolo" rows="3" maxlength="120" placeholder="Es. Correre 3 volte a settimana" enterkeyhint="done"></textarea>' +
+      '<div class="mco-hint">Scrivilo concreto e misurabile: un risultato che a fine periodo puoi spuntare.</div>' +
+      '<div class="mco-lab"><span>Entro quando</span></div>' +
+      '<div class="mco-chips">' +
+        '<button type="button" class="mco-chip" data-v="settimana" onclick="mcObScegli(\'settimana\')">Una settimana</button>' +
+        '<button type="button" class="mco-chip" data-v="mese" onclick="mcObScegli(\'mese\')">Un mese</button>' +
+        '<button type="button" class="mco-chip" data-v="trimestre" onclick="mcObScegli(\'trimestre\')">Tre mesi</button>' +
+        '<button type="button" class="mco-chip" data-v="data" onclick="mcObScegli(\'data\')">Scegli la data</button>' +
+      '</div>' +
+      '<div class="mco-date" id="mco-date"><input id="ob-data" type="date" aria-label="Data del traguardo"></div>' +
+      '<div class="mco-when" id="mco-when"></div>' +
+      '<button type="button" class="btn btn-lime mco-go" id="mco-go" disabled onclick="creaObiettivo()">Fissa l\'obiettivo</button>' +
+      '<button type="button" class="mco-annulla" onclick="closeObj()">Annulla</button>';
+    var t = $('#ob-titolo');
+    t.addEventListener('input', aggiornaTesto);
+    t.addEventListener('keydown', function(e){ if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); if(t.value.trim()) window.creaObiettivo(); } });
+    $('#ob-data').addEventListener('input', aggiornaQuando);
+    $('#ob-data').addEventListener('change', aggiornaQuando);
+  }
+  window.openObj = function(){
+    costruisciFoglio();
+    var t = $('#ob-titolo'); if(t) t.value = '';
+    var d = $('#ob-data'); if(d) d.value = '';
+    mcObScegli('mese'); aggiornaTesto();
+    document.getElementById('obj-bg').classList.add('show');
+    setTimeout(function(){ try{ t && t.focus(); }catch(e){} }, 280);
+  };
+
+  window.creaObiettivo = async function(){
+    var t = $('#ob-titolo'), go = $('#mco-go');
+    var titolo = t ? t.value.trim() : '';
+    if(!titolo){ toast('Scrivi il tuo obiettivo'); return; }
+    var scad = scadenzaScelta();
+    if(scelta === 'data' && !scad){ toast('Scegli la data del traguardo'); return; }
+    if(go){ go.disabled = true; go.textContent = 'Salvo…'; }
+    try{
+      if(typeof COLLEGATO !== 'undefined' && COLLEGATO && MC.utenteCorrente()){
+        await MC.obiettivi.crea(titolo, scad);
+      }
+      closeObj();
+      try{ goScreen('diario'); diarioTab('obiettivi'); }catch(e){}
+      await window.caricaObiettivi();
+      try{ chime(); }catch(e){}
+      toast('Obiettivo fissato');
+      try{ sincronizzaHome(); }catch(e){}
+    }catch(e){
+      toast('Non ho salvato: ' + (e.message || 'riprova'));
+    }finally{
+      if(go){ go.textContent = 'Fissa l\'obiettivo'; aggiornaTesto(); }
+    }
+  };
+
+  /* ---------- elenco obiettivi ---------- */
+  function scheda(o){
+    var fatto = !!o.completato, meta = '';
+    if(fatto){
+      meta = '<span class="mco-pill">' + IC_OK.replace('<svg', '<svg style="stroke-width:2.6"') + 'Raggiunto</span>';
+    } else if(o.scadenza){
+      var gg = Math.round((daIso(o.scadenza) - oggi()) / 86400000);
+      var resto = gg > 1 ? 'tra ' + gg + ' giorni' : gg === 1 ? 'domani' : gg === 0 ? 'oggi' : (gg === -1 ? 'scaduto ieri' : 'scaduto da ' + (-gg) + ' giorni');
+      meta = '<span class="mco-pill">' + IC_CAL + 'Entro il ' + dataBreve(o.scadenza) + '</span><span class="mco-left' + (gg < 0 ? ' late' : '') + '">' + resto + '</span>';
+    } else {
+      meta = '<span class="mco-pill">' + IC_CAL + 'Senza scadenza</span>';
+    }
+    return '<div class="pane mco-card' + (fatto ? ' fatto' : '') + '">' +
+      '<button type="button" class="mco-chk" aria-label="' + (fatto ? 'Segna come da fare' : 'Segna come raggiunto') + '" onclick="completaObiettivo(\'' + o.id + '\',' + (!fatto) + ')">' + IC_OK + '</button>' +
+      '<div class="mco-body"><div class="mco-t">' + esc(o.testo) + '</div><div class="mco-meta">' + meta + '</div></div>' +
+      '<button type="button" class="mco-del" aria-label="Elimina obiettivo" onclick="eliminaObiettivo(\'' + o.id + '\')">' + IC_DEL + '</button>' +
+    '</div>';
+  }
+  function testata(vista){
+    var cap = vista.querySelector('.sec-cap');
+    return cap ? cap.outerHTML : '<div class="sec-cap">I tuoi obiettivi <span class="add" onclick="openObj()">+ Nuovo obiettivo</span></div>';
+  }
+  window.caricaObiettivi = async function(){
+    var vista = document.getElementById('view-obiettivi'); if(!vista) return;
+    if(typeof COLLEGATO === 'undefined' || !COLLEGATO || !MC.utenteCorrente()) return;
+    var testa = testata(vista);
+    try{
+      var ob = await MC.obiettivi.lista();
+      if(!ob.length){
+        vista.innerHTML = testa +
+          '<div class="pane mco-vuoto"><div class="mco-ic">' + IC_TGT + '</div>' +
+          '<h4>Fissa il tuo primo obiettivo</h4><p>Un obiettivo scritto, con una data, è più difficile da rimandare.</p>' +
+          '<button type="button" class="btn btn-lime" onclick="openObj()">Nuovo obiettivo</button></div>';
+        return;
+      }
+      var aperti = ob.filter(function(o){ return !o.completato; });
+      var fatti = ob.filter(function(o){ return o.completato; });
+      aperti.sort(function(a, b){ return (a.scadenza || '9999') < (b.scadenza || '9999') ? -1 : 1; });
+      var html = testa + '<div class="mco-sum"><span><b>' + aperti.length + '</b> in corso</span><span><b>' + fatti.length + '</b> ' + (fatti.length === 1 ? 'raggiunto' : 'raggiunti') + '</span></div>';
+      html += aperti.map(scheda).join('');
+      if(fatti.length) html += '<div class="mco-sub">Raggiunti</div>' + fatti.map(scheda).join('');
+      vista.innerHTML = html;
+    }catch(e){ console.warn('Obiettivi:', e && e.message); }
+  };
+
+  /* ---------- niente contenuti dimostrativi nell'app vera ---------- */
+  function togliDemo(){
+    if(typeof COLLEGATO === 'undefined' || !COLLEGATO) return;
+    document.querySelectorAll('#view-diario .pane.entry[onclick="openEditor()"]').forEach(function(el){ el.remove(); });
+    var vo = document.getElementById('view-obiettivi');
+    if(vo && vo.querySelector('.obj-card[onclick="toggleObj(this)"]')){
+      vo.querySelectorAll('.obj-card[onclick="toggleObj(this)"]').forEach(function(el){ el.remove(); });
+      if(!vo.querySelector('.mco-card, .mco-vuoto')) vo.insertAdjacentHTML('beforeend', '<div class="mco-skel"></div><div class="mco-skel"></div>');
+    }
+  }
+
+  /* ---------- chip PRO: niente "PRO" finto prima di conoscere il piano ---------- */
+  function chipPronto(){
+    var c = document.getElementById('mc-pro-chip'); if(!c) return;
+    var noto = (typeof COLLEGATO === 'undefined' || !COLLEGATO) || !(window.MC && MC.utenteCorrente && MC.utenteCorrente()) || !!(MC.profiloCorrente && MC.profiloCorrente());
+    if(!noto){ c.classList.remove('mc-chip-ok'); return; }
+    try{ if(typeof window.aggiornaChipPro === 'function') window.aggiornaChipPro(); }catch(e){}
+    c.classList.add('mc-chip-ok');
+  }
+  (function(){
+    var o = window.applicaProfilo;
+    if(typeof o === 'function'){
+      window.applicaProfilo = function(){ var r = o.apply(this, arguments); try{ chipPronto(); }catch(e){} return r; };
+    }
+  })();
+
+  function avvio(){
+    var fab = document.getElementById('fab'); if(fab) fab.setAttribute('onclick', 'mcFab()');
+    document.querySelectorAll('#view-obiettivi .sec-cap .add').forEach(function(a){ a.setAttribute('onclick', 'openObj()'); });
+    costruisciFoglio();
+    togliDemo();
+    chipPronto();
+    var n = 0, t = setInterval(function(){ chipPronto(); if(++n > 40) clearInterval(t); }, 500);
+    setInterval(chipPronto, 4000);
+  }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', avvio); else avvio();
 })();
 </script>

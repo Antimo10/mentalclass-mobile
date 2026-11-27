@@ -404,8 +404,14 @@ const MC = (function(){
     },
     async eliminaAccount(){
       richiediLogin();
-      const { error } = await sb.rpc('elimina_mio_account');
-      if(error) throw new Error(error.message);
+      /* i file (vocali, diario, immagini) si cancellano solo con la Storage API:
+         lo fa la funzione sul server, poi elimina l'utente */
+      const { data, error } = await sb.functions.invoke('elimina-account', { body: {} });
+      if(error || !data || !data.eliminato){
+        let msg = (data && data.errore) || (error && error.message) || 'eliminazione non riuscita';
+        try{ if(error && error.context && error.context.json){ const j = await error.context.json(); if(j && j.errore) msg = j.errore; } }catch(e){}
+        throw new Error(msg);
+      }
       await sb.auth.signOut();
       utente = null; profilo = null;
     }
